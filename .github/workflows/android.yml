@@ -1,0 +1,93 @@
+name: Android
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      force_enable:
+        description: 'Ejecutar aunque ENABLE_ANDROID_CI no sea true'
+        type: boolean
+        default: false
+
+# Deshabilitado por defecto. Activar en GitHub → Settings → Variables:
+#   ENABLE_ANDROID_CI = true
+# Hasta entonces los tags v* no consumen minutos de build Android.
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    outputs:
+      enabled: ${{ steps.check.outputs.enabled }}
+    steps:
+      - id: check
+        env:
+          ENABLE_ANDROID_CI: ${{ vars.ENABLE_ANDROID_CI }}
+          FORCE: ${{ inputs.force_enable }}
+        run: |
+          if [ "$ENABLE_ANDROID_CI" = "true" ] || [ "$FORCE" = "true" ]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+            echo "Android CI habilitado."
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Android CI deshabilitado. Variable ENABLE_ANDROID_CI!=true. No se construye AAB."
+          fi
+
+  build-internal:
+    needs: gate
+    if: needs.gate.outputs.enabled == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Dependencies
+        run: flutter pub get
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Test
+        run: flutter test
+
+      - name: Decode keystore
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          if [ -z "$ANDROID_KEYSTORE_BASE64" ]; then
+            echo "ANDROID_KEYSTORE_BASE64 no configurado — skip firma release"
+            exit 0
+          fi
+          echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > android/app/upload-keystore.jks
+          cat > android/key.properties <<EOF
+          storePassword=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          keyPassword=${{ secrets.ANDROID_KEY_PASSWORD }}
+          keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}
+          storeFile=upload-keystore.jks
+          EOF
+
+      - name: Build App Bundle
+        run: flutter build appbundle --release
+
+      - name: Upload AAB artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release-aab
+          path: build/app/outputs/bundle/release/app-release.aab
+
+      # Subida a pista interna — requiere Fastlane + PLAY_STORE_JSON_KEY
+      # Descomentar cuando android/fastlane esté listo.
+      # Promoción a producción pública: MANUAL en Google Play Console.

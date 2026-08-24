@@ -1,0 +1,71 @@
+name: iOS
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      force_enable:
+        description: 'Ejecutar aunque ENABLE_IOS_CI no sea true'
+        type: boolean
+        default: false
+
+# Deshabilitado por defecto (macOS es caro en GHA).
+# Activar: Settings → Variables → ENABLE_IOS_CI = true
+# Solo por tag v* cuando esté habilitado — no en cada commit.
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    outputs:
+      enabled: ${{ steps.check.outputs.enabled }}
+    steps:
+      - id: check
+        env:
+          ENABLE_IOS_CI: ${{ vars.ENABLE_IOS_CI }}
+          FORCE: ${{ inputs.force_enable }}
+        run: |
+          if [ "$ENABLE_IOS_CI" = "true" ] || [ "$FORCE" = "true" ]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+            echo "iOS CI habilitado."
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::iOS CI deshabilitado. Variable ENABLE_IOS_CI!=true. No se usa runner macOS."
+          fi
+
+  build-testflight:
+    needs: gate
+    if: needs.gate.outputs.enabled == 'true'
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Dependencies
+        run: flutter pub get
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Test
+        run: flutter test
+
+      - name: Build IPA (unsigned / CI placeholder)
+        run: |
+          flutter build ios --release --no-codesign
+          echo "Para TestFlight: configurar Fastlane match + pilot y secrets APP_STORE_CONNECT_*"
+
+      - name: Upload build artifact (placeholder)
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-release-build
+          path: build/ios/iphoneos
+          if-no-files-found: ignore
