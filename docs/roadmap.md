@@ -24,8 +24,8 @@
 
 ## Fase 3 — FCM + Hosting
 
-- [ ] Firebase FCM + Hosting por entorno
-- [ ] Deploy web automático desde `main`
+- [ ] Un proyecto Firebase (FCM + Hosting)
+- [ ] Deploy web (manual o CI desde `main`)
 - [ ] `send-push` MVP
 
 ## Fase 4 — MVP funcional
@@ -39,34 +39,34 @@
 7. Votaciones  
 8. Push en eventos  
 
-## Fase 5 — Tiendas + multi-tenant
+## Fase 5 — Tiendas + segundo ambiente
 
-- [ ] Fastlane match + supply/pilot
-- [ ] Tags → TestFlight / Play internal
+- [ ] Fastlane + tags → TestFlight / Play internal (`ENABLE_*_CI`)
 - [ ] Tenant #2 demo
-- [ ] Staging/prod
+- [ ] **Separar `prod`** (Supabase + Firebase) cuando haya datos/usuarios reales
 
 ## Fase 6 — Pagos (cuando el producto lo pida)
 
 - [ ] Wompi o PayU
-- [ ] Implementar `payment-webhook` (quitar stub)
-- [ ] Checkout en app + comprobantes
+- [ ] Implementar `payment-webhook`
+- [ ] Checkout en app
 
 ## Dependencias
 
 ```mermaid
 graph TD
-  F0[Docs + GHA] --> F1[Supabase]
+  F0[Docs + GHA] --> F1[Supabase único]
   F1 --> F2[App core]
   F2 --> F3[FCM + Hosting]
   F2 --> F4[MVP]
   F3 --> F4
-  F4 --> F5[Stores + tenants]
+  F4 --> F5[Stores + ambiente prod]
   F5 --> F6[Pagos]
 ```
 
 ## Fuera de scope v1
 
-- Cobro in-app / pasarela
-- Flavors white-label por cliente
+- Staging / multi-ambiente
+- Cobro in-app
+- Flavors white-label
 - Migración automática desde prototipo en producción

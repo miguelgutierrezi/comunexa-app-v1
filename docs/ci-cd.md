@@ -1,94 +1,104 @@
 # CI/CD — GitHub Actions (Comunexa)
 
-Tres workflows independientes. Detalle: [`technical-brief.md`](technical-brief.md) §7.
-
 ## Resumen
 
-| Archivo | Runner | Disparo | Destino | Gate |
-|---|---|---|---|---|
-| [`web.yml`](../.github/workflows/web.yml) | `ubuntu-latest` | Push a `main` | Firebase Hosting | Siempre activo |
-| [`android.yml`](../.github/workflows/android.yml) | `ubuntu-latest` | Tag `v*` | Play internal | `ENABLE_ANDROID_CI=true` |
-| [`ios.yml`](../.github/workflows/ios.yml) | `macos-latest` | Tag `v*` | TestFlight | `ENABLE_IOS_CI=true` |
+| Archivo | Disparo | Destino | Gate |
+|---|---|---|---|
+| [`web.yml`](../.github/workflows/web.yml) | Push a `main` | Firebase Hosting (**automático**) | Secrets Firebase |
+| [`android.yml`](../.github/workflows/android.yml) | Tag `v*` | Play internal | `ENABLE_ANDROID_CI=true` |
+| [`ios.yml`](../.github/workflows/ios.yml) | Tag `v*` | TestFlight | `ENABLE_IOS_CI=true` |
 
-## Feature flags (variables de repositorio)
+## Activar deploy automático web
 
-Hasta tener builds estables para tiendas, **Android e iOS van deshabilitados por defecto**.
+Proyecto Firebase actual: **`comunexa-fd97d`** (un solo ambiente).
 
-En GitHub → **Settings → Secrets and variables → Actions → Variables**:
+Orden del workflow `web.yml`:
 
-| Variable | Valor para activar | Efecto |
-|---|---|---|
-| `ENABLE_ANDROID_CI` | `true` | Ejecuta build AAB (y más adelante supply a Play) |
-| `ENABLE_IOS_CI` | `true` | Ejecuta build en macOS / TestFlight |
+1. Si hay `supabase/migrations/*.sql` → aplicar migraciones (`supabase db push`)
+2. `flutter analyze` + `test` + `build web`
+3. Deploy a Firebase Hosting (`live`)
 
-Cualquier otro valor (o variable ausente) = **no se construye**. El workflow puede dispararse por un tag, pero solo corre un job `gate` barato en `ubuntu-latest` y sale con un aviso — **no gasta minutos macOS**.
+Si fallan las migraciones, **no** se hace deploy (evita app nueva contra schema viejo).
 
-### Override manual
+### Paso 1 — Service account Firebase
 
-En **Actions → Android / iOS → Run workflow**, marcar `force_enable` para probar un build sin cambiar la variable del repo.
+Opción A (CLI):
 
-### Cuándo activarlos
-
-1. Keystore / certificados listos y secrets configurados.
-2. App estable en web (o local) para el piloto.
-3. Cuentas Play / App Store Connect listas.
-4. Entonces: `ENABLE_ANDROID_CI=true` y/o `ENABLE_IOS_CI=true`.
-
-Web no usa este gate: el deploy a Hosting sigue en cada push a `main` (bajo riesgo, fácil de revertir).
-
-## Secretos de GitHub
-
-### Web / Firebase Hosting
-
-| Secret | Uso |
-|---|---|
-| `FIREBASE_SERVICE_ACCOUNT_COMUNEXA_PROD` | Service account para Hosting deploy |
-| `FIREBASE_PROJECT_ID` | Project ID |
-
-### Android (solo si `ENABLE_ANDROID_CI=true`)
-
-| Secret | Uso |
-|---|---|
-| `ANDROID_KEYSTORE_BASE64` | Keystore en base64 |
-| `ANDROID_KEYSTORE_PASSWORD` | Password keystore |
-| `ANDROID_KEY_ALIAS` | Alias |
-| `ANDROID_KEY_PASSWORD` | Password key |
-| `PLAY_STORE_JSON_KEY` | Play Developer API |
-
-### iOS (solo si `ENABLE_IOS_CI=true`)
-
-| Secret | Uso |
-|---|---|
-| `MATCH_PASSWORD` | Fastlane match |
-| `MATCH_GIT_BASIC_AUTHORIZATION` | Repo de certificados |
-| `APP_STORE_CONNECT_API_KEY_ID` | Key ID |
-| `APP_STORE_CONNECT_API_ISSUER_ID` | Issuer ID |
-| `APP_STORE_CONNECT_API_KEY_CONTENT` | `.p8` |
-| `APPLE_TEAM_ID` | Team ID |
-
-### Flutter / Supabase (opcional en build)
-
-| Secret | Uso |
-|---|---|
-| `SUPABASE_URL` | URL entorno |
-| `SUPABASE_ANON_KEY` | Anon key |
-
-## Política de release
-
-1. **Web:** merge a `main` → Hosting.
-2. **Móvil:** solo con flags activos + tag `v*` → canales de prueba.
-3. **Prod stores:** promoción manual en consolas.
-
-## Costos
-
-- macOS ≈ 10× minutos Linux → dejar `ENABLE_IOS_CI` en off hasta necesitarlo.
-- Tags `v*` con flags off no consumen runners caros.
-
-## Fastlane
-
-```
-android/fastlane/
-ios/fastlane/
+```bash
+cd comunexa-app-v1
+firebase login
+firebase use comunexa-fd97d
+firebase init hosting:github
 ```
 
-Cuando exista firma real, descomentar pasos en los YAML.
+Opción B (manual): Google Cloud → proyecto `comunexa-fd97d` → Service Account con rol **Firebase Hosting Admin** → Key JSON.
+
+### Paso 2 — Variables y Secrets en GitHub
+
+Repo → **Settings → Secrets and variables → Actions**
+
+**Variables** (pestaña Variables)
+
+| Variable | Valor |
+|---|---|
+| `FIREBASE_PROJECT_ID` | `comunexa-fd97d` |
+| `SUPABASE_PROJECT_REF` | `vqwfjmwoonntqavalqeu` |
+| `SUPABASE_URL` | `https://vqwfjmwoonntqavalqeu.supabase.co` |
+
+**Secrets** (pestaña Secrets)
+
+| Secret | Valor |
+|---|---|
+| `FIREBASE_SERVICE_ACCOUNT` | JSON **completo** de la service account |
+| `SUPABASE_ACCESS_TOKEN` | [Account tokens](https://supabase.com/dashboard/account/tokens) |
+| `SUPABASE_DB_PASSWORD` | Password de la DB |
+| `SUPABASE_ANON_KEY` | anon `public` key (opcional hasta que la app la use en build) |
+
+El workflow usa `${{ vars.* }}` para Variables y `${{ secrets.* }}` para Secrets.
+
+### Paso 3 — Disparar
+
+```bash
+git push origin main
+```
+
+O **Actions → Web → Run workflow**.
+
+URL: `https://comunexa-fd97d.web.app`
+
+### Migraciones en CI
+
+- Hay `.sql` en `supabase/migrations/` → corre `supabase link` + `db push`.
+- No hay archivos → omite el paso (solo build + Hosting).
+- Migraciones ya aplicadas → `db push` no vuelve a aplicarlas (idempotente).
+
+Nunca uses la `service_role` key en el workflow de Hosting; para migraciones basta Access Token + DB password.
+
+### Errores frecuentes
+
+| Error | Qué hacer |
+|---|---|
+| Falta `FIREBASE_SERVICE_ACCOUNT` | Pegar el JSON entero del secret |
+| Falta `SUPABASE_DB_PASSWORD` | Reset password en Supabase → Database settings |
+| Permission denied Hosting | Rol Firebase Hosting Admin en la SA |
+| `db push` falla | Revisar SQL localmente con `supabase db push` |
+
+## Feature flags móvil
+
+| Variable (Settings → Variables) | Activar |
+|---|---|
+| `ENABLE_ANDROID_CI` | `true` cuando toque Android |
+| `ENABLE_IOS_CI` | `true` cuando toque iOS |
+
+Off por defecto. Override: Run workflow → `force_enable`.
+
+## Secretos móvil (después)
+
+Android: `ANDROID_KEYSTORE_*`, `PLAY_STORE_JSON_KEY`  
+iOS: `MATCH_*`, `APP_STORE_CONNECT_*`, `APPLE_TEAM_ID`
+
+## Política
+
+1. **Web:** cada push a `main` → Hosting live.  
+2. **Móvil:** flags + tag `v*` → canales de prueba.  
+3. Un solo ambiente Firebase/Supabase hasta haber prod real.

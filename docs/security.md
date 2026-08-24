@@ -37,7 +37,7 @@ Integración pausada. No almacenar credenciales de pasarela hasta reactivar. Stu
 
 ## Firebase
 
-Solo **FCM + Hosting**. Proyecto por entorno. Sin Firestore/Auth.
+Solo **FCM + Hosting**. Un proyecto Firebase por ahora (pre-prod). Sin Firestore/Auth.
 
 ## Releases móviles
 

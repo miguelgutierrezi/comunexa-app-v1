@@ -2,7 +2,7 @@
 
 Plataforma **SaaS white-label** multi-tenant para **administradoras de propiedad horizontal** (Colombia primero). Cliente piloto: **Administradores Diaz PH SAS**.
 
-Misma base Flutter → **Google Play**, **App Store** y **web** (Firebase Hosting). Pagos in-app **pausados** en v1.
+Misma base Flutter → **Google Play**, **App Store** y **web** (Firebase Hosting). Pagos in-app **pausados** en v1. **Un solo ambiente** backend (pre-prod).
 
 > **Referencia UX/dominio:** [`administradores-diaz-ph-v2`](../administradores-diaz-ph-v2/) — no copiar su stack Firebase/Firestore.
 

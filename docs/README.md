@@ -37,6 +37,7 @@
 
 1. Un Supabase · muchos tenants · **RLS**  
 2. Un Flutter · Play + App Store + **Firebase Hosting**  
-3. **GHA**: web en `main`; móvil en tags → canales de prueba  
-4. Pagos **pausados**; esquema listo  
-5. Piloto: Diaz PH  
+3. **Un ambiente** backend por ahora (pre-prod)  
+4. **GHA**: web en `main`; móvil en tags → canales de prueba  
+5. Pagos **pausados**; esquema listo  
+6. Piloto: Diaz PH  

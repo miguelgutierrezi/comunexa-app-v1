@@ -11,7 +11,8 @@ Instrucciones al trabajar en **Comunexa** (`comunexa-app-v1`).
 | Aislamiento | **RLS** |
 | Push | **FCM** |
 | Hosting web | **Firebase Hosting** |
-| CI/CD | **GitHub Actions** (web en `main`; android/ios por tag `v*`) |
+| CI/CD | **GitHub Actions** (web en `main`; android/ios por tag `v*` + flags) |
+| Ambientes | **Uno solo** (pre-prod). Separar prod cuando haya usuarios reales |
 | Pagos | **Pausados** — stub `payment-webhook`; tablas `invoices`/`payments` sí existen |
 
 - No Firestore / Firebase Auth.

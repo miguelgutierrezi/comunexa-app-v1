@@ -25,7 +25,7 @@ Tipos: `feat`, `fix`, `docs`, `chore`, `refactor`, `test`, `ci`.
 
 Ramas:
 
-- `main` — estable, deploy staging
+- `main` — rama principal; deploy web a Hosting
 - `feat/<nombre>` — features
 - `fix/<nombre>` — correcciones
 

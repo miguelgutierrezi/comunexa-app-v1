@@ -100,13 +100,16 @@ RLS: [`database/rls-policies.md`](database/rls-policies.md). Resumen: [`security
 
 ## 9. Entornos y CI
 
-| Entorno | Supabase | Firebase (FCM+Hosting) |
-|---|---|---|
-| dev | `comunexa-dev` | `comunexa-dev` |
-| staging | `comunexa-staging` | `comunexa-staging` |
-| prod | `comunexa-prod` | `comunexa-prod` |
+**Ahora:** un solo proyecto Supabase + un solo Firebase (FCM + Hosting). Sin staging/prod.
 
-CI: [`ci-cd.md`](ci-cd.md) — web en `main`; móvil en tags `v*` → canales de prueba; prod stores = manual.
+**Después (piloto con datos reales / clientes):**
+
+| Entorno | Supabase | Firebase |
+|---|---|---|
+| development | `comunexa` (actual) | `comunexa` (actual) |
+| production | `comunexa-prod` (futuro) | `comunexa-prod` (futuro) |
+
+CI: [`ci-cd.md`](ci-cd.md) — web en `main`; móvil gated por variables.
 
 ## 10. vs prototipo Diaz PH
 

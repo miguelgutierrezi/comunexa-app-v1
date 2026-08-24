@@ -55,6 +55,9 @@ lib/firebase_options.dart
 supabase/.env.local
 supabase/.temp/
 
+# Firebase (project link local — usar .firebaserc.example como plantilla)
+.firebaserc
+
 # macOS
 **/Pods/
 **/Podfile.lock

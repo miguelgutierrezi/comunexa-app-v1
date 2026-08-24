@@ -70,21 +70,19 @@ Detalle: [`database/schema.sql`](database/schema.sql), [`database/er-diagram.md`
 
 ## 7. Entornos y CI/CD
 
-- Supabase: proyectos **dev / staging / prod** (mínimo dev/prod).
-- Firebase: proyecto por entorno para **FCM + Hosting** (no mezclar pruebas con producción).
-- **GitHub Actions** — tres workflows (detalle en [`.github/workflows/`](../.github/workflows/) y [`ci-cd.md`](ci-cd.md)):
+**Decisión actual (pre-producción):** **un solo ambiente** — un proyecto Supabase y un proyecto Firebase (FCM + Hosting). No hay staging/prod separados: la app aún no está en producción. Separar ambientes cuando haya piloto con datos reales (ver roadmap).
+
+- **GitHub Actions** — tres workflows ([`.github/workflows/`](../.github/workflows/), [`ci-cd.md`](ci-cd.md)):
 
 | Workflow | Disparo | Resultado |
 |---|---|---|
-| `web.yml` | Push a `main` | `flutter build web` → deploy **Firebase Hosting** (automático punta a punta) |
-| `android.yml` | Tag `v*` **y** `ENABLE_ANDROID_CI=true` | AAB → pista interna Play. Off por defecto hasta release estable |
-| `ios.yml` | Tag `v*` **y** `ENABLE_IOS_CI=true` | IPA → TestFlight. Off por defecto (ahorra minutos macOS) |
+| `web.yml` | Push a `main` | `flutter build web` → **Firebase Hosting** |
+| `android.yml` | Tag `v*` **y** `ENABLE_ANDROID_CI=true` | AAB → Play internal (off por defecto) |
+| `ios.yml` | Tag `v*` **y** `ENABLE_IOS_CI=true` | TestFlight (off por defecto; ahorra macOS) |
 
-Separar build automático de publicación pública: Apple/Google exigen revisión; el control humano se conserva antes de llegar a residentes del piloto.
+Publicación a stores públicas = paso manual. Migraciones en `supabase/migrations/`.
 
-**Costo:** minutos macOS en GHA consumen ~10× la cuota Linux. Disparar `ios.yml` **solo por tag**, no en cada commit.
-
-- Migraciones en `supabase/migrations/` — nunca SQL manual en prod.
+**Costo:** macOS ≈ 10× minutos Linux → `ios.yml` solo por tag y solo con flag activo.
 
 ## 8. Mapa de documentación
 

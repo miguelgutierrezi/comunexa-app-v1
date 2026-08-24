@@ -24,15 +24,13 @@ Firebase se usa para:
 - Flutter Web es estático; no necesita edge compute de Vercel.
 - Misma cuenta Firebase que FCM.
 
-## Proyectos por entorno
+## Proyectos
 
-| Entorno | Proyecto (ejemplo) |
-|---|---|
-| dev | `comunexa-dev` |
-| staging | `comunexa-staging` |
-| prod | `comunexa-prod` |
+**Ahora (pre-prod):** un solo proyecto Firebase, ej. `comunexa` — FCM + Hosting.
 
-No reutilizar el proyecto del prototipo `administradores-diaz-ph-v2`.
+No reutilizar el del prototipo `administradores-diaz-ph-v2`.
+
+**Futuro:** cuando exista producción real, crear `comunexa-prod` y dejar este como development.
 
 ## Archivos locales (gitignored)
 
@@ -47,14 +45,8 @@ Config de Hosting versionada: [`firebase.json`](firebase.json) en la raíz del r
 - Token → `profiles.fcm_token` (Supabase)
 - Envío: Edge Function `send-push`
 
-## Deploy web (CI)
-
-Ver [`.github/workflows/web.yml`](../.github/workflows/web.yml) y [`docs/ci-cd.md`](../docs/ci-cd.md).
-
-```bash
-flutter build web --release
-firebase deploy --only hosting
-```
+CI: [`.github/workflows/web.yml`](../.github/workflows/web.yml).  
+Deploy automático: secrets `FIREBASE_PROJECT_ID` + `FIREBASE_SERVICE_ACCOUNT` — ver [`docs/ci-cd.md`](../docs/ci-cd.md).
 
 ## Referencias
 
