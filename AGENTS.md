@@ -26,8 +26,9 @@ Instrucciones al trabajar en **Comunexa** (`comunexa-app-v1`).
 | Schema + RLS en `supabase/migrations/` | `db push` + seed Diaz PH |
 | Bootstrap, `Env`, tema light/dark, brand assets | `supabase_flutter` + client tipado |
 | Splash → Login UI responsive (stub auth; Apple solo iOS/macOS) | go_router + SessionProvider + Auth real |
+| Bypass login → **Home shell mock** (móvil / tablet / desktop · light+dark) | Home por rol + Auth real |
 | Workflows GHA + remote GitHub | Secrets/variables GHA + CI verde |
-| Stub `payment-webhook` | Features de negocio (Fase 4) |
+| Stub `payment-webhook` | Features de negocio reales (Fase 4) |
 
 Detalle: [`docs/roadmap.md`](docs/roadmap.md) · mapa `lib/`: [`docs/flutter-structure.md`](docs/flutter-structure.md).
 
@@ -46,7 +47,8 @@ Detalle: [`docs/roadmap.md`](docs/roadmap.md) · mapa `lib/`: [`docs/flutter-str
 | `core/config/env.dart` | `.env` / dart-define |
 | `core/theme/` | `AppTheme` + `BrandAssets` (marca producto) |
 | `features/splash/` | Splash breve |
-| `features/auth/presentation/login_screen.dart` | UI login; submit = stub; Apple solo iOS/macOS |
+| `features/auth/presentation/login_screen.dart` | UI login; bypass → home; demos alert; Apple solo iOS/macOS |
+| `features/home/` | Shell + feed mock + tablet portrait/land + dashboard desktop (light/dark) |
 | `services/` | Vacío; FCM etc. llegan después |
 
 ## Restricciones
@@ -72,6 +74,7 @@ Detalle: [`docs/roadmap.md`](docs/roadmap.md) · mapa `lib/`: [`docs/flutter-str
 
 - UI en español; código en inglés; **responder al usuario en español**.
 - Cambios mínimos alineados a la tarea; no saltar a Fase 4 sin pedirlo.
+- Home/login son **UI mock** hasta Auth real: no tratar bypass como sesión.
 
 ## Quality gate (mandatorio)
 
@@ -91,6 +94,7 @@ Los tres deben pasar (mismo criterio que `web.yml`). Solo-docs: no exige build.
 
 - Feature/pantalla/lógica nueva → tests unit/widget **en el mismo cambio**.
 - Fix → test de regresión cuando sea razonable.
+- Preferir `test/features/<feature>/` para smoke de pantallas (login, home).
 
 ### 3. Documentación + 3 agentes
 

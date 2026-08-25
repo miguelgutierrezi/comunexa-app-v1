@@ -44,7 +44,7 @@ comunexa-app-v1/
 
 ## Estado (2026-08-25)
 
-Fundamentos (docs, SQL/RLS, CI workflows, stub pagos) + **UI de login** responsive. Siguiente: Supabase Auth + go_router. Detalle: [docs/roadmap.md](docs/roadmap.md).
+Fundamentos (docs, SQL/RLS, CI workflows, stub pagos) + **UI de login** + **home shell mock** (móvil / tablet / desktop · light+dark). Siguiente: Supabase Auth + go_router. Detalle: [docs/roadmap.md](docs/roadmap.md).
 
 ## Getting started
 

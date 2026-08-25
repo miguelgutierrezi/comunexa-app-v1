@@ -5,7 +5,7 @@
 Stack: Flutter + **Supabase (RLS)** + **FCM** + **Firebase Hosting** + **GitHub Actions**.  
 Pagos in-app pausados (stub `payment-webhook`). No Firestore.
 
-**Estado (2026-08-25):** fundamentos + UI de login listos (Apple Sign-In solo iOS/macOS); Auth Supabase / go_router / features de negocio pendientes. Ver [`docs/roadmap.md`](docs/roadmap.md).
+**Estado (2026-08-25):** fundamentos + UI login + **home shell mock** (móvil / tablet / desktop · light+dark). Auth Supabase / go_router / features de negocio reales pendientes. Ver [`docs/roadmap.md`](docs/roadmap.md).
 
 ## Quality gate (mandatorio antes de cerrar)
 
@@ -31,4 +31,4 @@ Regla completa: [`AGENTS.md` § Quality gate](AGENTS.md) · [`.cursor/rules/qual
 | [`.cursor/rules/`](.cursor/rules/) | Reglas Cursor |
 | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) | GitHub Copilot |
 
-Restricciones duras: no secretos en git · no desactivar RLS · no completar pasarela de pagos sin pedirlo · responder en español.
+Restricciones duras: no secretos en git · no desactivar RLS · no completar pasarela de pagos sin pedirlo · responder en español · no cerrar sin quality gate + docs/agentes.

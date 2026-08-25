@@ -1,5 +1,7 @@
 import 'package:comunexa/core/theme/app_theme.dart';
 import 'package:comunexa/core/theme/brand_assets.dart';
+import 'package:comunexa/features/auth/presentation/login_alerts.dart';
+import 'package:comunexa/features/home/presentation/home_shell_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -58,6 +60,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
   bool _submitting = false;
+  LoginAlertKind? _formAlert;
 
   @override
   void dispose() {
@@ -66,19 +69,51 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
+  /// Auth aún no existe: bypass al home.
+  /// Prefijos `demo:` en el correo previsualizan alerts de Figma.
   Future<void> _onSubmit() async {
-    setState(() => _submitting = true);
-    await Future<void>.delayed(const Duration(milliseconds: 400));
+    final email = _emailController.text.trim().toLowerCase();
+
+    if (email.startsWith('demo:locked')) {
+      setState(() => _formAlert = null);
+      await showAccountLockedDialog(context);
+      return;
+    }
+    if (email.startsWith('demo:offline')) {
+      setState(() => _formAlert = null);
+      showNetworkErrorToast(context, onRetry: _onSubmit);
+      return;
+    }
+    if (email.startsWith('demo:invalid')) {
+      setState(() => _formAlert = LoginAlertKind.invalidCredentials);
+      return;
+    }
+    if (email.startsWith('demo:empty')) {
+      setState(() => _formAlert = LoginAlertKind.emptyFields);
+      return;
+    }
+
+    setState(() {
+      _formAlert = null;
+      _submitting = true;
+    });
+    await Future<void>.delayed(const Duration(milliseconds: 350));
     if (!mounted) return;
     setState(() => _submitting = false);
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Auth con Supabase se conectará en el siguiente paso.'),
-      ),
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute<void>(builder: (_) => const HomeShellScreen()),
     );
   }
 
+  void _onSocial(String provider) {
+    showComingSoonDialog(context);
+  }
+
   void _soon(String label) {
+    if (label.contains('Google') || label.contains('Apple')) {
+      _onSocial(label);
+      return;
+    }
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('$label — próximamente')),
     );
@@ -137,6 +172,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 colors: colors,
                                 density: density,
                                 showAppleSignIn: widget.offersAppleSignIn,
+                                formAlert: _formAlert,
                                 emailController: _emailController,
                                 passwordController: _passwordController,
                                 obscurePassword: _obscurePassword,
@@ -194,6 +230,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   colors: colors,
                                   density: density,
                                   showAppleSignIn: widget.offersAppleSignIn,
+                                  formAlert: _formAlert,
                                   emailController: _emailController,
                                   passwordController: _passwordController,
                                   obscurePassword: _obscurePassword,
@@ -227,6 +264,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     colors: colors,
                     density: _LoginDensity.mobile,
                     showAppleSignIn: widget.offersAppleSignIn,
+                    formAlert: _formAlert,
                     emailController: _emailController,
                     passwordController: _passwordController,
                     obscurePassword: _obscurePassword,
@@ -447,6 +485,7 @@ class _LoginForm extends StatelessWidget {
     required this.colors,
     required this.density,
     required this.showAppleSignIn,
+    required this.formAlert,
     required this.emailController,
     required this.passwordController,
     required this.obscurePassword,
@@ -459,6 +498,7 @@ class _LoginForm extends StatelessWidget {
   final _LoginColors colors;
   final _LoginDensity density;
   final bool showAppleSignIn;
+  final LoginAlertKind? formAlert;
   final TextEditingController emailController;
   final TextEditingController passwordController;
   final bool obscurePassword;
@@ -498,6 +538,11 @@ class _LoginForm extends StatelessWidget {
     final socialLabelSize = _isTabletLandscape ? 13.0 : 14.0;
     final actionsGap = _isTabletLandscape ? 20.0 : 24.0;
     final dividerGap = _isTabletLandscape ? 12.0 : 16.0;
+    final showInlineBanner = formAlert == LoginAlertKind.invalidCredentials ||
+        formAlert == LoginAlertKind.emptyFields;
+    final fieldsHaveError = showInlineBanner;
+    final showRequiredHints = formAlert == LoginAlertKind.emptyFields;
+    final errorBorder = AppTheme.dangerRed;
 
     final header = Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -512,7 +557,7 @@ class _LoginForm extends StatelessWidget {
           const SizedBox(height: 32),
         ],
         Text(
-          'Bienvenido de nuevo',
+          'Bienvenido',
           style: TextStyle(
             fontWeight: FontWeight.w700,
             fontSize: titleSize,
@@ -534,40 +579,86 @@ class _LoginForm extends StatelessWidget {
             ),
           ),
         ],
+        if (showInlineBanner) ...[
+          const SizedBox(height: 20),
+          LoginAlertBanner(kind: formAlert!),
+        ],
       ],
     );
+
+    Widget fieldLabelRow(String text) {
+      return Row(
+        children: [
+          Expanded(
+            child: _FieldLabel(
+              text: text,
+              color: colors.ink,
+              fontSize: labelSize,
+            ),
+          ),
+          if (showRequiredHints)
+            SvgPicture.asset(
+              BrandAssets.iconAlertCircle,
+              width: 16,
+              height: 16,
+              colorFilter: const ColorFilter.mode(
+                AppTheme.dangerRed,
+                BlendMode.srcIn,
+              ),
+            ),
+        ],
+      );
+    }
 
     final fields = Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _FieldLabel(
-          text: 'Correo Electrónico',
-          color: colors.ink,
-          fontSize: labelSize,
-        ),
+        if (showRequiredHints)
+          fieldLabelRow('Correo Electrónico')
+        else
+          _FieldLabel(
+            text: 'Correo Electrónico',
+            color: colors.ink,
+            fontSize: labelSize,
+          ),
         const SizedBox(height: 8),
         _AuthField(
           controller: emailController,
           hint: 'nombre@ejemplo.com',
           fill: colors.fieldFill,
-          border: colors.fieldBorder,
+          border: fieldsHaveError ? errorBorder : colors.fieldBorder,
           hintColor: colors.muted,
           iconAsset: BrandAssets.iconMail,
           iconColor: colors.muted,
-          focusBorder: colors.focusBorder,
+          focusBorder: fieldsHaveError ? errorBorder : colors.focusBorder,
+          errorBorderWidth: fieldsHaveError ? 1.5 : 1,
           keyboardType: TextInputType.emailAddress,
           textInputAction: TextInputAction.next,
         ),
+        if (showRequiredHints) ...[
+          const SizedBox(height: 6),
+          const Text(
+            'Este campo es obligatorio.',
+            style: TextStyle(
+              color: AppTheme.dangerRed,
+              fontWeight: FontWeight.w500,
+              fontSize: 12,
+            ),
+          ),
+        ],
         SizedBox(height: fieldGap),
         if (_inlineForgot)
           Row(
             children: [
-              _FieldLabel(
-                text: 'Contraseña',
-                color: colors.ink,
-                fontSize: labelSize,
-              ),
-              const SizedBox(width: 8),
+              if (showRequiredHints)
+                Expanded(child: fieldLabelRow('Contraseña'))
+              else
+                _FieldLabel(
+                  text: 'Contraseña',
+                  color: colors.ink,
+                  fontSize: labelSize,
+                ),
+              if (!showRequiredHints) const SizedBox(width: 8),
               Flexible(
                 child: Align(
                   alignment: Alignment.centerRight,
@@ -593,6 +684,8 @@ class _LoginForm extends StatelessWidget {
               ),
             ],
           )
+        else if (showRequiredHints)
+          fieldLabelRow('Contraseña')
         else
           _FieldLabel(
             text: 'Contraseña',
@@ -604,11 +697,12 @@ class _LoginForm extends StatelessWidget {
           controller: passwordController,
           hint: '••••••••',
           fill: colors.fieldFill,
-          border: colors.fieldBorder,
+          border: fieldsHaveError ? errorBorder : colors.fieldBorder,
           hintColor: colors.muted,
           iconAsset: BrandAssets.iconLock,
           iconColor: colors.muted,
-          focusBorder: colors.focusBorder,
+          focusBorder: fieldsHaveError ? errorBorder : colors.focusBorder,
+          errorBorderWidth: fieldsHaveError ? 1.5 : 1,
           obscureText: obscurePassword,
           textInputAction: TextInputAction.done,
           onSubmitted: (_) => onSubmit(),
@@ -624,6 +718,17 @@ class _LoginForm extends StatelessWidget {
             ),
           ),
         ),
+        if (showRequiredHints) ...[
+          const SizedBox(height: 6),
+          const Text(
+            'Este campo es obligatorio.',
+            style: TextStyle(
+              color: AppTheme.dangerRed,
+              fontWeight: FontWeight.w500,
+              fontSize: 12,
+            ),
+          ),
+        ],
         if (!_inlineForgot) ...[
           const SizedBox(height: 12),
           Align(
@@ -870,6 +975,7 @@ class _AuthField extends StatelessWidget {
     required this.iconAsset,
     required this.iconColor,
     this.focusBorder = AppTheme.seedColor,
+    this.errorBorderWidth = 1,
     this.obscureText = false,
     this.suffix,
     this.keyboardType,
@@ -885,6 +991,7 @@ class _AuthField extends StatelessWidget {
   final String iconAsset;
   final Color iconColor;
   final Color focusBorder;
+  final double errorBorderWidth;
   final bool obscureText;
   final Widget? suffix;
   final TextInputType? keyboardType;
@@ -921,7 +1028,7 @@ class _AuthField extends StatelessWidget {
           suffixIcon: suffix,
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: border),
+            borderSide: BorderSide(color: border, width: errorBorderWidth),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),

@@ -17,6 +17,21 @@ abstract final class BrandAssets {
   static const String iconEyeSlash = '$_figma/icon-eye-slash.svg';
   static const String iconGoogle = '$_figma/icon-google.svg';
   static const String iconApple = '$_figma/icon-apple.svg';
+  static const String iconAlertOctagon = '$_figma/icon-alert-octagon.svg';
+  static const String iconAlertTriangle = '$_figma/icon-alert-triangle.svg';
+  static const String iconAlertCircle = '$_figma/icon-alert-circle.svg';
+  static const String iconLockModal = '$_figma/icon-lock-modal.svg';
+  static const String iconWifiOff = '$_figma/icon-wifi-off.svg';
+  static const String iconSparkles = '$_figma/icon-sparkles.svg';
+  static const String iconBell = '$_figma/icon-bell.svg';
+  static const String iconNewspaper = '$_figma/icon-newspaper.svg';
+  static const String iconGrid = '$_figma/icon-grid.svg';
+  static const String iconActivity = '$_figma/icon-activity.svg';
+  static const String iconMessage = '$_figma/icon-message.svg';
+  static const String iconSettings = '$_figma/icon-settings.svg';
+  static const String symbolNav = '$_figma/comunexa-symbol-nav.svg';
+  static const String iconSearch = '$_figma/icon-search.svg';
+  static const String iconChevronRight = '$_figma/icon-chevron-right.svg';
 
   static const String tagline =
       'Un edificio, una comunidad, una sola app.';

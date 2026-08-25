@@ -18,7 +18,7 @@ Use these notes as the default context for this repository.
 
 ## Current code status (2026-08-25)
 
-- Done: migrations + RLS, Flutter bootstrap, theme/branding, splash, **responsive login UI** (auth still stub; **Apple button only on iOS/macOS**), GHA workflows, remote GitHub.
+- Done: migrations + RLS, Flutter bootstrap, theme/branding, splash, **responsive login UI** (auth still stub; **Apple button only on iOS/macOS**; bypass → home; demo alert emails), **home shell mock** (mobile + tablet portrait/landscape + desktop, light/dark), GHA workflows, remote GitHub.
 - Next: Supabase project + `supabase_flutter` + go_router + real Auth + SessionProvider.
 
 ## Core constraints
@@ -27,7 +27,7 @@ Use these notes as the default context for this repository.
 - Do not disable RLS. Always design with `tenant_id`.
 - Do not hardcode Diaz PH branding; product brand ≠ tenant brand.
 - Do not implement Wompi/PayU or complete `payment-webhook` unless explicitly asked.
-- Keep changes minimal.
+- Keep changes minimal. Treat login bypass / mock home as **UI only**, not real session.
 - Reply to the user in **Spanish**. UI strings in Spanish; code identifiers in English.
 
 ## Quality gate (mandatory before finishing a code change)
@@ -42,7 +42,7 @@ All three must pass (same as `web.yml`). Docs-only changes skip the build.
 
 ### Tests
 
-- New behavior/screens → add unit/widget tests **in the same change**.
+- New behavior/screens → add unit/widget tests **in the same change** (prefer `test/features/<feature>/`).
 - Bug fixes → add a regression test when reasonable.
 
 ### Documentation + all 3 agent surfaces

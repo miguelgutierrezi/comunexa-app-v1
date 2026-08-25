@@ -24,6 +24,7 @@ flutter build web --release
 ## Tests nuevos — mandatorio
 
 - Todo comportamiento o pantalla **nueva** lleva tests (unit y/o widget) en el mismo cambio.
+- Preferir `test/features/<feature>/` para smoke de pantallas (login, home).
 - Bugs: test que reproduzca el fallo (o smoke del path tocado) cuando sea razonable.
 - No dejar “tests después”: van en el mismo PR/tarea.
 

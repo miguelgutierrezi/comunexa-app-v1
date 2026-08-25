@@ -6,6 +6,8 @@ abstract final class AppTheme {
   static const Color seedColor = Color(0xFF2563EB);
   static const Color accentTeal = Color(0xFF00B4A6);
   static const Color accentViolet = Color(0xFF7A4DFF);
+  /// Acento sky del dashboard dark (nav activa, “Ver todos”).
+  static const Color accentSky = Color(0xFF38BDF8);
   static const Color ink = Color(0xFF0D1B2A);
   static const Color slate = Color(0xFF64748B);
   static const Color slateLight = Color(0xFF94A3B8);
@@ -14,6 +16,10 @@ abstract final class AppTheme {
   static const Color fieldDark = Color(0xFF111E2E);
   static const Color borderDark = Color(0xFF203545);
   static const Color socialDark = Color(0xFF152535);
+  static const Color cardDark = Color(0xFF1A2A3A);
+  static const Color headerDark = Color(0xFF1A2A3A);
+  static const Color dangerRed = Color(0xFFEF4444);
+  static const Color warningAmber = Color(0xFFF59E0B);
 
   static const LinearGradient brandGradient = LinearGradient(
     begin: Alignment.topLeft,

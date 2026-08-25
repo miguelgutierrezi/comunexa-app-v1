@@ -66,7 +66,7 @@ Ramas:
 ## Tests
 
 - Unit tests para repositorios y lógica domain.
-- Widget smoke tests para pantallas críticas (login, home).
+- Widget smoke tests para pantallas críticas (login, home) en `test/features/<feature>/`.
 - Tests de RLS en CI (script o Supabase local).
 - **Mandatorio:** lo nuevo en una tarea lleva tests en el mismo cambio.
 

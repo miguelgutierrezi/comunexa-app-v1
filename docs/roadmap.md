@@ -1,6 +1,6 @@
 # Roadmap — Comunexa
 
-Estado al **2026-08-25** (rama `main` @ `d460f7a`).
+Estado al **2026-08-25**.
 
 ## Fase 0 — Fundamentos
 
@@ -25,8 +25,15 @@ Estado al **2026-08-25** (rama `main` @ `d460f7a`).
 
 - [x] UI Login responsive (móvil / tablet / desktop, light+dark) — **solo presentación**
 - [x] Splash → Login (Navigator; sin sesión real)
-- [x] Smoke tests widget del login
+- [x] Bypass login → Home + demos de alertas (`demo:invalid|empty|locked|offline`)
+- [x] Smoke tests widget del login (breakpoints + demos OAuth coming soon)
 - [x] Botón Apple Sign-In solo en iOS/macOS (Google en todas)
+- [x] Home shell mock:
+  - móvil: header + bottom nav + feed Noticias
+  - tablet portrait (≥700, portrait): feed + eventos horizontales light/dark (`#74:5` / `#74:117`)
+  - tablet landscape (≥900, landscape): dashboard compacto light/dark (`#35:487` / `#35:606`)
+  - desktop (≥1280): dashboard sidebar light/dark (`#35:233` / `#35:353`)
+- [x] Smoke tests home (móvil / tablet portrait / tablet landscape / desktop · light+dark)
 - [ ] `supabase_flutter` + go_router + SessionProvider
 - [ ] Auth real (email/password; OAuth Google/Apple = stubs UI)
 - [ ] Home por rol + tema tenant dinámico
@@ -39,7 +46,7 @@ Estado al **2026-08-25** (rama `main` @ `d460f7a`).
 
 ## Fase 4 — MVP funcional
 
-1. Noticias  
+1. Noticias (UI mock en home; backend/repositorio pendiente)
 2. Reservas  
 3. Visitas + PDF  
 4. PQR  

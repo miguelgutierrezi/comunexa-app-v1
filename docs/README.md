@@ -49,7 +49,8 @@
 | Docs + migraciones SQL/RLS + stub pagos | Listo |
 | CI workflows en repo | Listo (secrets GHA pendientes de verificar) |
 | Flutter: tema, splash, **login UI** responsive | Listo (auth real pendiente; Apple solo iOS/macOS) |
+| Flutter: **home shell mock** (móvil / tablet / desktop · light+dark) | Listo (datos mock) |
 | `supabase_flutter` / go_router / SessionProvider | Pendiente (Fase 2) |
-| Features de negocio (noticias, visitas, …) | Pendiente (Fase 4) |
+| Features de negocio reales (noticias API, visitas, …) | Pendiente (Fase 4; UI mock noticias en home) |
 
 Ver [roadmap.md](roadmap.md).

@@ -81,19 +81,41 @@ lib/
 │       └── brand_assets.dart
 ├── features/
 │   ├── splash/presentation/splash_screen.dart
-│   └── auth/presentation/login_screen.dart   # UI completa, auth stub
+│   ├── auth/presentation/login_screen.dart   # UI + bypass stub + demos alert
+│   └── home/
+│       ├── data/mock_noticias.dart           # feed + eventos mock
+│       └── presentation/
+│           ├── home_shell_screen.dart        # breakpoints → mobile / tablet port / land / desktop
+│           ├── home_bottom_nav.dart
+│           ├── tablet_portrait_home.dart     # `#74:5` / `#74:117` feed + eventos horizontales
+│           ├── noticias_feed.dart
+│           └── desktop_dashboard.dart        # sidebar + grid + eventos
 └── services/                 # vacío (.gitkeep)
 ```
 
 | Hoy | Objetivo |
 |---|---|
-| Splash → Login vía `Navigator` | `go_router` + redirect por sesión |
+| Splash → Login → Home (bypass) vía `Navigator` | `go_router` + redirect por sesión |
 | Login UI responsive + tests | Conectar Supabase Auth + providers |
+| Home shell mock (móvil / tablet portrait / tablet landscape / desktop · light+dark) | Datos reales + home por rol |
+| Tablet landscape light+dark (`#35:487` / `#35:606`) | — |
+| Tablet portrait light+dark (`#74:5` / `#74:117`) | — |
 | Apple Sign-In solo iOS/macOS (override en tests) | Cablear OAuth real por plataforma |
 | `ProviderScope` sin providers de dominio | SessionProvider + auth_provider |
 | Sin `go_router` / `supabase_flutter` | Añadir en Fase 2 |
 | Sin freezed | Generar modelos al conectar BD |
 | Tema fijo Comunexa | `tenant_theme` desde `tenants` |
+
+### Breakpoints home (Figma)
+
+| Layout | Criterio | UI |
+|---|---|---|
+| Mobile | resto | Header + bottom nav + feed |
+| Tablet portrait | ancho ≥700 y alto > ancho | Feed columna + eventos horizontales + bottom nav light/dark (`#74:5` / `#74:117`) |
+| Tablet landscape | ancho ≥900 y ancho ≥ alto | Dashboard compacto light/dark (`DashboardLayout.tabletLandscape`) |
+| Desktop | ancho ≥1280 | Dashboard completo (`DashboardLayout.desktop`) |
+
+Login usa criterios propios (p. ej. desktop ≥1280, tablet portrait ≥700 + alto>ancho, landscape ≥900 + ancho≥alto).
 
 ## Capas por feature
 
@@ -145,12 +167,13 @@ dev_dependencies:
 
 ```
 test/
-├── core/
 ├── features/
-│   └── news/
-│       ├── data/news_repository_test.dart
-│       └── presentation/news_list_test.dart
-└── widget_test.dart
+│   ├── auth/
+│   │   └── login_screen_test.dart
+│   └── home/
+│       └── home_shell_test.dart
+└── widget_test.dart          # smoke mínimo / reexport si aplica
 ```
 
 Mock de Supabase con interfaces de repositorio; no hit real a BD en unit tests.
+Smoke widget: login (breakpoints + demos) y home (móvil / tablet landscape / desktop).

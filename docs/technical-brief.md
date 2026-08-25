@@ -14,7 +14,7 @@ No es una app de una sola empresa: distintas administradoras (**tenants**) opera
 
 **Distribución:** la misma base Flutter se publica en **tres canales** — Google Play, App Store y versión web. **No hay pagos dentro de la app por ahora** (se retoma más adelante; ver §6).
 
-**Etapa:** pre-producción. Fundamentos + UI de login listos; Auth Supabase y módulos de negocio pendientes (ver [`roadmap.md`](roadmap.md)). Base reutilizable para muchas administradoras, no solo el cliente piloto.
+**Etapa:** pre-producción. Fundamentos + UI de login + **home shell mock** (móvil / tablet landscape / desktop) listos; Auth Supabase y módulos de negocio reales pendientes (ver [`roadmap.md`](roadmap.md)). Base reutilizable para muchas administradoras, no solo el cliente piloto.
 
 ## 2. Stack tecnológico
 
