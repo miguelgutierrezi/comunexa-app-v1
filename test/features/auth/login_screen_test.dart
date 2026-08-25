@@ -1,8 +1,8 @@
+import '../../helpers/test_provider_scope.dart';
 import 'package:comunexa/core/config/env.dart';
 import 'package:comunexa/core/theme/app_theme.dart';
 import 'package:comunexa/features/auth/presentation/login_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -11,7 +11,7 @@ void main() {
   });
   testWidgets('login light muestra bienvenida y acciones', (tester) async {
     await tester.pumpWidget(
-      ProviderScope(
+      TestProviderScope(
         child: MaterialApp(
           theme: AppTheme.light(),
           darkTheme: AppTheme.dark(),
@@ -28,7 +28,7 @@ void main() {
   });
   testWidgets('login oculta Apple fuera de plataformas Apple', (tester) async {
     await tester.pumpWidget(
-      ProviderScope(
+      TestProviderScope(
         child: MaterialApp(
           theme: AppTheme.light(),
           home: const LoginScreen(showAppleSignIn: false),
@@ -41,7 +41,7 @@ void main() {
   });
   testWidgets('login muestra Apple cuando la plataforma lo ofrece', (tester) async {
     await tester.pumpWidget(
-      ProviderScope(
+      TestProviderScope(
         child: MaterialApp(
           theme: AppTheme.light(),
           home: const LoginScreen(showAppleSignIn: true),
@@ -57,7 +57,7 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
 
     await tester.pumpWidget(
-      ProviderScope(
+      TestProviderScope(
         child: MaterialApp(
           theme: AppTheme.light(),
           home: const LoginScreen(),
@@ -77,7 +77,7 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
 
     await tester.pumpWidget(
-      ProviderScope(
+      TestProviderScope(
         child: MaterialApp(
           theme: AppTheme.light(),
           home: const LoginScreen(),
@@ -111,7 +111,7 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
 
     await tester.pumpWidget(
-      ProviderScope(
+      TestProviderScope(
         child: MaterialApp(
           theme: AppTheme.light(),
           darkTheme: AppTheme.dark(),
@@ -143,7 +143,7 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
 
     await tester.pumpWidget(
-      ProviderScope(
+      TestProviderScope(
         child: MaterialApp(
           theme: AppTheme.light(),
           home: const LoginScreen(),
@@ -172,7 +172,7 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
 
     await tester.pumpWidget(
-      ProviderScope(
+      TestProviderScope(
         child: MaterialApp(
           theme: AppTheme.light(),
           darkTheme: AppTheme.dark(),
@@ -204,7 +204,7 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
 
     await tester.pumpWidget(
-      ProviderScope(
+      TestProviderScope(
         child: MaterialApp(
           theme: AppTheme.light(),
           darkTheme: AppTheme.dark(),
@@ -232,7 +232,7 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
 
     await tester.pumpWidget(
-      ProviderScope(
+      TestProviderScope(
         child: MaterialApp(
           theme: AppTheme.light(),
           home: const LoginScreen(showAppleSignIn: true),
@@ -252,7 +252,7 @@ void main() {
   });
   testWidgets('login demo:invalid muestra banner de credenciales', (tester) async {
     await tester.pumpWidget(
-      ProviderScope(
+      TestProviderScope(
         child: MaterialApp(
           theme: AppTheme.light(),
           home: const LoginScreen(showAppleSignIn: true),
@@ -275,7 +275,7 @@ void main() {
   });
   testWidgets('login demo:empty muestra banner de campos obligatorios', (tester) async {
     await tester.pumpWidget(
-      ProviderScope(
+      TestProviderScope(
         child: MaterialApp(
           theme: AppTheme.light(),
           home: const LoginScreen(showAppleSignIn: true),
@@ -295,7 +295,7 @@ void main() {
   });
   testWidgets('Google muestra coming soon', (tester) async {
     await tester.pumpWidget(
-      ProviderScope(
+      TestProviderScope(
         child: MaterialApp(
           theme: AppTheme.light(),
           home: const LoginScreen(showAppleSignIn: true),

@@ -1,9 +1,13 @@
+import 'package:comunexa/core/session/session_provider.dart';
 import 'package:comunexa/core/theme/app_theme.dart';
 import 'package:comunexa/core/theme/brand_assets.dart';
+import 'package:comunexa/features/auth/data/mock_user_contexts.dart';
 import 'package:comunexa/features/home/data/mock_noticias.dart';
 import 'package:comunexa/features/home/presentation/home_bottom_nav.dart';
 import 'package:comunexa/features/home/presentation/noticias_feed.dart';
+import 'package:comunexa/features/home/presentation/widgets/property_context_menu_item.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 /// Densidad del dashboard split
@@ -31,6 +35,12 @@ enum DashboardLayout {
   double get userNameSize => this == desktop ? 13 : 12;
   double get userRoleSize => this == desktop ? 11 : 10;
   bool get denseCards => this == tabletLandscape;
+
+  /// Fondo de la pill del property switcher (dark tablet usa `#111E2E`).
+  Color propertyPillFill(bool isDark) {
+    if (!isDark) return AppTheme.bgLight;
+    return this == tabletLandscape ? AppTheme.fieldDark : AppTheme.cardDark;
+  }
 }
 
 /// Dashboard split light/dark (desktop + tablet landscape).
@@ -80,7 +90,7 @@ class DesktopDashboard extends StatelessWidget {
   }
 }
 
-class _DesktopSidebar extends StatelessWidget {
+class _DesktopSidebar extends ConsumerWidget {
   const _DesktopSidebar({
     required this.current,
     required this.onChanged,
@@ -92,7 +102,7 @@ class _DesktopSidebar extends StatelessWidget {
   final DashboardLayout layout;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Material(
@@ -140,6 +150,8 @@ class _DesktopSidebar extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 32),
+            _SidebarPropertySwitcher(layout: layout),
+            const SizedBox(height: 32),
             for (final tab in HomeTab.values) ...[
               _SidebarItem(
                 tab: tab,
@@ -153,6 +165,154 @@ class _DesktopSidebar extends StatelessWidget {
             _SidebarUserCard(layout: layout),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Selector de propiedad/rol en sidebar split
+/// (desktop `#35:233`/`#35:353` · tablet land `#35:487`/`#35:606`).
+class _SidebarPropertySwitcher extends ConsumerWidget {
+  const _SidebarPropertySwitcher({required this.layout});
+
+  final DashboardLayout layout;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final active =
+        ref.watch(activeContextProvider) ?? mockSingleContext;
+    final contexts = ref.watch(availableContextsProvider);
+    final canSwitch = contexts.length > 1;
+
+    final pillFill = layout.propertyPillFill(isDark);
+    final pillBorder = isDark ? AppTheme.borderDark : AppTheme.borderLight;
+    final titleColor = isDark ? Colors.white : AppTheme.ink;
+    final subtitleColor = isDark ? AppTheme.slateLight : AppTheme.slate;
+    final chevronColor = isDark ? AppTheme.slateLight : AppTheme.slate;
+
+    Widget pillContent = Row(
+      children: [
+        Container(
+          width: 28,
+          height: 28,
+          decoration: BoxDecoration(
+            color: active.iconBackground,
+            borderRadius: BorderRadius.circular(14),
+          ),
+          alignment: Alignment.center,
+          child: SvgPicture.asset(
+            active.iconAsset,
+            width: 16,
+            height: 16,
+          ),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Text(
+            active.propertyName,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              color: titleColor,
+              fontWeight: FontWeight.w700,
+              fontSize: 14,
+            ),
+          ),
+        ),
+        if (canSwitch) ...[
+          const SizedBox(width: 8),
+          Transform.rotate(
+            angle: 1.5708,
+            child: SvgPicture.asset(
+              BrandAssets.iconChevronRight,
+              width: 16,
+              height: 16,
+              colorFilter: ColorFilter.mode(chevronColor, BlendMode.srcIn),
+            ),
+          ),
+        ],
+      ],
+    );
+
+    final pill = Container(
+      height: 44,
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      decoration: BoxDecoration(
+        color: pillFill,
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: pillBorder),
+      ),
+      alignment: Alignment.centerLeft,
+      child: pillContent,
+    );
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          if (canSwitch)
+            MenuAnchor(
+              style: MenuStyle(
+                visualDensity: VisualDensity.compact,
+                padding: WidgetStatePropertyAll(EdgeInsets.zero),
+                shape: WidgetStatePropertyAll(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    side: BorderSide(
+                      color: isDark ? AppTheme.borderDark : AppTheme.borderLight,
+                    ),
+                  ),
+                ),
+                backgroundColor: WidgetStatePropertyAll(
+                  isDark ? AppTheme.cardDark : Colors.white,
+                ),
+                elevation: WidgetStatePropertyAll(8),
+              ),
+              builder: (context, controller, child) {
+                return Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: () {
+                      if (controller.isOpen) {
+                        controller.close();
+                      } else {
+                        controller.open();
+                      }
+                    },
+                    borderRadius: BorderRadius.circular(22),
+                    child: pill,
+                  ),
+                );
+              },
+              menuChildren: [
+                for (final ctx in contexts)
+                  PropertyContextMenuItem(
+                    access: ctx,
+                    selected: ctx.id == active.id,
+                    isDark: isDark,
+                    onTap: () async {
+                      if (ctx.id == active.id) return;
+                      await ref
+                          .read(sessionProvider.notifier)
+                          .selectContext(ctx.id);
+                    },
+                  ),
+              ],
+            )
+          else
+            pill,
+          const SizedBox(height: 4),
+          Text(
+            active.roleLabel,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              color: subtitleColor,
+              fontWeight: FontWeight.w400,
+              fontSize: 12,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -240,14 +400,19 @@ class _SidebarItem extends StatelessWidget {
   }
 }
 
-class _SidebarUserCard extends StatelessWidget {
+class _SidebarUserCard extends ConsumerWidget {
   const _SidebarUserCard({required this.layout});
 
   final DashboardLayout layout;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final displayName =
+        ref.watch(sessionDisplayNameProvider) ?? 'Carlos Méndez';
+    final active = ref.watch(activeContextProvider) ?? mockSingleContext;
+    final roleLabel = active.sidebarRoleLabel;
+    final initials = _initialsFor(displayName);
 
     return Container(
       padding: const EdgeInsets.all(12),
@@ -268,9 +433,9 @@ class _SidebarUserCard extends StatelessWidget {
               gradient: AppTheme.brandGradient,
             ),
             alignment: Alignment.center,
-            child: const Text(
-              'CM',
-              style: TextStyle(
+            child: Text(
+              initials,
+              style: const TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.w700,
                 fontSize: 12,
@@ -283,7 +448,7 @@ class _SidebarUserCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Carlos Méndez',
+                  displayName,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     color: isDark ? Colors.white : AppTheme.ink,
@@ -293,7 +458,7 @@ class _SidebarUserCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  'Residente - T. A',
+                  roleLabel,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     color: isDark ? AppTheme.slateLight : AppTheme.slate,
@@ -308,7 +473,7 @@ class _SidebarUserCard extends StatelessWidget {
             width: layout == DashboardLayout.tabletLandscape ? 14 : 16,
             height: layout == DashboardLayout.tabletLandscape ? 14 : 16,
             colorFilter: ColorFilter.mode(
-              isDark ? AppTheme.slate : AppTheme.slateLight,
+              isDark ? AppTheme.slateLight : AppTheme.slate,
               BlendMode.srcIn,
             ),
           ),
@@ -701,4 +866,15 @@ class _EventRow extends StatelessWidget {
       ),
     );
   }
+}
+
+String _initialsFor(String name) {
+  final parts = name.trim().split(RegExp(r'\s+'));
+  if (parts.isEmpty) return '?';
+  if (parts.length == 1) {
+    return parts.first.length >= 2
+        ? parts.first.substring(0, 2).toUpperCase()
+        : parts.first.toUpperCase();
+  }
+  return '${parts.first[0]}${parts[1][0]}'.toUpperCase();
 }

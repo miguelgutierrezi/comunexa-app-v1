@@ -40,10 +40,13 @@ Estado al **2026-08-25**.
   - tablet landscape (≥900, landscape): dashboard compacto light/dark (`#35:487` / `#35:606`)
   - desktop (≥1280): dashboard sidebar light/dark (`#35:233` / `#35:353`)
 - [x] Smoke tests home (móvil / tablet portrait / tablet landscape / desktop · light+dark)
-- [ ] `supabase_flutter` + go_router + SessionProvider
-- [ ] Auth real (email/password; OAuth Google/Apple = stubs UI) sobre membresías, no `profiles.role`
+- [x] SessionProvider stub con persistencia local (`shared_preferences`): correo, contexto activo y último usado
+- [ ] `supabase_flutter` + go_router + Auth real
 - [ ] Onboarding híbrido: aceptar invitación o solicitar ingreso a propiedad
-- [ ] Selector de contexto multirrol (omitir si solo hay uno) + cambio desde el shell
+- [x] Selector de contexto multirrol mobile light/dark (`#99:5` / `#99:67`)
+- [x] Selector de contexto tablet portrait light/dark (`#100:475` / `#100:547`)
+- [x] Selector de contexto tablet landscape light/dark (`#100:331` / `#100:402`)
+- [x] Selector de contexto desktop light/dark (`#99:185` / `#99:256`)
 - [ ] Contexto de plataforma separado y auditoría de acceso de soporte
 - [ ] Home por rol + branding efectivo (`co_branded` por defecto)
 

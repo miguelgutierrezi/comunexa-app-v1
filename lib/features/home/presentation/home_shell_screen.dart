@@ -4,6 +4,7 @@ import 'package:comunexa/features/home/presentation/desktop_dashboard.dart';
 import 'package:comunexa/features/home/presentation/home_bottom_nav.dart';
 import 'package:comunexa/features/home/presentation/noticias_feed.dart';
 import 'package:comunexa/features/home/presentation/tablet_portrait_home.dart';
+import 'package:comunexa/features/home/presentation/widgets/header_property_switcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -109,80 +110,58 @@ class _HomeHeader extends StatelessWidget {
       ),
       child: Row(
         children: [
-          SvgPicture.asset(
-            BrandAssets.symbolNav,
-            width: 24,
-            height: 24,
-          ),
-          const SizedBox(width: 10),
-          Text.rich(
-            TextSpan(
-              style: TextStyle(
-                fontWeight: FontWeight.w800,
-                fontSize: 18,
-                letterSpacing: 2,
-                color: isDark ? Colors.white : AppTheme.ink,
-              ),
-              children: [
-                const TextSpan(text: 'COMUN'),
-                TextSpan(
-                  text: 'EXA',
-                  style: TextStyle(
-                    color: isDark ? AppTheme.accentTeal : AppTheme.seedColor,
-                  ),
-                ),
-              ],
+          const Expanded(
+            child: HeaderPropertySwitcher(
+              density: HeaderPropertySwitcherDensity.mobile,
             ),
           ),
-          const Spacer(),
-          IconButton(
-            onPressed: () {
+          GestureDetector(
+            onTap: () {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('Notificaciones — próximamente')),
               );
             },
-            visualDensity: VisualDensity.compact,
-            icon: SizedBox(
-              width: 24,
-              height: 24,
-              child: Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  SvgPicture.asset(
-                    BrandAssets.iconBell,
-                    width: 20,
-                    height: 20,
-                    colorFilter: ColorFilter.mode(
-                      isDark ? Colors.white : AppTheme.ink,
-                      BlendMode.srcIn,
-                    ),
+            child: SizedBox(
+            width: 24,
+            height: 24,
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                SvgPicture.asset(
+                  BrandAssets.iconBell,
+                  width: 20,
+                  height: 20,
+                  colorFilter: ColorFilter.mode(
+                    isDark ? Colors.white : AppTheme.ink,
+                    BlendMode.srcIn,
                   ),
-                  Positioned(
-                    right: -4,
-                    top: -6,
-                    child: Container(
-                      width: 14,
-                      height: 14,
-                      alignment: Alignment.center,
-                      decoration: const BoxDecoration(
-                        color: AppTheme.dangerRed,
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Text(
-                        '3',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w700,
-                          fontSize: 9,
-                        ),
+                ),
+                Positioned(
+                  right: -4,
+                  top: -6,
+                  child: Container(
+                    width: 14,
+                    height: 14,
+                    alignment: Alignment.center,
+                    decoration: const BoxDecoration(
+                      color: AppTheme.dangerRed,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Text(
+                      '3',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 9,
                       ),
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
+            ),
             ),
           ),
-          const SizedBox(width: 4),
+          const SizedBox(width: 16),
           Container(
             width: 32,
             height: 32,

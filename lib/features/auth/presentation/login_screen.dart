@@ -1,9 +1,11 @@
 import 'package:comunexa/core/theme/app_theme.dart';
 import 'package:comunexa/core/theme/brand_assets.dart';
 import 'package:comunexa/features/auth/presentation/login_alerts.dart';
-import 'package:comunexa/features/home/presentation/home_shell_screen.dart';
+import 'package:comunexa/features/auth/presentation/post_login_navigation.dart';
+import 'package:comunexa/features/auth/presentation/widgets/auth_hero_panel.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 /// Login responsive:
@@ -14,7 +16,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 ///
 /// Sign in with Apple solo en plataformas Apple (iOS / macOS), incluido web
 /// cuando el host es Apple. Override vía [showAppleSignIn] para tests.
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key, this.showAppleSignIn});
 
   /// `null` → detectar plataforma. Tests pueden forzar `true`/`false`.
@@ -35,7 +37,7 @@ class LoginScreen extends StatefulWidget {
       showAppleSignIn ?? platformOffersAppleSignIn();
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
 
 enum _LoginDensity { mobile, tabletPortrait, tabletLandscape, desktop }
@@ -55,7 +57,7 @@ _LoginDensity _densityFor(BoxConstraints constraints) {
   return _LoginDensity.mobile;
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
@@ -100,9 +102,7 @@ class _LoginScreenState extends State<LoginScreen> {
     await Future<void>.delayed(const Duration(milliseconds: 350));
     if (!mounted) return;
     setState(() => _submitting = false);
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute<void>(builder: (_) => const HomeShellScreen()),
-    );
+    navigateAfterLogin(context, ref, email: _emailController.text);
   }
 
   void _onSocial(String provider) {
@@ -146,9 +146,11 @@ class _LoginScreenState extends State<LoginScreen> {
               children: [
                 Expanded(
                   flex: heroFlex,
-                  child: _HeroPanel(
+                  child: AuthHeroPanel(
                     version: LoginScreen.appVersion,
-                    density: density,
+                    density: density == _LoginDensity.desktop
+                        ? AuthHeroDensity.desktop
+                        : AuthHeroDensity.tabletLandscape,
                   ),
                 ),
                 Expanded(
@@ -323,107 +325,6 @@ class _LoginColors {
       focusBorder: isDark ? AppTheme.accentTeal : AppTheme.seedColor,
       markAsset: isDark ? BrandAssets.markNegative : BrandAssets.markColor,
       highlightExa: !isDark,
-    );
-  }
-}
-
-class _HeroPanel extends StatelessWidget {
-  const _HeroPanel({
-    required this.version,
-    required this.density,
-  });
-
-  final String version;
-  final _LoginDensity density;
-
-  @override
-  Widget build(BuildContext context) {
-    final isTablet = density == _LoginDensity.tabletLandscape;
-    final padding = isTablet ? 48.0 : 64.0;
-    final symbolSize = isTablet ? 130.0 : 160.0;
-    final brandSize = isTablet ? 36.0 : 48.0;
-    final taglineSize = isTablet ? 15.0 : 18.0;
-    final centerGap = isTablet ? 24.0 : 32.0;
-    final footerSize = isTablet ? 12.0 : 13.0;
-    final watermarkSize = isTablet ? 11.0 : 12.0;
-    final watermarkOpacity = isTablet ? 0.5 : 0.4;
-    final versionLabel = isTablet ? 'v$version' : 'Versión $version';
-
-    return DecoratedBox(
-      decoration: const BoxDecoration(gradient: AppTheme.brandGradient),
-      child: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.all(padding),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(
-                'SECURE ENTERPRISE LOGIN',
-                style: TextStyle(
-                  color: Colors.white.withValues(alpha: watermarkOpacity),
-                  fontWeight: FontWeight.w700,
-                  fontSize: watermarkSize,
-                  letterSpacing: 0.6,
-                ),
-              ),
-              const Spacer(),
-              Column(
-                children: [
-                  SvgPicture.asset(
-                    BrandAssets.symbolLarge,
-                    width: symbolSize,
-                    height: symbolSize,
-                  ),
-                  SizedBox(height: centerGap),
-                  Text(
-                    'COMUNEXA',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w800,
-                      fontSize: brandSize,
-                      letterSpacing: 2,
-                    ),
-                  ),
-                  SizedBox(height: isTablet ? 8 : 12),
-                  Text(
-                    BrandAssets.tagline,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.8),
-                      fontSize: taglineSize,
-                      height: isTablet ? 1.4 : null,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                ],
-              ),
-              const Spacer(),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    '© 2026 Comunexa Inc.',
-                    style: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.6),
-                      fontSize: footerSize,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  Text(
-                    versionLabel,
-                    style: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.6),
-                      fontSize: footerSize,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }

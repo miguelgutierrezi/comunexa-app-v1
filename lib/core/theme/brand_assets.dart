@@ -32,6 +32,12 @@ abstract final class BrandAssets {
   static const String symbolNav = '$_figma/comunexa-symbol-nav.svg';
   static const String iconSearch = '$_figma/icon-search.svg';
   static const String iconChevronRight = '$_figma/icon-chevron-right.svg';
+  static const String iconHouse = '$_figma/icon-house.svg';
+  static const String iconBuilding = '$_figma/icon-building.svg';
+  static const String iconHotel = '$_figma/icon-hotel.svg';
+  static const String iconBriefcase = '$_figma/icon-briefcase.svg';
+  static const String iconCircleCheck = '$_figma/icon-circle-check.svg';
+  static const String iconLogOut = '$_figma/icon-log-out.svg';
 
   static const String tagline =
       'Un edificio, una comunidad, una sola app.';

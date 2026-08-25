@@ -3,11 +3,12 @@ import 'package:comunexa/core/theme/brand_assets.dart';
 import 'package:comunexa/features/home/data/mock_noticias.dart';
 import 'package:comunexa/features/home/presentation/home_bottom_nav.dart';
 import 'package:comunexa/features/home/presentation/noticias_feed.dart';
+import 'package:comunexa/features/home/presentation/widgets/header_property_switcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 /// Home tablet portrait (Figma `#74:5` light / `#74:117` dark).
-/// Header con búsqueda + feed en columna + eventos horizontales + bottom nav.
+/// Header con property switcher + búsqueda + feed + eventos + bottom nav.
 class TabletPortraitHome extends StatelessWidget {
   const TabletPortraitHome({
     super.key,
@@ -59,36 +60,17 @@ class _TabletPortraitHeader extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
       decoration: BoxDecoration(
-        // Dark Figma `#74:117`: header cardDark; search fieldDark.
         color: isDark ? AppTheme.headerDark : Colors.white,
         border: Border(bottom: BorderSide(color: border)),
       ),
       child: Row(
         children: [
-          SvgPicture.asset(
-            BrandAssets.symbolNav,
-            width: 28,
-            height: 28,
-          ),
-          const SizedBox(width: 12),
-          Text.rich(
-            TextSpan(
-              style: TextStyle(
-                fontWeight: FontWeight.w800,
-                fontSize: 20,
-                letterSpacing: 2,
-                color: isDark ? Colors.white : AppTheme.ink,
-              ),
-              children: const [
-                TextSpan(text: 'COMUN'),
-                TextSpan(
-                  text: 'EXA',
-                  style: TextStyle(color: AppTheme.seedColor),
-                ),
-              ],
+          const Flexible(
+            child: HeaderPropertySwitcher(
+              density: HeaderPropertySwitcherDensity.tabletPortrait,
             ),
           ),
-          const Spacer(),
+          const SizedBox(width: 16),
           SizedBox(
             width: 220,
             child: TextField(

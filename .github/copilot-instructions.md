@@ -19,7 +19,7 @@ Use these notes as the default context for this repository.
 ## Current code status (2026-08-25)
 
 - Done: migrations + RLS, Flutter bootstrap, theme/branding, splash, **responsive login UI** (auth still stub; **Apple button only on iOS/macOS**; bypass → home; demo alert emails), **home shell mock** (mobile + tablet portrait/landscape + desktop, light/dark), GHA workflows, remote GitHub.
-- Next: Supabase project + `supabase_flutter` + go_router + real Auth + SessionProvider.
+- Next: Supabase project + `supabase_flutter` + go_router + real Auth (SessionProvider stub ya persistido).
 - Before Auth, migrate the transitional single `profiles.role` model to contextual organization/property memberships. Target roles: global `platform_superadmin`; `organization_admin`; `property_manager`; `property_staff`; `member`.
 
 ## Core constraints

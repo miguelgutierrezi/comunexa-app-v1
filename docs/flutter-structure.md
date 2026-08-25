@@ -78,12 +78,22 @@ lib/
 ├── core/
 │   ├── config/env.dart
 │   ├── errors/app_exception.dart
+│   ├── session/
+│   │   ├── session_state.dart
+│   │   ├── session_storage.dart      # SharedPreferences + in-memory (tests)
+│   │   └── session_provider.dart     # signIn · selectContext · signOut · restore
 │   └── theme/
 │       ├── app_theme.dart    # light/dark + tipografía
 │       └── brand_assets.dart
 ├── features/
 │   ├── splash/presentation/splash_screen.dart
-│   ├── auth/presentation/login_screen.dart   # UI + bypass stub + demos alert
+│   ├── auth/
+│   │   ├── data/mock_user_contexts.dart
+│   │   ├── domain/user_access_context.dart
+│   │   └── presentation/
+│   │       ├── login_screen.dart
+│   │       ├── context_select_screen.dart   # `#99:5`/`#99:67` mobile · `#100:475`/`#100:547` tablet port · `#100:331`/`#100:402` tablet land · `#99:185`/`#99:256` desktop
+│   │       └── post_login_navigation.dart
 │   └── home/
 │       ├── data/mock_noticias.dart           # feed + eventos mock
 │       └── presentation/
@@ -103,7 +113,7 @@ lib/
 | Tablet landscape light+dark (`#35:487` / `#35:606`) | — |
 | Tablet portrait light+dark (`#74:5` / `#74:117`) | — |
 | Apple Sign-In solo iOS/macOS (override en tests) | Cablear OAuth real por plataforma |
-| `ProviderScope` sin providers de dominio | SessionProvider + auth_provider |
+| `ProviderScope` + SessionProvider (stub persistido) | auth_provider Supabase |
 | Sin `go_router` / `supabase_flutter` | Añadir en Fase 2 |
 | Sin freezed | Generar modelos al conectar BD |
 | Tema fijo Comunexa | `tenant_theme` desde `tenants` |
@@ -141,7 +151,7 @@ Rutas declarativas con deep links para push:
 | Ruta | Pantalla | Deep link ejemplo |
 |---|---|---|
 | `/login` | Login | — |
-| `/select-context` | Selector multirrol/multipropiedad | — |
+| `/select-context` | Selector multirrol (mobile · `#100:475` tablet port · tablet land · desktop; ver Figma IDs en código) | — |
 | `/home` | Shell principal | — |
 | `/news/:id` | Detalle noticia | `comunexa://news/{id}` |
 | `/pqr/:id` | Detalle PQR | `comunexa://pqr/{id}` |
@@ -149,7 +159,7 @@ Rutas declarativas con deep links para push:
 
 Redirect guard: si no hay sesión → `/login`; si hay sesión → cargar organización, propiedad activa, membresías y tenant theme. La UI deriva permisos del rol contextual de la propiedad, no de un rol global en el perfil.
 
-Tras resolver membresías: un contexto entra directo; varios navegan a `/select-context`. El selector muestra propiedad, organización y función, recuerda el último contexto autorizado y permite cambiarlo desde el shell. La consola de plataforma es un contexto separado y las acciones de soporte sobre clientes se auditan.
+Tras resolver membresías: un contexto entra directo; varios navegan a `/select-context`. En desktop (`#35:233`), el sidebar incluye **property switcher** (pill + rol) con menú para cambiar contexto sin salir del home. El selector recuerda el último contexto autorizado y persiste vía `SessionProvider`.
 
 El tema visual consume un `EffectiveBranding` inmutable. Su resolución aplica `property branding → organization branding → BrandAssets/AppTheme`, conserva la firma Comunexa salvo `white_label` enterprise y valida contraste antes de exponer colores a widgets.
 

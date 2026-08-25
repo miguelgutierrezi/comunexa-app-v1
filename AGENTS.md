@@ -25,8 +25,8 @@ Instrucciones al trabajar en **Comunexa** (`comunexa-app-v1`).
 |---|---|
 | Schema + RLS inicial en `supabase/migrations/` | Migrar membresías contextuales antes de Auth; luego `db push` + seed Diaz PH |
 | Bootstrap, `Env`, tema light/dark, brand assets | `supabase_flutter` + client tipado |
-| Splash → Login UI responsive (stub auth; Apple solo iOS/macOS) | go_router + SessionProvider + Auth real |
-| Bypass login → **Home shell mock** (móvil / tablet / desktop · light+dark) | Home por rol + Auth real |
+| Splash → Login UI responsive (stub auth; Apple solo iOS/macOS) · SessionProvider persistido | go_router + Auth real Supabase |
+| Bypass login → **Home shell mock** (móvil / tablet / desktop · light+dark) | Selector tablet/desktop; home por rol + Auth real |
 | Workflows GHA + remote GitHub | Secrets/variables GHA + CI verde |
 | Stub `payment-webhook` | Features de negocio reales (Fase 4) |
 
@@ -47,7 +47,7 @@ Detalle: [`docs/roadmap.md`](docs/roadmap.md) · mapa `lib/`: [`docs/flutter-str
 | `core/config/env.dart` | `.env` / dart-define |
 | `core/theme/` | `AppTheme` + `BrandAssets` (marca producto) |
 | `features/splash/` | Splash breve |
-| `features/auth/presentation/login_screen.dart` | UI login; bypass → home; demos alert; Apple solo iOS/macOS |
+| `features/auth/` | Login + selector contexto mock (`demo:multi`) + post-login stub |
 | `features/home/` | Shell + feed mock + tablet portrait/land + dashboard desktop (light/dark) |
 | `services/` | Vacío; FCM etc. llegan después |
 

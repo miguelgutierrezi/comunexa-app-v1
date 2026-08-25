@@ -115,7 +115,7 @@ class _NavItem extends StatelessWidget {
         ? (isDark ? AppTheme.accentSky : AppTheme.seedColor)
         : AppTheme.accentTeal;
     final inactive = isDark
-        ? AppTheme.slateLight
+        ? (isTablet ? AppTheme.slateLight : AppTheme.slate)
         : (isTablet ? AppTheme.slate : AppTheme.slateLight);
     final color = selected ? active : inactive;
     final iconSize = isTablet ? 24.0 : 20.0;

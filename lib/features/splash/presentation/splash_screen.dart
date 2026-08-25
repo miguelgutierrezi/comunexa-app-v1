@@ -1,26 +1,37 @@
+import 'package:comunexa/core/session/session_provider.dart';
+import 'package:comunexa/core/session/session_state.dart';
 import 'package:comunexa/core/theme/brand_assets.dart';
-import 'package:comunexa/features/auth/presentation/login_screen.dart';
+import 'package:comunexa/features/auth/presentation/post_login_navigation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-/// Splash breve → login (auth real llega con Supabase).
-class SplashScreen extends StatefulWidget {
+/// Splash breve → restaura sesión persistida o login.
+class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
 
   @override
-  State<SplashScreen> createState() => _SplashScreenState();
+  ConsumerState<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
+class _SplashScreenState extends ConsumerState<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Future<void>.delayed(const Duration(milliseconds: 1200), () {
-      if (!mounted) return;
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute<void>(builder: (_) => const LoginScreen()),
-      );
-    });
+    _bootstrap();
+  }
+
+  Future<void> _bootstrap() async {
+    final minDelay = Future<void>.delayed(const Duration(milliseconds: 1200));
+    final sessionFuture = ref.read(sessionProvider.future);
+    await Future.wait([minDelay, sessionFuture]);
+
+    if (!mounted) return;
+    final session = ref.read(sessionProvider).valueOrNull ?? SessionState.empty;
+    navigateToAppStart(
+      context,
+      resolveAppStartDestination(session),
+    );
   }
 
   @override
