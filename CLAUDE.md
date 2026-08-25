@@ -7,6 +7,14 @@ Pagos in-app pausados (stub `payment-webhook`). No Firestore.
 
 **Estado (2026-08-25):** fundamentos + UI login + **home shell mock** (móvil / tablet / desktop · light+dark). Auth Supabase / go_router / features de negocio reales pendientes. Ver [`docs/roadmap.md`](docs/roadmap.md).
 
+Modelo objetivo antes de Auth: organización → propiedad → unidad, con membresías contextuales (`organization_admin`, `property_manager`, `property_staff`, `member`) y `platform_superadmin` global. El SQL actual `profiles.role`/`buildings` es transitorio; hoteles son extensibilidad futura, no alcance MVP.
+
+Branding objetivo: propiedad → organización → Comunexa, con `co_branded` como modo MVP y `white_label` reservado para enterprise. La personalización no reemplaza el sistema de diseño ni la accesibilidad.
+
+Comercial/onboarding: suscripción B2B pagada por organización o propiedad, manual durante el piloto y separada de pagos de residentes; el usuario final no paga acceso. Miembros entran por invitación privada o solicitud aprobada. Multirrol selecciona contexto solo si hay varios; plataforma es contexto separado y auditado. Ver `docs/subscriptions-and-onboarding.md`.
+
+Vigilancia es preset `security_guard` de `property_staff`, con control de acceso append-only. Imágenes de usuario: PNG/JPEG/WebP procesados en backend; SVG no en MVP. Nombre/icono nativos de cliente requieren white-label enterprise; la app compartida conserva Comunexa. Ver `docs/access-control-and-media.md`.
+
 ## Quality gate (mandatorio antes de cerrar)
 
 ```bash

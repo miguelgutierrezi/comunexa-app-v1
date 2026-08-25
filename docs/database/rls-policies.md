@@ -49,12 +49,27 @@ RLS de Postgres no aplica a Storage. Buckets con políticas equivalentes:
 ```sql
 -- Ejemplo conceptual en storage.objects
 -- tenant-assets: lectura pública del logo; escritura solo tenant_admin
+-- property-assets: lectura autenticada; escritura organization_admin/property_manager de esa propiedad
 -- building-docs: lectura si has_building_access; escritura admin
 ```
 
 Definir en migración `003_storage_policies.sql` cuando se creen los buckets.
 
 ## Evolución
+
+### Migración de roles pendiente antes de Auth
+
+La matriz anterior refleja las policies 002 actuales. El objetivo aprobado reemplaza el rol único de `profiles` por membresías:
+
+- privilegio global: `platform_superadmin`;
+- organización: `organization_admin`;
+- propiedad: `property_manager`, `property_staff`, `member`.
+
+Las helpers futuras deben resolver acceso para una propiedad concreta y no inferir que un usuario tiene el mismo rol en toda la organización. Los tests deben incluir un usuario con roles distintos en dos propiedades y verificar que los permisos no se propaguen entre ellas.
+
+Las invitaciones y solicitudes requieren pruebas adicionales: un código público no permite leer datos privados; un miembro no se autoaprueba; un manager no aprueba fuera de sus propiedades; un token expirado/revocado no crea membresía; y la activación de plan no depende de valores enviados por Flutter.
+
+Para control de acceso, `property_staff` requiere permisos explícitos del preset `security_guard`. Debe poder registrar entradas/salidas solo en propiedades asignadas, sin leer dominios ajenos ni borrar historial. Las correcciones son eventos auditables, no `DELETE` operativo.
 
 Al añadir tablas nuevas:
 

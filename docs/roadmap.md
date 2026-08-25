@@ -16,8 +16,14 @@ Estado al **2026-08-25**.
 
 ## Fase 1 — Supabase dev
 
+- [ ] Migrar modelo de acceso antes de Auth: organizaciones/propiedades + membresías contextuales
+- [ ] Separar `property_manager` de `property_staff`; `platform_superadmin` global
 - [ ] Proyecto + `db push`
 - [ ] Auth + Storage buckets
+- [ ] Branding jerárquico: organización + propiedad, fallback y permisos de Storage
+- [ ] Pipeline de media: PNG/JPEG/WebP, validación, re-encode, metadatos y variantes; sin SVG de usuario
+- [ ] Modelo SQL de `billing_accounts` + suscripción/entitlements; pagador organización o propiedad, activación manual
+- [ ] Invitaciones privadas + código público + solicitudes aprobables + auditoría
 - [ ] Seed Diaz PH
 - [ ] Tests RLS
 
@@ -35,8 +41,11 @@ Estado al **2026-08-25**.
   - desktop (≥1280): dashboard sidebar light/dark (`#35:233` / `#35:353`)
 - [x] Smoke tests home (móvil / tablet portrait / tablet landscape / desktop · light+dark)
 - [ ] `supabase_flutter` + go_router + SessionProvider
-- [ ] Auth real (email/password; OAuth Google/Apple = stubs UI)
-- [ ] Home por rol + tema tenant dinámico
+- [ ] Auth real (email/password; OAuth Google/Apple = stubs UI) sobre membresías, no `profiles.role`
+- [ ] Onboarding híbrido: aceptar invitación o solicitar ingreso a propiedad
+- [ ] Selector de contexto multirrol (omitir si solo hay uno) + cambio desde el shell
+- [ ] Contexto de plataforma separado y auditoría de acceso de soporte
+- [ ] Home por rol + branding efectivo (`co_branded` por defecto)
 
 ## Fase 3 — FCM + Hosting
 
@@ -49,6 +58,7 @@ Estado al **2026-08-25**.
 1. Noticias (UI mock en home; backend/repositorio pendiente)
 2. Reservas  
 3. Visitas + PDF  
+   - Control de acceso: preset `security_guard`, autorizaciones, vehículos y eventos auditables
 4. PQR  
 5. Mensajería  
 6. Facturación **solo lectura/estado** (sin pasarela)  
@@ -84,5 +94,7 @@ graph TD
 
 - Staging / multi-ambiente
 - Cobro in-app
-- Flavors white-label
+- `white_label` sin firma Comunexa y flavors por organización
+- PWA/manifests por cliente y builds nativos con nombre/icono propios (enterprise)
 - Migración automática desde prototipo en producción
+- Flujos hoteleros (reservas de habitación, check-in/out y tarifas); solo se preserva extensibilidad del modelo

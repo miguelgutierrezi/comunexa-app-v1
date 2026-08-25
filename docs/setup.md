@@ -59,7 +59,7 @@ Dashboard → Authentication (email). Redirect URL = dominio Hosting.
 
 ## 5. Storage
 
-Buckets: `tenant-assets`, `building-docs`, `pqr-attachments` (ver [security.md](security.md)).
+Buckets: `tenant-assets`, `property-assets`, `building-docs`, `pqr-attachments` (ver [security.md](security.md)). `property-assets` se crea junto con la migración de propiedades/membresías, no antes de forma aislada.
 
 ## 6. Firebase (FCM + Hosting)
 

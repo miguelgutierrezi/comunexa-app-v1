@@ -58,7 +58,7 @@ supabase secrets set FCM_SERVER_KEY=...
 ## Seguridad
 
 - Service role solo en functions, con validación JWT / firma webhook / secret.
-- PDF: branding del tenant; no filtrar PII entre tenants.
+- PDF: usar el branding efectivo propiedad → organización → Comunexa y respetar `branding_mode`; no filtrar PII entre organizaciones.
 
 ## Local / deploy
 

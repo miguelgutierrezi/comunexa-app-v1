@@ -16,6 +16,8 @@
 | [conventions.md](conventions.md) | Código y commits |
 | [security.md](security.md) | RLS y secretos |
 | [roadmap.md](roadmap.md) | Fases |
+| [subscriptions-and-onboarding.md](subscriptions-and-onboarding.md) | Planes, suscripción B2B, invitaciones y solicitudes de acceso |
+| [access-control-and-media.md](access-control-and-media.md) | Vigilancia, visitas, vehículos y validación de imágenes |
 
 ## Base de datos
 
@@ -39,7 +41,7 @@
 2. Un Flutter · Play + App Store + **Firebase Hosting**  
 3. **Un ambiente** backend por ahora (pre-prod)  
 4. **GHA**: web en `main`; móvil en tags → canales de prueba  
-5. Pagos **pausados**; esquema listo  
+5. Pagos de residentes **pausados**; suscripción B2B del piloto por factura/activación manual
 6. Piloto: Diaz PH  
 
 ## Estado del código (2026-08-25)

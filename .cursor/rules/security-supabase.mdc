@@ -11,5 +11,9 @@ alwaysApply: false
 - En Flutter solo **anon key**. Service role solo en Edge Functions / CI con secretos.
 - No desactivar RLS. Toda tabla de negocio con `tenant_id` (directo o vía edificio).
 - No loguear tokens, passwords ni PII con `debugPrint` en código nuevo.
-- Storage: paths particionados por tenant/edificio cuando se creen buckets.
+- Storage: paths particionados por organización/propiedad. En branding de propiedad, escritura solo `organization_admin`/`property_manager`; validar MIME, tamaño, dimensiones y pertenencia de la ruta en servidor/policies.
+- Invitaciones: tokens aleatorios, expirables/revocables, uso limitado y hash persistido. Códigos públicos solo crean solicitudes; aprobación contextual y auditada, nunca desde confianza en Flutter.
+- Cada cambio de contexto se valida en backend. El contexto `platform_superadmin` está separado; soporte sobre datos de clientes registra actor, contexto, motivo y tiempo, sin suplantación silenciosa.
+- Media de usuario: allowlist PNG/JPEG/WebP, magic bytes + decode, límites bytes/dimensiones, re-encode y retiro EXIF; no SVG MVP. Publicar solo variantes procesadas.
+- Control de acceso: mínimo privilegio por propiedad, eventos append-only, correcciones auditadas, retención definida y sin reconocimiento facial MVP.
 - Auth real aún no cableada: no fingir autorización solo en el cliente.

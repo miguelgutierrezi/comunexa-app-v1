@@ -23,7 +23,7 @@ Instrucciones al trabajar en **Comunexa** (`comunexa-app-v1`).
 
 | Hecho | Pendiente inmediato |
 |---|---|
-| Schema + RLS en `supabase/migrations/` | `db push` + seed Diaz PH |
+| Schema + RLS inicial en `supabase/migrations/` | Migrar membresías contextuales antes de Auth; luego `db push` + seed Diaz PH |
 | Bootstrap, `Env`, tema light/dark, brand assets | `supabase_flutter` + client tipado |
 | Splash → Login UI responsive (stub auth; Apple solo iOS/macOS) | go_router + SessionProvider + Auth real |
 | Bypass login → **Home shell mock** (móvil / tablet / desktop · light+dark) | Home por rol + Auth real |
@@ -63,12 +63,29 @@ Detalle: [`docs/roadmap.md`](docs/roadmap.md) · mapa `lib/`: [`docs/flutter-str
 
 - No hardcodear marca Diaz PH.
 - `tenant_id` en entidades; UUIDs, no nombres como FK.
+- Dominio objetivo: organización → propiedad → unidad. `tenant`/`building` son nombres SQL actuales hasta migración explícita.
+- No añadir roles operativos a `profiles.role`: usar membresías de organización/propiedad. Roles objetivo: `platform_superadmin`, `organization_admin`, `property_manager`, `property_staff`, `member`.
+- Hoteles son extensibilidad futura, no alcance funcional del MVP PH.
 - Branding de producto (`BrandAssets`) ≠ branding de tenant (futuro desde `tenants`).
+- Branding efectivo: propiedad → organización → Comunexa. `co_branded` es el modo MVP recomendado; `white_label` sin firma Comunexa es enterprise futuro.
+- Solo `organization_admin` y `property_manager` modifican branding de propiedad; validar contraste y assets. No permitir que la personalización reemplace estructura, componentes o accesibilidad.
+- Imágenes de usuario MVP: PNG/JPEG/WebP validados y re-encodeados en backend; quitar metadatos. No aceptar SVG de usuario ni publicar cargas sin procesar.
+- Nombre/icono nativos personalizados requieren build white-label enterprise; la app compartida conserva Comunexa. PWA dedicada puede usar manifest propio.
+- Vigilancia = preset `security_guard` de `property_staff`, con permisos mínimos para autorizaciones, visitas, vehículos y eventos; no crear otro rol global.
 
 ### Pagos
 
 - No implementar checkout Wompi/PayU en v1.
 - No “completar” el stub `payment-webhook` sin petición explícita.
+- Distinguir pagos de residentes (pausados) de la suscripción B2B de Comunexa. Puede pagar organización o propiedad y cubrir una o varias propiedades; el usuario final no paga acceso. Piloto: factura y activación manual; no reutilizar `invoices`/`payments` operativos.
+
+### Suscripción y onboarding
+
+- Modelo objetivo: cargo base por organización + unidades activas + complementos; planes conceptuales `essential`, `management`, `enterprise`.
+- Acceso de miembros: invitación privada o solicitud mediante código público. El código público nunca otorga acceso.
+- Multirrol: un contexto entra directo; varios muestran selector de propiedad/organización/función. Plataforma es contexto separado; accesos de soporte deben auditarse, sin suplantación silenciosa.
+- Aprobar solicitudes solo con permisos contextuales; tokens privados expirables, revocables, de uso limitado y almacenados como hash.
+- Fuente: [`docs/subscriptions-and-onboarding.md`](docs/subscriptions-and-onboarding.md).
 
 ### Alcance
 

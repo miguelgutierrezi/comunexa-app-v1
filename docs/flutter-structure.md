@@ -18,10 +18,11 @@ lib/
 │   │   └── routes.dart
 │   ├── session/
 │   │   ├── session_state.dart
-│   │   └── session_provider.dart     # tenant activo, edificio activo, perfil
+│   │   └── session_provider.dart     # organización, propiedad, perfil y membresías activas
 │   ├── theme/
 │   │   ├── app_theme.dart
-│   │   └── tenant_theme.dart         # colores desde tenants
+│   │   ├── tenant_theme.dart         # identidad base de organización
+│   │   └── effective_branding.dart   # propiedad → organización → Comunexa
 │   ├── errors/
 │   │   └── app_exception.dart
 │   └── supabase/
@@ -48,11 +49,12 @@ lib/
 │   │   ├── domain/tenant_config.dart
 │   │   └── presentation/
 │   │
-│   ├── buildings/
+│   ├── properties/                    # edificios/conjuntos; hotel futuro
 │   ├── news/
 │   ├── reservations/
 │   ├── messaging/
 │   ├── visits/
+│   ├── access_control/                 # vigilancia, autorizaciones, vehículos y eventos
 │   ├── billing/
 │   ├── pqr/
 │   ├── voting/
@@ -139,12 +141,19 @@ Rutas declarativas con deep links para push:
 | Ruta | Pantalla | Deep link ejemplo |
 |---|---|---|
 | `/login` | Login | — |
+| `/select-context` | Selector multirrol/multipropiedad | — |
 | `/home` | Shell principal | — |
 | `/news/:id` | Detalle noticia | `comunexa://news/{id}` |
 | `/pqr/:id` | Detalle PQR | `comunexa://pqr/{id}` |
 | `/invoices/:id` | Factura | `comunexa://invoices/{id}` |
 
-Redirect guard: si no hay sesión → `/login`; si hay sesión → cargar tenant theme.
+Redirect guard: si no hay sesión → `/login`; si hay sesión → cargar organización, propiedad activa, membresías y tenant theme. La UI deriva permisos del rol contextual de la propiedad, no de un rol global en el perfil.
+
+Tras resolver membresías: un contexto entra directo; varios navegan a `/select-context`. El selector muestra propiedad, organización y función, recuerda el último contexto autorizado y permite cambiarlo desde el shell. La consola de plataforma es un contexto separado y las acciones de soporte sobre clientes se auditan.
+
+El tema visual consume un `EffectiveBranding` inmutable. Su resolución aplica `property branding → organization branding → BrandAssets/AppTheme`, conserva la firma Comunexa salvo `white_label` enterprise y valida contraste antes de exponer colores a widgets.
+
+La carga de imágenes usa un servicio/repositorio; `presentation` nunca publica directamente una ruta final en Storage. Muestra preview y errores locales, pero solo activa la variante que el backend marcó como procesada.
 
 ## Dependencias previstas (`pubspec.yaml`)
 

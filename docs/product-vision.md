@@ -34,9 +34,9 @@ Una plataforma **SaaS / white-label** donde:
 
 Dos niveles de “configurable”:
 
-### 1. Multi-edificio (dentro de un tenant)
+### 1. Multi-propiedad (dentro de una organización)
 
-Una administradora gestiona **varios conjuntos/edificios**. Cada edificio tiene sus zonas, residentes, noticias y reglas operativas.
+Una administradora gestiona **varios edificios o conjuntos**. Cada propiedad tiene unidades, usuarios, zonas, noticias y reglas operativas. Hotel es una extensión futura prevista, no alcance del MVP PH.
 
 ### 2. Multi-tenant (varias administradoras)
 
@@ -62,14 +62,17 @@ flowchart TB
   B3 --> R3[Residentes]
 ```
 
-## Usuarios y roles
+## Usuarios, roles y alcance
 
 | Rol | Descripción |
 |---|---|
-| **Superadmin plataforma** | Crea tenants, planes, soporte interno (no expuesto a residentes) |
-| **Admin de tenant** | Superusuario de la empresa administradora |
-| **Admin de edificio** | Gestiona uno o varios conjuntos asignados |
-| **Residente / propietario** | Usuario final del edificio |
+| **Superadmin de plataforma** | Administra Comunexa globalmente; no debe confundirse con el responsable de una propiedad |
+| **Administrador de organización** | Superusuario de la administradora y de todas sus propiedades |
+| **Responsable de propiedad** | Control completo de uno o varios edificios/conjuntos asignados |
+| **Operador de propiedad** | Ejecuta tareas delegadas de operación en propiedades asignadas |
+| **Miembro / cliente** | Residente, propietario o cliente vinculado a una unidad; huésped en una extensión futura |
+
+Los roles se asignan por membresía. Una misma identidad puede tener diferente rol en cada propiedad.
 
 ## Módulos del producto (roadmap funcional)
 
@@ -80,6 +83,7 @@ flowchart TB
 | Zonas comunes | Reservas con calendario |
 | Mensajería | Chat administración ↔ residentes |
 | Visitas | Registro + PDF |
+| Control de acceso | Vigilancia, autorizaciones, entradas/salidas y vehículos |
 | Facturación | Cuotas y estados de pago |
 | PQR | Peticiones, quejas, reclamos |
 | Votaciones | Encuestas y asambleas |
@@ -87,12 +91,33 @@ flowchart TB
 
 ## Branding dinámico
 
-Cada tenant configura (vía Supabase / panel interno):
+Comunexa permite que cada propiedad tenga identidad propia sin perder la trazabilidad de su administradora ni la marca de la plataforma. El modelo recomendado es:
+
+```text
+Logo y nombre de la propiedad
+Administrado por <organización>
+Tecnología Comunexa
+```
+
+Cada organización configura una identidad base y cada propiedad puede heredarla o personalizar:
 
 - Logo y favicon
 - Colores primarios/secundarios
+- Imagen de portada o bienvenida
 - Datos de contacto (dirección, teléfono, email)
 - Textos de bienvenida y pie de PDF
+
+Modalidades previstas:
+
+| Modalidad | Identidad mostrada | Etapa |
+|---|---|---|
+| `inherit` | Organización + Comunexa | MVP |
+| `co_branded` | Propiedad + organización + Comunexa | MVP, recomendada |
+| `white_label` | Propiedad u organización | Enterprise futuro |
+
+Comunexa mantiene el sistema de diseño: tipografía, estructura, iconografía, componentes y requisitos de accesibilidad. La personalización se limita a activos, colores validados y contenido de marca.
+
+Las imágenes cargadas por clientes se validan, limpian y optimizan en backend. En el MVP se aceptan PNG, JPEG y WebP; SVG de usuarios queda excluido.
 
 La app **no** debe hardcodear “Administradores Diaz PH” en código compartido; Diaz PH será el **primer tenant**, no la identidad del producto.
 
@@ -108,7 +133,19 @@ La app **no** debe hardcodear “Administradores Diaz PH” en código compartid
 
 **Pagos in-app:** pausados en v1 (facturación como estado de cuotas; sin pasarela).
 
-**Futuro (si hay demanda enterprise):** flavors white-label por administradora (ícono/nombre propios en tiendas). No es el camino inicial.
+## Modelo comercial y acceso
+
+La organización administradora o el conjunto/propiedad contrata Comunexa mediante suscripción B2B; los usuarios finales no pagan por crear su cuenta ni acceder. Una administradora puede consolidar varias propiedades en una factura o cada propiedad puede pagar directamente. El precio objetivo combina cargo base, unidades activas y complementos. Planes conceptuales: `essential`, `management` y `enterprise`; precios y límites se validan en el piloto.
+
+El alta de miembros combina invitaciones privadas —que pueden preaprobar persona y unidad— con solicitudes mediante un código público de propiedad. El código público nunca concede acceso: `organization_admin`, `property_manager` o un `property_staff` autorizado debe aprobar la solicitud.
+
+Detalle y estados: [`subscriptions-and-onboarding.md`](subscriptions-and-onboarding.md).
+
+Una identidad puede pertenecer a varias propiedades con funciones diferentes. Si tiene un solo contexto entra directamente; si tiene varios, elige “¿A dónde quieres entrar?” y puede cambiar desde el menú sin cerrar sesión.
+
+**Futuro (si hay demanda enterprise):** modo sin firma Comunexa y flavors white-label por organización (ícono/nombre propios en tiendas). No es el camino inicial.
+
+En la app nativa compartida, el icono y nombre instalados siguen siendo Comunexa; el branding particular aparece dentro de la experiencia. Una PWA dedicada puede instalarse con nombre/icono del cliente mediante su propio manifest. Una app nativa con nombre/icono del conjunto, empresa u hotel requiere un build y publicación white-label enterprise independientes.
 
 ## Métricas de éxito (orientativas)
 

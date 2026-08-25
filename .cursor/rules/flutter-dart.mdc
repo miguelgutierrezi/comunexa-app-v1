@@ -12,6 +12,8 @@ alwaysApply: false
 - UI al usuario en **español**. Código en inglés.
 - `presentation` no debe llamar a Supabase directo; encapsular en repositorios `data/`.
 - Login actual (`features/auth/presentation/login_screen.dart`) es **UI + stub**; Apple Sign-In solo si plataforma es iOS/macOS (`showAppleSignIn` overrideable en tests). Al conectar Auth, añadir repository/provider sin reescribir el layout responsive salvo que se pida.
-- Branding producto: `BrandAssets` / `AppTheme`. Branding tenant = futuro desde `tenants`, no hardcodear Diaz PH.
+- Branding producto: `BrandAssets` / `AppTheme`. Resolver identidad efectiva propiedad → organización → Comunexa; `co_branded` por defecto y `white_label` solo enterprise. No hardcodear Diaz PH ni permitir que colores configurables rompan contraste/accesibilidad.
+- App nativa compartida conserva nombre/icono Comunexa; branding dinámico vive dentro de la app. PWA dedicada puede usar manifest por cliente; nativo personalizado exige flavor/build enterprise.
+- UI solo previsualiza cargas; no trata un asset como publicado hasta que backend lo valide y procese.
 - Preferir `const`; `flutter analyze` limpio. Widgets de pantalla con sufijo `Screen`.
 - Toda pantalla/lógica nueva → tests en el mismo cambio; cerrar solo tras quality gate (`quality-gate.mdc`).

@@ -20,12 +20,17 @@ Use these notes as the default context for this repository.
 
 - Done: migrations + RLS, Flutter bootstrap, theme/branding, splash, **responsive login UI** (auth still stub; **Apple button only on iOS/macOS**; bypass → home; demo alert emails), **home shell mock** (mobile + tablet portrait/landscape + desktop, light/dark), GHA workflows, remote GitHub.
 - Next: Supabase project + `supabase_flutter` + go_router + real Auth + SessionProvider.
+- Before Auth, migrate the transitional single `profiles.role` model to contextual organization/property memberships. Target roles: global `platform_superadmin`; `organization_admin`; `property_manager`; `property_staff`; `member`.
 
 ## Core constraints
 
 - Do not commit secrets (`.env`, service role, keystores, `google-services.json`).
 - Do not disable RLS. Always design with `tenant_id`.
 - Do not hardcode Diaz PH branding; product brand ≠ tenant brand.
+- Target domain is organization → property → unit. Current SQL names `tenant`/`building` remain valid until an explicit migration; do not mix models partially. Hotels are future extensibility, not MVP scope.
+- Resolve branding as property → organization → Comunexa. MVP defaults to `co_branded`; removing Comunexa (`white_label`) is enterprise-only. Keep typography, components, layout, and accessibility product-controlled.
+- B2B subscription may be paid by an organization or property and cover one or many properties; end users never pay for access. It is manually activated during the pilot and separate from paused resident payments. Onboarding uses private invitations or approval-required requests. Multi-role users select a context only when several exist; platform support context is separate and audited. See `docs/subscriptions-and-onboarding.md`.
+- Security guards are a least-privilege `property_staff` preset, not a global role; access events are append-only. User media MVP accepts server-validated/re-encoded PNG/JPEG/WebP, not SVG. Native client name/icon require an enterprise white-label build; the shared app remains Comunexa. See `docs/access-control-and-media.md`.
 - Do not implement Wompi/PayU or complete `payment-webhook` unless explicitly asked.
 - Keep changes minimal. Treat login bypass / mock home as **UI only**, not real session.
 - Reply to the user in **Spanish**. UI strings in Spanish; code identifiers in English.
