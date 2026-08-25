@@ -98,6 +98,8 @@ RLS: [`database/rls-policies.md`](database/rls-policies.md). Resumen: [`security
 
 [`flutter-structure.md`](flutter-structure.md) — features con data/domain/presentation.
 
+**Estado app (2026-08-25):** bootstrap + tema + splash + **UI de login** (todos los breakpoints, light/dark). Auth aún es stub (SnackBar); no hay `go_router`, client Supabase ni home por rol. Detalle en el roadmap Fase 2.
+
 ## 9. Entornos y CI
 
 **Ahora:** un solo proyecto Supabase + un solo Firebase (FCM + Hosting). Sin staging/prod.

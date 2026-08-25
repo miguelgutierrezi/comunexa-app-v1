@@ -42,13 +42,27 @@ comunexa-app-v1/
 └── docs/
 ```
 
+## Estado (2026-08-25)
+
+Fundamentos (docs, SQL/RLS, CI workflows, stub pagos) + **UI de login** responsive. Siguiente: Supabase Auth + go_router. Detalle: [docs/roadmap.md](docs/roadmap.md).
+
 ## Getting started
 
 ```bash
+cp .env.example .env   # completar SUPABASE_* cuando exista proyecto
 flutter pub get && flutter analyze && flutter test && flutter run
 ```
 
 Supabase / Firebase / CI: [docs/setup.md](docs/setup.md).
+
+## Agentes IA
+
+| Archivo | Herramienta |
+|---|---|
+| [AGENTS.md](AGENTS.md) | Todas |
+| [CLAUDE.md](CLAUDE.md) | Claude Code |
+| [.cursor/rules/](.cursor/rules/) | Cursor |
+| [.github/copilot-instructions.md](.github/copilot-instructions.md) | GitHub Copilot |
 
 ## Licencia
 

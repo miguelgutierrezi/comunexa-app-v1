@@ -41,3 +41,15 @@
 4. **GHA**: web en `main`; móvil en tags → canales de prueba  
 5. Pagos **pausados**; esquema listo  
 6. Piloto: Diaz PH  
+
+## Estado del código (2026-08-25)
+
+| Área | Estado |
+|---|---|
+| Docs + migraciones SQL/RLS + stub pagos | Listo |
+| CI workflows en repo | Listo (secrets GHA pendientes de verificar) |
+| Flutter: tema, splash, **login UI** responsive | Listo (auth real pendiente) |
+| `supabase_flutter` / go_router / SessionProvider | Pendiente (Fase 2) |
+| Features de negocio (noticias, visitas, …) | Pendiente (Fase 4) |
+
+Ver [roadmap.md](roadmap.md).

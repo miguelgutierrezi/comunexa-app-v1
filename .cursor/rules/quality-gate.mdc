@@ -1,0 +1,49 @@
+---
+description: Quality gate obligatorio — tests, analyze, build y docs
+alwaysApply: true
+---
+
+# Quality gate — obligatorio en cada cambio
+
+Ninguna tarea de código se considera terminada sin pasar este gate. Si algo falla, **arreglar antes de cerrar**.
+
+## Antes de dar por terminado (y tras cambios en `lib/` / tests / pubspec)
+
+Ejecutar en orden desde la raíz del repo:
+
+```bash
+flutter analyze
+flutter test
+flutter build web --release
+```
+
+- Alineado con CI (`web.yml`). Los tres deben salir en verde.
+- Si el cambio es solo docs/reglas (sin Dart), basta con no romper formato; no hace falta build.
+- Si el cambio toca Android/iOS nativo de forma relevante, añadir el build de esa plataforma además del web.
+
+## Tests nuevos — mandatorio
+
+- Todo comportamiento o pantalla **nueva** lleva tests (unit y/o widget) en el mismo cambio.
+- Bugs: test que reproduzca el fallo (o smoke del path tocado) cuando sea razonable.
+- No dejar “tests después”: van en el mismo PR/tarea.
+
+## Documentación — mandatorio
+
+Si el cambio altera comportamiento, API, schema, fases, estructura `lib/`, stack o convenciones:
+
+1. Actualizar `docs/` relevante (`roadmap`, `flutter-structure`, `architecture`, etc.).
+2. **Sincronizar las 3 superficies de agentes** (mismo mensaje de estado/restricciones):
+   - `AGENTS.md` (+ `CLAUDE.md` si aplica)
+   - `.cursor/rules/` (al menos `project-core.mdc`; otras si el tema las toca)
+   - `.github/copilot-instructions.md`
+3. Índice `docs/ai/README.md` si cambian rutas o reglas nuevas.
+
+Omitir docs solo si el cambio es puramente cosmético/interno sin impacto observable ni de proceso.
+
+## Checklist de cierre
+
+- [ ] Tests nuevos/actualizados para lo añadido
+- [ ] `flutter analyze` OK
+- [ ] `flutter test` OK
+- [ ] `flutter build web --release` OK (si hubo código Flutter)
+- [ ] Docs + reglas de los 3 agentes al día (si hubo impacto de producto/arquitectura/estado)

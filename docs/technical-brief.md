@@ -14,7 +14,7 @@ No es una app de una sola empresa: distintas administradoras (**tenants**) opera
 
 **Distribución:** la misma base Flutter se publica en **tres canales** — Google Play, App Store y versión web. **No hay pagos dentro de la app por ahora** (se retoma más adelante; ver §6).
 
-**Etapa:** producto en diseño / v2 pre-producción. Base reutilizable para muchas administradoras, no solo el cliente piloto.
+**Etapa:** pre-producción. Fundamentos + UI de login listos; Auth Supabase y módulos de negocio pendientes (ver [`roadmap.md`](roadmap.md)). Base reutilizable para muchas administradoras, no solo el cliente piloto.
 
 ## 2. Stack tecnológico
 
@@ -96,3 +96,4 @@ Publicación a stores públicas = paso manual. Migraciones en `supabase/migratio
 | CI/CD | [`ci-cd.md`](ci-cd.md) · [`.github/workflows/`](../.github/workflows/) |
 | Setup | [`setup.md`](setup.md) |
 | Convenciones | [`conventions.md`](conventions.md) |
+| Agentes IA | [`../AGENTS.md`](../AGENTS.md) · [`../CLAUDE.md`](../CLAUDE.md) · [`../.cursor/rules/`](../.cursor/rules/) · [`../.github/copilot-instructions.md`](../.github/copilot-instructions.md) |

@@ -1,0 +1,15 @@
+---
+description: Modelo de datos multi-tenant y migraciones
+globs: supabase/**/*.sql,docs/database/**/*,lib/features/**/*
+alwaysApply: false
+---
+
+# Data / multi-tenant — Comunexa
+
+- Un proyecto Supabase; aislamiento por **RLS** + `tenant_id` ([`docs/technical-brief.md`](docs/technical-brief.md)).
+- Fuente canónica SQL: `supabase/migrations/`. Docs en `docs/database/` deben alinearse.
+- No editar migraciones ya aplicadas en un ambiente compartido: crear `00N_*.sql` nueva.
+- PKs UUID; FKs por id, no por nombre de edificio/tenant.
+- Roles: superadmin plataforma · administradora (tenant) · admin edificio · residente.
+- Tablas `invoices`/`payments` existen; cobro in-app **no** — no “activar” webhook de pagos sin pedirlo.
+- Al modelar features nuevas: diseñar con `tenant_id` + `building_id` desde el día 1.

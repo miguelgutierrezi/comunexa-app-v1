@@ -68,6 +68,33 @@ Ramas:
 - Unit tests para repositorios y lógica domain.
 - Widget smoke tests para pantallas críticas (login, home).
 - Tests de RLS en CI (script o Supabase local).
+- **Mandatorio:** lo nuevo en una tarea lleva tests en el mismo cambio.
+
+## Quality gate local (mandatorio)
+
+Antes de dar por terminado un cambio de código (agentes o humano):
+
+```bash
+flutter analyze
+flutter test
+flutter build web --release
+```
+
+Alineado con [`.github/workflows/web.yml`](../.github/workflows/web.yml). Si falla alguno → no cerrar la tarea.
+
+Solo documentación/reglas (sin Dart): no exige build.
+
+## Documentación y agentes (mandatorio)
+
+Impacto en comportamiento, schema, fases, estructura o convenciones → actualizar en el mismo cambio:
+
+1. `docs/` pertinente  
+2. Las **3** superficies de agentes, alineadas:
+   - Cursor: `.cursor/rules/`
+   - Claude / genérico: `AGENTS.md`, `CLAUDE.md`
+   - GitHub Copilot: `.github/copilot-instructions.md`
+
+Regla canónica para agentes: [`.cursor/rules/quality-gate.mdc`](../.cursor/rules/quality-gate.mdc) · [`AGENTS.md`](../AGENTS.md).
 
 ## CI / releases
 
@@ -86,5 +113,5 @@ Checklist antes de cerrar tarea:
 1. ¿RLS cubre la tabla tocada?
 2. ¿`tenant_id` en datos nuevos?
 3. ¿Sin secretos en diff?
-4. ¿Tests pasan?
-5. ¿Documentación actualizada si cambió arquitectura o schema?
+4. ¿Tests nuevos/actualizados + `analyze` / `test` / `build web` en verde?
+5. ¿Docs + reglas Cursor / Claude / Copilot actualizadas si hubo impacto?

@@ -1,0 +1,17 @@
+---
+description: Convenciones Flutter/Dart en lib/
+globs: lib/**/*.dart
+alwaysApply: false
+---
+
+# Flutter / Dart — Comunexa
+
+- Package: `package:comunexa/...`. SDK según `pubspec.yaml`.
+- Arquitectura objetivo: features con `data` / `domain` / `presentation` ([`docs/flutter-structure.md`](docs/flutter-structure.md)).
+- Estado: Riverpod (`ProviderScope` ya en `main`). Navegación objetivo: **go_router** (hoy `MaterialApp` + rutas / Navigator).
+- UI al usuario en **español**. Código en inglés.
+- `presentation` no debe llamar a Supabase directo; encapsular en repositorios `data/`.
+- Login actual (`features/auth/presentation/login_screen.dart`) es **UI + stub**; al conectar Auth, añadir repository/provider sin reescribir el layout responsive salvo que se pida.
+- Branding producto: `BrandAssets` / `AppTheme`. Branding tenant = futuro desde `tenants`, no hardcodear Diaz PH.
+- Preferir `const`; `flutter analyze` limpio. Widgets de pantalla con sufijo `Screen`.
+- Toda pantalla/lógica nueva → tests en el mismo cambio; cerrar solo tras quality gate (`quality-gate.mdc`).

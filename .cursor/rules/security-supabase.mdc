@@ -1,0 +1,15 @@
+---
+description: Seguridad Supabase, secretos y RLS
+globs: lib/**/*.dart,supabase/**/*,docs/database/**/*,.env*,firebase.json,android/**/*,ios/**/*
+alwaysApply: false
+---
+
+# Security — Comunexa
+
+- Prioridad: `docs/security.md` + `docs/database/rls-policies.md`.
+- Prohibido: commitear `.env`, service role, keystores, `google-services.json`, tokens.
+- En Flutter solo **anon key**. Service role solo en Edge Functions / CI con secretos.
+- No desactivar RLS. Toda tabla de negocio con `tenant_id` (directo o vía edificio).
+- No loguear tokens, passwords ni PII con `debugPrint` en código nuevo.
+- Storage: paths particionados por tenant/edificio cuando se creen buckets.
+- Auth real aún no cableada: no fingir autorización solo en el cliente.

@@ -65,12 +65,34 @@ lib/
 
 ## Estado actual vs objetivo
 
+Actualizado **2026-08-25**.
+
+### Árbol real hoy
+
+```
+lib/
+├── main.dart                 # Env.load + ProviderScope
+├── app.dart                  # MaterialApp (aún sin go_router)
+├── core/
+│   ├── config/env.dart
+│   ├── errors/app_exception.dart
+│   └── theme/
+│       ├── app_theme.dart    # light/dark + tipografía
+│       └── brand_assets.dart
+├── features/
+│   ├── splash/presentation/splash_screen.dart
+│   └── auth/presentation/login_screen.dart   # UI completa, auth stub
+└── services/                 # vacío (.gitkeep)
+```
+
 | Hoy | Objetivo |
 |---|---|
-| `lib/features/splash/` | Mantener; añadir auth + router |
-| Sin `go_router` | Añadir en Fase 2 |
-| Sin Supabase client | `core/supabase/` + `supabase_flutter` |
+| Splash → Login vía `Navigator` | `go_router` + redirect por sesión |
+| Login UI responsive + tests | Conectar Supabase Auth + providers |
+| `ProviderScope` sin providers de dominio | SessionProvider + auth_provider |
+| Sin `go_router` / `supabase_flutter` | Añadir en Fase 2 |
 | Sin freezed | Generar modelos al conectar BD |
+| Tema fijo Comunexa | `tenant_theme` desde `tenants` |
 
 ## Capas por feature
 
