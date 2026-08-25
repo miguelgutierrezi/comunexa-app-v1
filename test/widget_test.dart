@@ -49,6 +49,74 @@ void main() {
     expect(find.text('Versión 1.0.0'), findsOneWidget);
   });
 
+  testWidgets('login tablet portrait light usa hero apilado', (tester) async {
+    tester.view.physicalSize = const Size(834, 1194);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+
+    await tester.pumpWidget(
+      ProviderScope(
+        child: MaterialApp(
+          theme: AppTheme.light(),
+          home: const LoginScreen(),
+        ),
+      ),
+    );
+
+    expect(find.text('SECURE ENTERPRISE LOGIN'), findsNothing);
+    expect(find.text('COMUNEXA'), findsOneWidget);
+    expect(find.textContaining('Gestiona tu residencia'), findsOneWidget);
+    expect(find.text('Bienvenido de nuevo'), findsOneWidget);
+    expect(find.text('v1.0.0'), findsNothing);
+    expect(find.text('Versión 1.0.0'), findsNothing);
+
+    final title = tester.widget<Text>(find.text('Bienvenido de nuevo'));
+    expect(title.style?.fontSize, 28);
+
+    final brand = tester.widget<Text>(find.text('COMUNEXA'));
+    expect(brand.style?.fontSize, 36);
+    expect(brand.style?.letterSpacing, 6);
+
+    final forgot = tester.widget<Text>(
+      find.text('¿Olvidaste tu contraseña?'),
+    );
+    expect(forgot.style?.color, AppTheme.seedColor);
+    expect(forgot.style?.fontSize, 13);
+  });
+
+  testWidgets('login tablet portrait dark usa ink y acentos teal', (tester) async {
+    tester.view.physicalSize = const Size(834, 1194);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+
+    await tester.pumpWidget(
+      ProviderScope(
+        child: MaterialApp(
+          theme: AppTheme.light(),
+          darkTheme: AppTheme.dark(),
+          themeMode: ThemeMode.dark,
+          home: const LoginScreen(),
+        ),
+      ),
+    );
+
+    expect(find.text('SECURE ENTERPRISE LOGIN'), findsNothing);
+    expect(find.text('COMUNEXA'), findsOneWidget);
+
+    final title = tester.widget<Text>(find.text('Bienvenido de nuevo'));
+    expect(title.style?.fontSize, 28);
+    expect(title.style?.color, Colors.white);
+
+    final forgot = tester.widget<Text>(
+      find.text('¿Olvidaste tu contraseña?'),
+    );
+    expect(forgot.style?.color, AppTheme.accentTeal);
+    expect(forgot.style?.fontSize, 13);
+
+    final register = tester.widget<Text>(find.text('Regístrate'));
+    expect(register.style?.color, AppTheme.accentTeal);
+  });
+
   testWidgets('login tablet landscape light usa densidad compacta', (tester) async {
     tester.view.physicalSize = const Size(1194, 834);
     tester.view.devicePixelRatio = 1;
@@ -77,6 +145,39 @@ void main() {
     );
     expect(forgot.style?.color, AppTheme.seedColor);
     expect(forgot.style?.fontSize, 12);
+  });
+
+  testWidgets('login tablet landscape dark usa ink y acentos teal', (tester) async {
+    tester.view.physicalSize = const Size(1194, 834);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+
+    await tester.pumpWidget(
+      ProviderScope(
+        child: MaterialApp(
+          theme: AppTheme.light(),
+          darkTheme: AppTheme.dark(),
+          themeMode: ThemeMode.dark,
+          home: const LoginScreen(),
+        ),
+      ),
+    );
+
+    expect(find.text('SECURE ENTERPRISE LOGIN'), findsOneWidget);
+    expect(find.text('v1.0.0'), findsOneWidget);
+
+    final title = tester.widget<Text>(find.text('Bienvenido de nuevo'));
+    expect(title.style?.fontSize, 28);
+    expect(title.style?.color, Colors.white);
+
+    final forgot = tester.widget<Text>(
+      find.text('¿Olvidaste tu contraseña?'),
+    );
+    expect(forgot.style?.color, AppTheme.accentTeal);
+    expect(forgot.style?.fontSize, 12);
+
+    final register = tester.widget<Text>(find.text('Regístrate'));
+    expect(register.style?.color, AppTheme.accentTeal);
   });
 
   testWidgets('login desktop dark usa panel ink y acentos teal', (tester) async {

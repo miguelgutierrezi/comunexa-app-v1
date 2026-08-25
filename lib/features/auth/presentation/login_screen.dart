@@ -5,12 +5,14 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 /// Login responsive:
 /// - móvil: `login-light-screen` / `login-dark-screen`
-/// - tablet landscape: `tablet-login-light` (≥900)
+/// - tablet portrait: `tablet-portrait-login-light` / `tablet-portrait-login-dark` (≥700, alto > ancho)
+/// - tablet landscape: `tablet-login-light` / `tablet-login-dark` (≥900)
 /// - desktop: `desktop-login-light` / `desktop-login-dark` (≥1280)
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
-  static const double tabletBreakpoint = 900;
+  static const double tabletPortraitBreakpoint = 700;
+  static const double tabletLandscapeBreakpoint = 900;
   static const double desktopBreakpoint = 1280;
   static const String appVersion = '1.0.0';
 
@@ -18,11 +20,20 @@ class LoginScreen extends StatefulWidget {
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
-enum _LoginDensity { mobile, tablet, desktop }
+enum _LoginDensity { mobile, tabletPortrait, tabletLandscape, desktop }
 
-_LoginDensity _densityForWidth(double width) {
-  if (width >= LoginScreen.desktopBreakpoint) return _LoginDensity.desktop;
-  if (width >= LoginScreen.tabletBreakpoint) return _LoginDensity.tablet;
+_LoginDensity _densityFor(BoxConstraints constraints) {
+  final width = constraints.maxWidth;
+  final height = constraints.maxHeight;
+  if (width >= LoginScreen.desktopBreakpoint) {
+    return _LoginDensity.desktop;
+  }
+  if (width >= LoginScreen.tabletLandscapeBreakpoint && width >= height) {
+    return _LoginDensity.tabletLandscape;
+  }
+  if (width >= LoginScreen.tabletPortraitBreakpoint && height > width) {
+    return _LoginDensity.tabletPortrait;
+  }
   return _LoginDensity.mobile;
 }
 
@@ -64,15 +75,18 @@ class _LoginScreenState extends State<LoginScreen> {
     final colors = _LoginColors.of(isDark);
 
     return Scaffold(
-      backgroundColor: isDark ? AppTheme.ink : const Color(0xFFF1F5F9),
+      backgroundColor: isDark ? AppTheme.ink : AppTheme.bgLight,
       body: LayoutBuilder(
         builder: (context, constraints) {
-          final density = _densityForWidth(constraints.maxWidth);
-          if (density != _LoginDensity.mobile) {
-            // Figma tablet 530:664 · desktop 792:648
-            final heroFlex = density == _LoginDensity.tablet ? 44 : 55;
-            final formFlex = density == _LoginDensity.tablet ? 56 : 45;
-            final formPadding = density == _LoginDensity.tablet
+          final density = _densityFor(constraints);
+
+          if (density == _LoginDensity.tabletLandscape ||
+              density == _LoginDensity.desktop) {
+            // Figma tablet landscape 530:664 · desktop 792:648
+            final isTablet = density == _LoginDensity.tabletLandscape;
+            final heroFlex = isTablet ? 44 : 55;
+            final formFlex = isTablet ? 56 : 45;
+            final formPadding = isTablet
                 ? const EdgeInsets.symmetric(horizontal: 72, vertical: 48)
                 : const EdgeInsets.all(80);
 
@@ -89,7 +103,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 Expanded(
                   flex: formFlex,
                   child: ColoredBox(
-                    // Figma form-panel-light #FFFFFF / form-panel-dark #0D1B2A
                     color: isDark ? AppTheme.ink : Colors.white,
                     child: SafeArea(
                       child: LayoutBuilder(
@@ -102,9 +115,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 minHeight: (panelConstraints.maxHeight -
                                         verticalPad)
                                     .clamp(0, double.infinity),
-                                maxWidth: density == _LoginDensity.tablet
-                                    ? 520
-                                    : 488,
+                                maxWidth: isTablet ? 520 : 488,
                               ),
                               child: _LoginForm(
                                 colors: colors,
@@ -118,6 +129,64 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                                 onSubmit: _onSubmit,
                                 onSoon: _soon,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            );
+          }
+
+          if (density == _LoginDensity.tabletPortrait) {
+            // Figma tablet-portrait-login: hero 450 + form fill
+            final heroHeight =
+                (constraints.maxHeight * 0.377).clamp(320.0, 450.0);
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                SizedBox(
+                  height: heroHeight,
+                  child: const _PortraitHeroPanel(),
+                ),
+                Expanded(
+                  child: ColoredBox(
+                    color: isDark ? AppTheme.ink : Colors.white,
+                    child: SafeArea(
+                      top: false,
+                      child: LayoutBuilder(
+                        builder: (context, panelConstraints) {
+                          const formPadding = EdgeInsets.symmetric(
+                            horizontal: 80,
+                            vertical: 48,
+                          );
+                          return SingleChildScrollView(
+                            padding: formPadding,
+                            child: Center(
+                              child: ConstrainedBox(
+                                constraints: BoxConstraints(
+                                  minHeight: (panelConstraints.maxHeight -
+                                          formPadding.vertical)
+                                      .clamp(0, double.infinity),
+                                  maxWidth: 500,
+                                ),
+                                child: _LoginForm(
+                                  colors: colors,
+                                  density: density,
+                                  emailController: _emailController,
+                                  passwordController: _passwordController,
+                                  obscurePassword: _obscurePassword,
+                                  submitting: _submitting,
+                                  onToggleObscure: () => setState(
+                                    () =>
+                                        _obscurePassword = !_obscurePassword,
+                                  ),
+                                  onSubmit: _onSubmit,
+                                  onSoon: _soon,
+                                ),
                               ),
                             ),
                           );
@@ -212,7 +281,7 @@ class _HeroPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isTablet = density == _LoginDensity.tablet;
+    final isTablet = density == _LoginDensity.tabletLandscape;
     final padding = isTablet ? 48.0 : 64.0;
     final symbolSize = isTablet ? 130.0 : 160.0;
     final brandSize = isTablet ? 36.0 : 48.0;
@@ -302,6 +371,58 @@ class _HeroPanel extends StatelessWidget {
   }
 }
 
+/// Hero superior de tablet portrait (sin watermark ni footer).
+class _PortraitHeroPanel extends StatelessWidget {
+  const _PortraitHeroPanel();
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: const BoxDecoration(gradient: AppTheme.brandGradient),
+      child: SafeArea(
+        bottom: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(32, 12, 32, 48),
+          child: Align(
+            alignment: Alignment.bottomCenter,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SvgPicture.asset(
+                  BrandAssets.symbolLarge,
+                  width: 84,
+                  height: 84,
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  'COMUNEXA',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w800,
+                    fontSize: 36,
+                    letterSpacing: 6,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  BrandAssets.tagline,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.white.withValues(alpha: 0.8),
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _LoginForm extends StatelessWidget {
   const _LoginForm({
     required this.colors,
@@ -325,30 +446,42 @@ class _LoginForm extends StatelessWidget {
   final VoidCallback onSubmit;
   final void Function(String) onSoon;
 
-  bool get _isSplit => density != _LoginDensity.mobile;
-  bool get _isTablet => density == _LoginDensity.tablet;
+  bool get _isSplit =>
+      density == _LoginDensity.tabletLandscape ||
+      density == _LoginDensity.desktop;
+  bool get _isTabletLandscape => density == _LoginDensity.tabletLandscape;
+  bool get _isTabletPortrait => density == _LoginDensity.tabletPortrait;
+  bool get _showSubtitle => _isSplit || _isTabletPortrait;
+  bool get _inlineForgot => _isSplit || _isTabletPortrait;
 
   @override
   Widget build(BuildContext context) {
     final titleSize = switch (density) {
       _LoginDensity.desktop => 32.0,
-      _LoginDensity.tablet => 28.0,
+      _LoginDensity.tabletLandscape ||
+      _LoginDensity.tabletPortrait =>
+        28.0,
       _LoginDensity.mobile => 22.0,
     };
-    final subtitleSize = _isTablet ? 14.0 : 15.0;
-    final fieldGap = _isTablet ? 20.0 : (_isSplit ? 24.0 : 16.0);
-    final labelSize = _isTablet ? 12.0 : 13.0;
-    final forgotSize = _isTablet ? 12.0 : 13.0;
-    final footerSize = _isTablet ? 13.0 : 14.0;
-    final submitHeight = _isTablet ? 48.0 : 52.0;
-    final submitRadius = _isTablet ? 12.0 : 14.0;
-    final socialHeight = _isTablet ? 44.0 : 48.0;
-    final submitLabelSize = _isTablet ? 14.0 : 15.0;
+    final subtitleSize = _isTabletLandscape ? 14.0 : 15.0;
+    final fieldGap = (_isTabletLandscape || _isTabletPortrait)
+        ? 20.0
+        : (_isSplit ? 24.0 : 16.0);
+    final labelSize = _isTabletLandscape ? 12.0 : 13.0;
+    final forgotSize = _isTabletLandscape ? 12.0 : 13.0;
+    final footerSize = _isTabletLandscape ? 13.0 : 14.0;
+    final submitHeight = _isTabletLandscape ? 48.0 : 52.0;
+    final submitRadius = (_isTabletLandscape || _isTabletPortrait) ? 12.0 : 14.0;
+    final socialHeight = _isTabletLandscape ? 44.0 : 48.0;
+    final submitLabelSize = _isTabletLandscape ? 14.0 : 15.0;
+    final socialLabelSize = _isTabletLandscape ? 13.0 : 14.0;
+    final actionsGap = _isTabletLandscape ? 20.0 : 24.0;
+    final dividerGap = _isTabletLandscape ? 12.0 : 16.0;
 
     final header = Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (!_isSplit) ...[
+        if (density == _LoginDensity.mobile) ...[
           _BrandHeader(
             markAsset: colors.markAsset,
             ink: colors.ink,
@@ -366,12 +499,15 @@ class _LoginForm extends StatelessWidget {
             color: colors.ink,
           ),
         ),
-        if (_isSplit) ...[
-          SizedBox(height: _isTablet ? 8 : 12),
+        if (_showSubtitle) ...[
+          SizedBox(
+            height: (_isTabletLandscape || _isTabletPortrait) ? 8 : 12,
+          ),
           Text(
             'Gestiona tu residencia de la forma más rápida y sencilla.',
             style: TextStyle(
               fontSize: subtitleSize,
+              height: _isTabletPortrait ? 1.4 : null,
               color: colors.muted,
               fontWeight: FontWeight.w400,
             ),
@@ -402,7 +538,7 @@ class _LoginForm extends StatelessWidget {
           textInputAction: TextInputAction.next,
         ),
         SizedBox(height: fieldGap),
-        if (_isSplit)
+        if (_inlineForgot)
           Row(
             children: [
               _FieldLabel(
@@ -467,7 +603,7 @@ class _LoginForm extends StatelessWidget {
             ),
           ),
         ),
-        if (!_isSplit) ...[
+        if (!_inlineForgot) ...[
           const SizedBox(height: 12),
           Align(
             alignment: Alignment.centerRight,
@@ -504,9 +640,9 @@ class _LoginForm extends StatelessWidget {
           fontSize: submitLabelSize,
           onPressed: submitting ? null : onSubmit,
         ),
-        SizedBox(height: _isTablet ? 20 : 24),
+        SizedBox(height: actionsGap),
         _OrDivider(muted: colors.muted, line: colors.fieldBorder),
-        SizedBox(height: _isTablet ? 12 : 16),
+        SizedBox(height: dividerGap),
         Row(
           children: [
             Expanded(
@@ -516,7 +652,7 @@ class _LoginForm extends StatelessWidget {
                 border: colors.fieldBorder,
                 labelColor: colors.ink,
                 height: socialHeight,
-                labelSize: _isTablet ? 13 : 14,
+                labelSize: socialLabelSize,
                 icon: SvgPicture.asset(
                   BrandAssets.iconGoogle,
                   width: 18,
@@ -536,7 +672,7 @@ class _LoginForm extends StatelessWidget {
                 border: colors.fieldBorder,
                 labelColor: colors.ink,
                 height: socialHeight,
-                labelSize: _isTablet ? 13 : 14,
+                labelSize: socialLabelSize,
                 icon: SvgPicture.asset(
                   BrandAssets.iconApple,
                   width: 18,
@@ -555,27 +691,30 @@ class _LoginForm extends StatelessWidget {
     );
 
     final footer = Center(
-      child: Text.rich(
-        TextSpan(
-          style: TextStyle(color: colors.muted, fontSize: footerSize),
-          children: [
-            const TextSpan(text: '¿No tienes cuenta? '),
-            WidgetSpan(
-              alignment: PlaceholderAlignment.baseline,
-              baseline: TextBaseline.alphabetic,
-              child: GestureDetector(
-                onTap: () => onSoon('Registro'),
-                child: Text(
-                  'Regístrate',
-                  style: TextStyle(
-                    color: colors.accentLink,
-                    fontWeight: FontWeight.w600,
-                    fontSize: footerSize,
+      child: Padding(
+        padding: EdgeInsets.only(top: _isTabletPortrait ? 8 : 0),
+        child: Text.rich(
+          TextSpan(
+            style: TextStyle(color: colors.muted, fontSize: footerSize),
+            children: [
+              const TextSpan(text: '¿No tienes cuenta? '),
+              WidgetSpan(
+                alignment: PlaceholderAlignment.baseline,
+                baseline: TextBaseline.alphabetic,
+                child: GestureDetector(
+                  onTap: () => onSoon('Registro'),
+                  child: Text(
+                    'Regístrate',
+                    style: TextStyle(
+                      color: colors.accentLink,
+                      fontWeight: FontWeight.w600,
+                      fontSize: footerSize,
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -588,6 +727,22 @@ class _LoginForm extends StatelessWidget {
           header,
           fields,
           actions,
+          footer,
+        ],
+      );
+    }
+
+    if (_isTabletPortrait) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          header,
+          const SizedBox(height: 32),
+          fields,
+          const SizedBox(height: 32),
+          actions,
+          const SizedBox(height: 24),
           footer,
         ],
       );
