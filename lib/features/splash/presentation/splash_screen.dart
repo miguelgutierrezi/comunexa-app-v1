@@ -1,8 +1,27 @@
+import 'package:comunexa/core/theme/brand_assets.dart';
+import 'package:comunexa/features/auth/presentation/login_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
-/// Pantalla inicial mientras se define auth, sesión y carga de tenant.
-class SplashScreen extends StatelessWidget {
+/// Splash breve → login (auth real llega con Supabase).
+class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
+
+  @override
+  State<SplashScreen> createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen> {
+  @override
+  void initState() {
+    super.initState();
+    Future<void>.delayed(const Duration(milliseconds: 1200), () {
+      if (!mounted) return;
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute<void>(builder: (_) => const LoginScreen()),
+      );
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -12,32 +31,19 @@ class SplashScreen extends StatelessWidget {
       body: SafeArea(
         child: Center(
           child: Padding(
-            padding: const EdgeInsets.all(32),
+            padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 32),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
-                  Icons.apartment_rounded,
-                  size: 72,
+                SvgPicture.asset(
+                  BrandAssets.logoHorizontal,
+                  height: 88,
+                  semanticsLabel: 'Comunexa',
+                ),
+                const SizedBox(height: 40),
+                CircularProgressIndicator(
                   color: theme.colorScheme.primary,
                 ),
-                const SizedBox(height: 24),
-                Text(
-                  'Comunexa',
-                  style: theme.textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Conecta administradoras con sus comunidades',
-                  textAlign: TextAlign.center,
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                ),
-                const SizedBox(height: 32),
-                const CircularProgressIndicator(),
               ],
             ),
           ),

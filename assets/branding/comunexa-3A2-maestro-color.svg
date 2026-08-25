@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title desc">
+  <title id="title">Comunexa 3A.2 — símbolo maestro a color</title>
+  <desc id="desc">Símbolo de Comunexa con gradiente teal, azul y violeta.</desc>
+  <defs><linearGradient id="comunexa-gradient" x1="24" y1="216" x2="236" y2="28" gradientUnits="userSpaceOnUse"><stop stop-color="#00B4A6"/><stop offset=".52" stop-color="#2563EB"/><stop offset="1" stop-color="#7A4DFF"/></linearGradient></defs>
+  <g id="comunexa-symbol" fill="none" stroke="url(#comunexa-gradient)" stroke-width="13" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M31 158V94L69 68L94 85V126"/><path d="M82 126V49L132 18L155 34V121"/><path d="M130 121V77L165 53L204 80V128"/><path d="M185 143V106L214 87L237 104V158"/>
+    <circle cx="83" cy="173" r="9" fill="url(#comunexa-gradient)" stroke="none"/><circle cx="128" cy="162" r="13" fill="url(#comunexa-gradient)" stroke="none"/><circle cx="173" cy="173" r="9" fill="url(#comunexa-gradient)" stroke="none"/>
+    <path d="M61 202Q66 185 83 185Q97 185 104 198M94 205Q101 180 128 180Q155 180 162 205M152 198Q159 185 173 185Q190 185 195 202"/><path d="M42 207Q128 228 214 207"/>
+  </g>
+</svg>

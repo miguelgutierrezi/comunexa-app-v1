@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 260" role="img" aria-label="Comunexa — Un edificio, una comunidad, una sola app.">
+  <defs><linearGradient id="g" x1="20" y1="220" x2="930" y2="40" gradientUnits="userSpaceOnUse"><stop stop-color="#00B4A6"/><stop offset=".56" stop-color="#2563EB"/><stop offset="1" stop-color="#7A4DFF"/></linearGradient></defs>
+  <g transform="translate(20 10) scale(.92)" fill="none" stroke="url(#g)" stroke-width="13" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M31 158V94L69 68L94 85V126M82 126V49L132 18L155 34V121M130 121V77L165 53L204 80V128M185 143V106L214 87L237 104V158"/>
+    <circle cx="83" cy="173" r="9" fill="url(#g)" stroke="none"/><circle cx="128" cy="162" r="13" fill="url(#g)" stroke="none"/><circle cx="173" cy="173" r="9" fill="url(#g)" stroke="none"/>
+    <path d="M61 202Q66 185 83 185Q97 185 104 198M94 205Q101 180 128 180Q155 180 162 205M152 198Q159 185 173 185Q190 185 195 202M42 207Q128 228 214 207"/>
+  </g>
+  <g font-family="Inter, Avenir Next, Helvetica Neue, Arial, sans-serif"><text x="285" y="130" font-size="78" font-weight="700" letter-spacing="5" fill="#0D1B2A">COMUN<tspan fill="url(#g)">EXA</tspan></text><text x="290" y="176" font-size="23" fill="#0D1B2A">Un edificio, una comunidad, una sola app.</text></g>
+</svg>

@@ -38,15 +38,19 @@ supabase db push
 
 ```bash
 cp .env.example .env
+# editar .env con SUPABASE_URL, SUPABASE_ANON_KEY, etc.
 ```
 
-```env
-APP_ENV=development
-SUPABASE_URL=https://xxxx.supabase.co
-SUPABASE_ANON_KEY=eyJ...
+La app carga `.env` sola al arrancar (`flutter_dotenv` → `Env.load()` en `main.dart`).
+
+```bash
+flutter run -d chrome
 ```
 
-Solo **anon key** en la app.
+No hace falta `--dart-define-from-file` en local.  
+`.env` está en `.gitignore` y también declarado como asset en `pubspec.yaml`.
+
+Uso en código: `Env.supabaseUrl`, `Env.supabaseAnonKey`, `Env.isConfigured`.
 
 ## 4. Auth
 

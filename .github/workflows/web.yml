@@ -113,6 +113,21 @@ jobs:
           channel: stable
           cache: true
 
+      # `.env` es asset de Flutter (flutter_dotenv) y está gitignored.
+      - name: Prepare .env for Flutter
+        env:
+          SUPABASE_URL: ${{ vars.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          FIREBASE_PROJECT_ID: ${{ vars.FIREBASE_PROJECT_ID }}
+        run: |
+          cat > .env << EOF
+          APP_ENV=development
+          SUPABASE_URL=${SUPABASE_URL}
+          SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
+          FIREBASE_PROJECT_ID=${FIREBASE_PROJECT_ID}
+          EOF
+          echo ".env preparado para assets"
+
       - name: Dependencies
         run: flutter pub get
 
@@ -123,11 +138,7 @@ jobs:
         run: flutter test
 
       - name: Build web
-        run: |
-          flutter build web --release \
-            --dart-define=APP_ENV=development \
-            --dart-define=SUPABASE_URL=${{ vars.SUPABASE_URL }} \
-            --dart-define=SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}
+        run: flutter build web --release
 
       - name: Deploy to Firebase Hosting
         uses: FirebaseExtended/action-hosting-deploy@v0

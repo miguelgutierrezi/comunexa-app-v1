@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Favicon de Comunexa">
+  <rect width="64" height="64" rx="14" fill="#0D1B2A"/>
+  <g fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M9 39V22L19 15L25 19V36M23 36V13L34 6L40 10V36M38 36V21L48 15L56 21V39"/>
+    <circle cx="22" cy="44" r="2.5" fill="#fff" stroke="none"/><circle cx="32" cy="42" r="3.5" fill="#fff" stroke="none"/><circle cx="42" cy="44" r="2.5" fill="#fff" stroke="none"/>
+    <path d="M12 52Q32 58 52 52"/>
+  </g>
+</svg>
