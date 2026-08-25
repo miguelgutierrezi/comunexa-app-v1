@@ -48,7 +48,7 @@
 |---|---|
 | Docs + migraciones SQL/RLS + stub pagos | Listo |
 | CI workflows en repo | Listo (secrets GHA pendientes de verificar) |
-| Flutter: tema, splash, **login UI** responsive | Listo (auth real pendiente) |
+| Flutter: tema, splash, **login UI** responsive | Listo (auth real pendiente; Apple solo iOS/macOS) |
 | `supabase_flutter` / go_router / SessionProvider | Pendiente (Fase 2) |
 | Features de negocio (noticias, visitas, …) | Pendiente (Fase 4) |
 

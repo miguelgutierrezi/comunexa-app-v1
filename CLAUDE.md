@@ -5,7 +5,7 @@
 Stack: Flutter + **Supabase (RLS)** + **FCM** + **Firebase Hosting** + **GitHub Actions**.  
 Pagos in-app pausados (stub `payment-webhook`). No Firestore.
 
-**Estado (2026-08-25):** fundamentos + UI de login listos; Auth Supabase / go_router / features de negocio pendientes. Ver [`docs/roadmap.md`](docs/roadmap.md).
+**Estado (2026-08-25):** fundamentos + UI de login listos (Apple Sign-In solo iOS/macOS); Auth Supabase / go_router / features de negocio pendientes. Ver [`docs/roadmap.md`](docs/roadmap.md).
 
 ## Quality gate (mandatorio antes de cerrar)
 

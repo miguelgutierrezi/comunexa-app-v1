@@ -17,7 +17,7 @@ void main() {
           theme: AppTheme.light(),
           darkTheme: AppTheme.dark(),
           themeMode: ThemeMode.light,
-          home: const LoginScreen(),
+          home: const LoginScreen(showAppleSignIn: true),
         ),
       ),
     );
@@ -25,6 +25,33 @@ void main() {
     expect(find.text('Bienvenido de nuevo'), findsOneWidget);
     expect(find.text('Iniciar Sesión'), findsOneWidget);
     expect(find.text('Google'), findsOneWidget);
+    expect(find.text('Apple'), findsOneWidget);
+  });
+
+  testWidgets('login oculta Apple fuera de plataformas Apple', (tester) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        child: MaterialApp(
+          theme: AppTheme.light(),
+          home: const LoginScreen(showAppleSignIn: false),
+        ),
+      ),
+    );
+
+    expect(find.text('Google'), findsOneWidget);
+    expect(find.text('Apple'), findsNothing);
+  });
+
+  testWidgets('login muestra Apple cuando la plataforma lo ofrece', (tester) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        child: MaterialApp(
+          theme: AppTheme.light(),
+          home: const LoginScreen(showAppleSignIn: true),
+        ),
+      ),
+    );
+
     expect(find.text('Apple'), findsOneWidget);
   });
 

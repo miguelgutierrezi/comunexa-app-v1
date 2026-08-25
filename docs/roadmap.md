@@ -26,6 +26,7 @@ Estado al **2026-08-25** (rama `main` @ `d460f7a`).
 - [x] UI Login responsive (móvil / tablet / desktop, light+dark) — **solo presentación**
 - [x] Splash → Login (Navigator; sin sesión real)
 - [x] Smoke tests widget del login
+- [x] Botón Apple Sign-In solo en iOS/macOS (Google en todas)
 - [ ] `supabase_flutter` + go_router + SessionProvider
 - [ ] Auth real (email/password; OAuth Google/Apple = stubs UI)
 - [ ] Home por rol + tema tenant dinámico

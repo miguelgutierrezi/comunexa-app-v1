@@ -18,7 +18,7 @@ Use these notes as the default context for this repository.
 
 ## Current code status (2026-08-25)
 
-- Done: migrations + RLS, Flutter bootstrap, theme/branding, splash, **responsive login UI** (auth still stub), GHA workflows, remote GitHub.
+- Done: migrations + RLS, Flutter bootstrap, theme/branding, splash, **responsive login UI** (auth still stub; **Apple button only on iOS/macOS**), GHA workflows, remote GitHub.
 - Next: Supabase project + `supabase_flutter` + go_router + real Auth + SessionProvider.
 
 ## Core constraints

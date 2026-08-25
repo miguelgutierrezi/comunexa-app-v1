@@ -1,5 +1,6 @@
 import 'package:comunexa/core/theme/app_theme.dart';
 import 'package:comunexa/core/theme/brand_assets.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -8,13 +9,28 @@ import 'package:flutter_svg/flutter_svg.dart';
 /// - tablet portrait: `tablet-portrait-login-light` / `tablet-portrait-login-dark` (≥700, alto > ancho)
 /// - tablet landscape: `tablet-login-light` / `tablet-login-dark` (≥900)
 /// - desktop: `desktop-login-light` / `desktop-login-dark` (≥1280)
+///
+/// Sign in with Apple solo en plataformas Apple (iOS / macOS), incluido web
+/// cuando el host es Apple. Override vía [showAppleSignIn] para tests.
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  const LoginScreen({super.key, this.showAppleSignIn});
+
+  /// `null` → detectar plataforma. Tests pueden forzar `true`/`false`.
+  final bool? showAppleSignIn;
 
   static const double tabletPortraitBreakpoint = 700;
   static const double tabletLandscapeBreakpoint = 900;
   static const double desktopBreakpoint = 1280;
   static const String appVersion = '1.0.0';
+
+  /// Apple Sign-In en UI: iOS y macOS (también web sobre esos hosts).
+  static bool platformOffersAppleSignIn() {
+    return defaultTargetPlatform == TargetPlatform.iOS ||
+        defaultTargetPlatform == TargetPlatform.macOS;
+  }
+
+  bool get offersAppleSignIn =>
+      showAppleSignIn ?? platformOffersAppleSignIn();
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -120,6 +136,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               child: _LoginForm(
                                 colors: colors,
                                 density: density,
+                                showAppleSignIn: widget.offersAppleSignIn,
                                 emailController: _emailController,
                                 passwordController: _passwordController,
                                 obscurePassword: _obscurePassword,
@@ -176,6 +193,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 child: _LoginForm(
                                   colors: colors,
                                   density: density,
+                                  showAppleSignIn: widget.offersAppleSignIn,
                                   emailController: _emailController,
                                   passwordController: _passwordController,
                                   obscurePassword: _obscurePassword,
@@ -208,6 +226,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: _LoginForm(
                     colors: colors,
                     density: _LoginDensity.mobile,
+                    showAppleSignIn: widget.offersAppleSignIn,
                     emailController: _emailController,
                     passwordController: _passwordController,
                     obscurePassword: _obscurePassword,
@@ -427,6 +446,7 @@ class _LoginForm extends StatelessWidget {
   const _LoginForm({
     required this.colors,
     required this.density,
+    required this.showAppleSignIn,
     required this.emailController,
     required this.passwordController,
     required this.obscurePassword,
@@ -438,6 +458,7 @@ class _LoginForm extends StatelessWidget {
 
   final _LoginColors colors;
   final _LoginDensity density;
+  final bool showAppleSignIn;
   final TextEditingController emailController;
   final TextEditingController passwordController;
   final bool obscurePassword;
@@ -664,27 +685,29 @@ class _LoginForm extends StatelessWidget {
                 onPressed: () => onSoon('Google Sign-In'),
               ),
             ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _SocialButton(
-                label: 'Apple',
-                fill: colors.socialFill,
-                border: colors.fieldBorder,
-                labelColor: colors.ink,
-                height: socialHeight,
-                labelSize: socialLabelSize,
-                icon: SvgPicture.asset(
-                  BrandAssets.iconApple,
-                  width: 18,
-                  height: 18,
-                  colorFilter: ColorFilter.mode(
-                    colors.isDark ? Colors.white : colors.ink,
-                    BlendMode.srcIn,
+            if (showAppleSignIn) ...[
+              const SizedBox(width: 12),
+              Expanded(
+                child: _SocialButton(
+                  label: 'Apple',
+                  fill: colors.socialFill,
+                  border: colors.fieldBorder,
+                  labelColor: colors.ink,
+                  height: socialHeight,
+                  labelSize: socialLabelSize,
+                  icon: SvgPicture.asset(
+                    BrandAssets.iconApple,
+                    width: 18,
+                    height: 18,
+                    colorFilter: ColorFilter.mode(
+                      colors.isDark ? Colors.white : colors.ink,
+                      BlendMode.srcIn,
+                    ),
                   ),
+                  onPressed: () => onSoon('Apple Sign-In'),
                 ),
-                onPressed: () => onSoon('Apple Sign-In'),
               ),
-            ),
+            ],
           ],
         ),
       ],

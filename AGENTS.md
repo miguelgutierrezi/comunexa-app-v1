@@ -25,7 +25,7 @@ Instrucciones al trabajar en **Comunexa** (`comunexa-app-v1`).
 |---|---|
 | Schema + RLS en `supabase/migrations/` | `db push` + seed Diaz PH |
 | Bootstrap, `Env`, tema light/dark, brand assets | `supabase_flutter` + client tipado |
-| Splash → Login UI responsive (stub auth) | go_router + SessionProvider + Auth real |
+| Splash → Login UI responsive (stub auth; Apple solo iOS/macOS) | go_router + SessionProvider + Auth real |
 | Workflows GHA + remote GitHub | Secrets/variables GHA + CI verde |
 | Stub `payment-webhook` | Features de negocio (Fase 4) |
 
@@ -46,7 +46,7 @@ Detalle: [`docs/roadmap.md`](docs/roadmap.md) · mapa `lib/`: [`docs/flutter-str
 | `core/config/env.dart` | `.env` / dart-define |
 | `core/theme/` | `AppTheme` + `BrandAssets` (marca producto) |
 | `features/splash/` | Splash breve |
-| `features/auth/presentation/login_screen.dart` | UI login; submit = stub |
+| `features/auth/presentation/login_screen.dart` | UI login; submit = stub; Apple solo iOS/macOS |
 | `services/` | Vacío; FCM etc. llegan después |
 
 ## Restricciones

@@ -10,6 +10,6 @@ alwaysApply: true
 - **No** Firestore / Firebase Auth. No copiar código de `administradores-diaz-ph-v2`.
 - Pagos in-app **pausados** (stub `payment-webhook`). No completar pasarela sin pedirlo.
 - Leer `AGENTS.md` y `docs/technical-brief.md` antes de cambios estructurales.
-- Estado actual: [`docs/roadmap.md`](docs/roadmap.md) — login UI listo; Auth real / go_router pendientes.
+- Estado actual: [`docs/roadmap.md`](docs/roadmap.md) — login UI listo (Apple solo iOS/macOS); Auth real / go_router pendientes.
 - **Quality gate:** ver `quality-gate.mdc` — `flutter analyze` + `flutter test` + `flutter build web --release` en verde; tests para lo nuevo; docs + **3 agentes** (AGENTS/CLAUDE, `.cursor/rules/`, `.github/copilot-instructions.md`) mandatorios si hay impacto.
 - Cambios mínimos; responder al usuario en **español**.

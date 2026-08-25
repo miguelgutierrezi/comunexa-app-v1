@@ -89,6 +89,7 @@ lib/
 |---|---|
 | Splash → Login vía `Navigator` | `go_router` + redirect por sesión |
 | Login UI responsive + tests | Conectar Supabase Auth + providers |
+| Apple Sign-In solo iOS/macOS (override en tests) | Cablear OAuth real por plataforma |
 | `ProviderScope` sin providers de dominio | SessionProvider + auth_provider |
 | Sin `go_router` / `supabase_flutter` | Añadir en Fase 2 |
 | Sin freezed | Generar modelos al conectar BD |
