@@ -32,6 +32,11 @@ abstract final class BrandAssets {
   static const String symbolNav = '$_figma/comunexa-symbol-nav.svg';
   static const String iconSearch = '$_figma/icon-search.svg';
   static const String iconChevronRight = '$_figma/icon-chevron-right.svg';
+  static const String iconArrowLeft = '$_figma/icon-arrow-left.svg';
+  static const String iconCalendar = '$_figma/icon-calendar.svg';
+  static const String iconUpload = '$_figma/icon-upload.svg';
+  static const String iconFile = '$_figma/icon-file.svg';
+  static const String iconXCircle = '$_figma/icon-x-circle.svg';
   static const String iconHouse = '$_figma/icon-house.svg';
   static const String iconBuilding = '$_figma/icon-building.svg';
   static const String iconHotel = '$_figma/icon-hotel.svg';

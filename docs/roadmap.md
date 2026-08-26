@@ -41,6 +41,7 @@ Estado al **2026-08-25**.
   - desktop (≥1280): dashboard sidebar light/dark (`#35:233` / `#35:353`)
 - [x] Smoke tests home (móvil / tablet portrait / tablet landscape / desktop · light+dark)
 - [x] SessionProvider stub con persistencia local (`shared_preferences`): correo, contexto activo y último usado
+- [x] Añadir noticia todos breakpoints light+dark (móvil / tablet port `#116:5`/`#116:92` / tablet land / desktop) + FAB/CTA
 - [ ] `supabase_flutter` + go_router + Auth real
 - [ ] Onboarding híbrido: aceptar invitación o solicitar ingreso a propiedad
 - [x] Selector de contexto multirrol mobile light/dark (`#99:5` / `#99:67`)
@@ -58,7 +59,7 @@ Estado al **2026-08-25**.
 
 ## Fase 4 — MVP funcional
 
-1. Noticias (UI mock en home; backend/repositorio pendiente)
+1. Noticias (UI mock + formulario añadir todos breakpoints salvo tablet port dark; backend pendiente)
 2. Reservas  
 3. Visitas + PDF  
    - Control de acceso: preset `security_guard`, autorizaciones, vehículos y eventos auditables

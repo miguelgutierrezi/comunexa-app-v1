@@ -1,5 +1,6 @@
 import 'package:comunexa/core/theme/app_theme.dart';
 import 'package:comunexa/core/theme/brand_assets.dart';
+import 'package:comunexa/features/home/presentation/add_news_screen.dart';
 import 'package:comunexa/features/home/presentation/desktop_dashboard.dart';
 import 'package:comunexa/features/home/presentation/home_bottom_nav.dart';
 import 'package:comunexa/features/home/presentation/noticias_feed.dart';
@@ -9,10 +10,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 /// Shell post-login:
-/// - mobile: header + bottom nav (showcase `#35:5`)
+/// - mobile: header + bottom nav (showcase `#35:5`) + FAB añadir noticia (`#112:5`)
 /// - tablet portrait ≥700 y alto>ancho: feed + eventos (`#74:5`)
 /// - tablet landscape ≥900: sidebar compacto (`#35:487` / `#35:606`)
-/// - desktop ≥1280: sidebar dashboard (`#35:233` / `#35:353`)
+/// - desktop ≥1280: sidebar dashboard (`#35:233` / `#35:353`) + CTA añadir noticia (`#112:217`)
 class HomeShellScreen extends StatefulWidget {
   const HomeShellScreen({super.key});
 
@@ -26,6 +27,16 @@ class HomeShellScreen extends StatefulWidget {
 
 class _HomeShellScreenState extends State<HomeShellScreen> {
   HomeTab _tab = HomeTab.noticias;
+
+  void _openAddNews() {
+    Navigator.of(context).push<HomeTab>(
+      MaterialPageRoute(builder: (_) => const AddNewsScreen()),
+    ).then((tab) {
+      if (tab != null && mounted) {
+        setState(() => _tab = tab);
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,27 +63,55 @@ class _HomeShellScreenState extends State<HomeShellScreen> {
               layout: isDesktop
                   ? DashboardLayout.desktop
                   : DashboardLayout.tabletLandscape,
+              onAddNews: _openAddNews,
             );
           }
 
           if (isTabletPort) {
-            return TabletPortraitHome(
-              currentTab: _tab,
-              onTabChanged: (tab) => setState(() => _tab = tab),
+            return Scaffold(
+              backgroundColor: Colors.transparent,
+              floatingActionButton: _tab == HomeTab.noticias
+                  ? FloatingActionButton(
+                      onPressed: _openAddNews,
+                      backgroundColor: AppTheme.ink,
+                      foregroundColor: Colors.white,
+                      tooltip: 'Añadir noticia',
+                      child: const Icon(
+                        Icons.add,
+                        semanticLabel: 'Añadir noticia',
+                      ),
+                    )
+                  : null,
+              body: TabletPortraitHome(
+                currentTab: _tab,
+                onTabChanged: (tab) => setState(() => _tab = tab),
+              ),
             );
           }
 
-          return SafeArea(
-            bottom: false,
-            child: Column(
-              children: [
-                const _HomeHeader(),
-                Expanded(child: _buildMobileBody()),
-                HomeBottomNav(
-                  current: _tab,
-                  onChanged: (tab) => setState(() => _tab = tab),
-                ),
-              ],
+          return Scaffold(
+            backgroundColor: isDark ? AppTheme.ink : AppTheme.bgLight,
+            floatingActionButton: _tab == HomeTab.noticias
+                ? FloatingActionButton(
+                    onPressed: _openAddNews,
+                    backgroundColor: AppTheme.ink,
+                    foregroundColor: Colors.white,
+                    tooltip: 'Añadir noticia',
+                    child: const Icon(Icons.add, semanticLabel: 'Añadir noticia'),
+                  )
+                : null,
+            body: SafeArea(
+              bottom: false,
+              child: Column(
+                children: [
+                  const _HomeHeader(),
+                  Expanded(child: _buildMobileBody()),
+                  HomeBottomNav(
+                    current: _tab,
+                    onChanged: (tab) => setState(() => _tab = tab),
+                  ),
+                ],
+              ),
             ),
           );
         },

@@ -36,6 +36,18 @@ enum DashboardLayout {
   double get userRoleSize => this == desktop ? 11 : 10;
   bool get denseCards => this == tabletLandscape;
 
+  /// Ancho sidebar en pantallas “añadir noticia” (Figma tablet `#114:8` = 240).
+  double get addNewsSidebarWidth => this == desktop ? 260 : 240;
+  double get addNewsCardWidth => this == desktop ? 680 : 640;
+  double get addNewsCardPadding => this == desktop ? 32 : 28;
+  double get addNewsFormGap => this == desktop ? 24 : 20;
+  double get addNewsLabelSize => this == desktop ? 13 : 12;
+  double get addNewsDropzonePad => this == desktop ? 20 : 16;
+  double? get addNewsDescriptionMin => this == desktop ? 160 : null;
+  EdgeInsets get addNewsBodyPadding => this == desktop
+      ? const EdgeInsets.all(40)
+      : const EdgeInsets.symmetric(vertical: 24);
+
   /// Fondo de la pill del property switcher (dark tablet usa `#111E2E`).
   Color propertyPillFill(bool isDark) {
     if (!isDark) return AppTheme.bgLight;
@@ -50,11 +62,13 @@ class DesktopDashboard extends StatelessWidget {
     required this.currentTab,
     required this.onTabChanged,
     this.layout = DashboardLayout.desktop,
+    this.onAddNews,
   });
 
   final HomeTab currentTab;
   final ValueChanged<HomeTab> onTabChanged;
   final DashboardLayout layout;
+  final VoidCallback? onAddNews;
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +81,7 @@ class DesktopDashboard extends StatelessWidget {
         children: [
           SizedBox(
             width: layout.sidebarWidth,
-            child: _DesktopSidebar(
+            child: HomeSplitSidebar(
               current: currentTab,
               onChanged: onTabChanged,
               layout: layout,
@@ -77,7 +91,11 @@ class DesktopDashboard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                _DesktopTopBar(layout: layout),
+                _DesktopTopBar(
+                  layout: layout,
+                  showAddNews: currentTab == HomeTab.noticias,
+                  onAddNews: onAddNews,
+                ),
                 Expanded(
                   child: _DesktopBody(tab: currentTab, layout: layout),
                 ),
@@ -90,11 +108,13 @@ class DesktopDashboard extends StatelessWidget {
   }
 }
 
-class _DesktopSidebar extends ConsumerWidget {
-  const _DesktopSidebar({
+/// Sidebar compartido del dashboard split y pantallas hijas (p. ej. añadir noticia).
+class HomeSplitSidebar extends ConsumerWidget {
+  const HomeSplitSidebar({
+    super.key,
     required this.current,
     required this.onChanged,
-    required this.layout,
+    this.layout = DashboardLayout.desktop,
   });
 
   final HomeTab current;
@@ -484,9 +504,15 @@ class _SidebarUserCard extends ConsumerWidget {
 }
 
 class _DesktopTopBar extends StatelessWidget {
-  const _DesktopTopBar({required this.layout});
+  const _DesktopTopBar({
+    required this.layout,
+    this.showAddNews = false,
+    this.onAddNews,
+  });
 
   final DashboardLayout layout;
+  final bool showAddNews;
+  final VoidCallback? onAddNews;
 
   @override
   Widget build(BuildContext context) {
@@ -500,6 +526,7 @@ class _DesktopTopBar extends StatelessWidget {
         vertical: 20,
       ),
       decoration: BoxDecoration(
+        color: isDark ? null : Colors.white,
         border: Border(bottom: BorderSide(color: border)),
       ),
       child: Row(
@@ -515,6 +542,25 @@ class _DesktopTopBar extends StatelessWidget {
               ),
             ),
           ),
+          if (showAddNews && onAddNews != null) ...[
+            SizedBox(width: layout.headerActionsGap),
+            FilledButton.icon(
+              onPressed: onAddNews,
+              style: FilledButton.styleFrom(
+                backgroundColor: AppTheme.ink,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              icon: const Icon(Icons.add, size: 18),
+              label: const Text(
+                'Añadir noticia',
+                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
+              ),
+            ),
+          ],
           SizedBox(width: layout.headerActionsGap),
           SizedBox(
             width: layout.searchWidth,

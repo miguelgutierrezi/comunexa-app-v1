@@ -48,7 +48,7 @@ Detalle: [`docs/roadmap.md`](docs/roadmap.md) · mapa `lib/`: [`docs/flutter-str
 | `core/theme/` | `AppTheme` + `BrandAssets` (marca producto) |
 | `features/splash/` | Splash breve |
 | `features/auth/` | Login + selector contexto mock (`demo:multi`) + post-login stub |
-| `features/home/` | Shell + feed mock + tablet portrait/land + dashboard desktop (light/dark) |
+| `features/home/` | Shell + feed + añadir noticia (móvil/tablet/desktop) + dashboards |
 | `services/` | Vacío; FCM etc. llegan después |
 
 ## Restricciones

@@ -99,6 +99,7 @@ lib/
 │       └── presentation/
 │           ├── home_shell_screen.dart        # breakpoints → mobile / tablet port / land / desktop
 │           ├── home_bottom_nav.dart
+│           ├── add_news_screen.dart          # móvil · tablet port `#116:5`/`#116:92` · tablet land · desktop
 │           ├── tablet_portrait_home.dart     # `#74:5` / `#74:117` feed + eventos horizontales
 │           ├── noticias_feed.dart
 │           └── desktop_dashboard.dart        # sidebar + grid + eventos
@@ -110,6 +111,7 @@ lib/
 | Splash → Login → Home (bypass) vía `Navigator` | `go_router` + redirect por sesión |
 | Login UI responsive + tests | Conectar Supabase Auth + providers |
 | Home shell mock (móvil / tablet portrait / tablet landscape / desktop · light+dark) | Datos reales + home por rol |
+| Añadir noticia todos breakpoints light+dark | Persistencia API |
 | Tablet landscape light+dark (`#35:487` / `#35:606`) | — |
 | Tablet portrait light+dark (`#74:5` / `#74:117`) | — |
 | Apple Sign-In solo iOS/macOS (override en tests) | Cablear OAuth real por plataforma |

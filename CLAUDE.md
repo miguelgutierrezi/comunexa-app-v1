@@ -5,7 +5,7 @@
 Stack: Flutter + **Supabase (RLS)** + **FCM** + **Firebase Hosting** + **GitHub Actions**.  
 Pagos in-app pausados (stub `payment-webhook`). No Firestore.
 
-**Estado (2026-08-25):** fundamentos + UI login + **home shell mock** (móvil / tablet / desktop · light+dark). Auth Supabase / go_router / features de negocio reales pendientes. Ver [`docs/roadmap.md`](docs/roadmap.md).
+**Estado (2026-08-25):** fundamentos + UI login + **home shell mock** + **añadir noticia** (móvil / tablet port+land / desktop · light+dark). Auth Supabase / go_router pendientes. Ver [`docs/roadmap.md`](docs/roadmap.md).
 
 Modelo objetivo antes de Auth: organización → propiedad → unidad, con membresías contextuales (`organization_admin`, `property_manager`, `property_staff`, `member`) y `platform_superadmin` global. El SQL actual `profiles.role`/`buildings` es transitorio; hoteles son extensibilidad futura, no alcance MVP.
 

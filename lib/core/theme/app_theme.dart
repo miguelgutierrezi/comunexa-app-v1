@@ -13,11 +13,15 @@ abstract final class AppTheme {
   static const Color slateLight = Color(0xFF94A3B8);
   static const Color borderLight = Color(0xFFE2E8F0);
   static const Color bgLight = Color(0xFFF8FAFC);
+  /// Fill de inputs light (Figma slate-100).
+  static const Color fieldLight = Color(0xFFF1F5F9);
   static const Color fieldDark = Color(0xFF111E2E);
   static const Color borderDark = Color(0xFF203545);
   static const Color socialDark = Color(0xFF152535);
   static const Color cardDark = Color(0xFF1A2A3A);
   static const Color headerDark = Color(0xFF1A2A3A);
+  /// Surface elevada dark (inputs / cards slate-800, Figma `#1E293B`).
+  static const Color slate800 = Color(0xFF1E293B);
   static const Color dangerRed = Color(0xFFEF4444);
   static const Color warningAmber = Color(0xFFF59E0B);
 
