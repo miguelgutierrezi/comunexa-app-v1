@@ -443,10 +443,10 @@ void main() {
       ),
     );
 
-    await tester.enterText(find.byType(TextField).first, 'demo:multi@test.com');
+    await tester.enterText(find.byType(TextField).at(0), 'demo:multi@test.com');
+    await tester.enterText(find.byType(TextField).at(1), 'password123');
     await tester.tap(find.text('Iniciar Sesión'));
     await tester.pump();
-    await tester.pump(const Duration(milliseconds: 500));
     await tester.pumpAndSettle();
 
     expect(find.text('Selecciona a dónde quieres acceder'), findsOneWidget);

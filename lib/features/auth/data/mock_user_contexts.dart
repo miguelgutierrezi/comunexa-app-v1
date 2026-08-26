@@ -2,7 +2,7 @@ import 'package:comunexa/core/theme/app_theme.dart';
 import 'package:comunexa/core/theme/brand_assets.dart';
 import 'package:comunexa/features/auth/domain/user_access_context.dart';
 
-/// Resuelve contextos mock según el correo del bypass de login.
+/// Resuelve contextos mock según el correo (hasta cutover de membresías).
 List<UserAccessContext> mockUserContextsForEmail(String email) {
   final normalized = email.trim().toLowerCase();
   if (normalized.startsWith('demo:single')) {

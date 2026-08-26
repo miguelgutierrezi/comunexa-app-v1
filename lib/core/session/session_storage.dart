@@ -82,6 +82,8 @@ class SharedPreferencesSessionStorage implements SessionStorage {
 class InMemorySessionStorage implements SessionStorage {
   SessionSnapshot? _snapshot;
 
+  SessionSnapshot? get current => _snapshot;
+
   @override
   Future<void> clear() async {
     _snapshot = null;

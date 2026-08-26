@@ -65,8 +65,14 @@ Cliente: `supabaseClientProvider` / `ComunexaSupabase.client` solo desde capas `
 
 ## 4. Auth
 
-Dashboard → Authentication (email). Redirect URL = dominio Hosting.  
-`handle_new_user` crea `profiles`.
+**Proveedor:** Supabase Auth (no Firebase Auth). Firebase = FCM + Hosting.
+
+Dashboard → Authentication:
+1. Habilitar **Email** (password).
+2. Redirect URL = dominio Hosting (y deep links móviles cuando existan).
+3. Opcional después: Google / Apple vía OAuth (mismos providers en Dashboard; UI ya muestra botones como “próximamente”).
+
+`handle_new_user` crea `profiles`. La app usa `AuthRepository` → `signInWithPassword` / `signOut` / `sendPasswordResetEmail` / restore de sesión JWT.
 
 ## 5. Storage
 

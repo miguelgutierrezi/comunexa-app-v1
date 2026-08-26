@@ -112,15 +112,15 @@ lib/
 
 | Hoy | Objetivo |
 |---|---|
-| Splash → Login → Home (bypass) vía `Navigator` | `go_router` + redirect por sesión |
-| Login UI responsive + tests | Conectar Supabase Auth + providers |
+| Splash → Login → Home vía `Navigator` | `go_router` + redirect por sesión |
+| Login UI + Auth email/password + tests | OAuth Google/Apple |
 | Home shell mock (móvil / tablet portrait / tablet landscape / desktop · light+dark) | Datos reales + home por rol |
 | Añadir noticia todos breakpoints light+dark | Persistencia API |
 | Tablet landscape light+dark (`#35:487` / `#35:606`) | — |
 | Tablet portrait light+dark (`#74:5` / `#74:117`) | — |
 | Apple Sign-In solo iOS/macOS (override en tests) | Cablear OAuth real por plataforma |
-| `ProviderScope` + SessionProvider (stub persistido) | auth_provider Supabase |
-| `supabase_flutter` init tipado (`ComunexaSupabase`) | Auth real + repositorios |
+| `ProviderScope` + SessionProvider (Auth + contexto) | Membresías reales post-cutover |
+| `supabase_flutter` + Auth email/password | OAuth Google/Apple + repositorios |
 | Sin `go_router` | Añadir en Fase 2 |
 | Sin freezed | Generar modelos al conectar BD |
 | Tema fijo Comunexa | `tenant_theme` desde org/property |

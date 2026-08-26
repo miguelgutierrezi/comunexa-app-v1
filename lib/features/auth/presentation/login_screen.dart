@@ -1,5 +1,7 @@
+import 'package:comunexa/core/session/session_provider.dart';
 import 'package:comunexa/core/theme/app_theme.dart';
 import 'package:comunexa/core/theme/brand_assets.dart';
+import 'package:comunexa/features/auth/domain/auth_failure.dart';
 import 'package:comunexa/features/auth/presentation/login_alerts.dart';
 import 'package:comunexa/features/auth/presentation/post_login_navigation.dart';
 import 'package:comunexa/features/auth/presentation/widgets/auth_hero_panel.dart';
@@ -71,10 +73,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     super.dispose();
   }
 
-  /// Auth aún no existe: bypass al home.
-  /// Prefijos `demo:` en el correo previsualizan alerts de Figma.
+  /// Auth email/password. Prefijos `demo:` solo previsualizan alerts Figma.
   Future<void> _onSubmit() async {
     final email = _emailController.text.trim().toLowerCase();
+    final password = _passwordController.text;
 
     if (email.startsWith('demo:locked')) {
       setState(() => _formAlert = null);
@@ -95,14 +97,79 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       return;
     }
 
+    if (email.isEmpty || password.isEmpty) {
+      setState(() => _formAlert = LoginAlertKind.emptyFields);
+      return;
+    }
+
     setState(() {
       _formAlert = null;
       _submitting = true;
     });
-    await Future<void>.delayed(const Duration(milliseconds: 350));
-    if (!mounted) return;
-    setState(() => _submitting = false);
-    navigateAfterLogin(context, ref, email: _emailController.text);
+
+    try {
+      await navigateAfterLogin(
+        context,
+        ref,
+        email: email,
+        password: password,
+      );
+    } on AuthFailure catch (e) {
+      if (!mounted) return;
+      setState(() => _submitting = false);
+      await _handleAuthFailure(e);
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _submitting = false;
+        _formAlert = LoginAlertKind.invalidCredentials;
+      });
+    }
+  }
+
+  Future<void> _handleAuthFailure(AuthFailure e) async {
+    switch (e.kind) {
+      case AuthFailureKind.invalidCredentials:
+        setState(() => _formAlert = LoginAlertKind.invalidCredentials);
+      case AuthFailureKind.network:
+        showNetworkErrorToast(context, onRetry: _onSubmit);
+      case AuthFailureKind.notConfigured:
+      case AuthFailureKind.rateLimited:
+      case AuthFailureKind.unknown:
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.message)),
+        );
+    }
+  }
+
+  Future<void> _onForgotPassword() async {
+    final email = _emailController.text.trim().toLowerCase();
+    if (email.isEmpty || email.startsWith('demo:')) {
+      setState(() => _formAlert = LoginAlertKind.emptyFields);
+      return;
+    }
+
+    try {
+      await ref.read(sessionProvider.notifier).sendPasswordResetEmail(email);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Si el correo existe, recibirás un enlace para restablecer tu contraseña.',
+          ),
+        ),
+      );
+    } on AuthFailure catch (e) {
+      if (!mounted) return;
+      await _handleAuthFailure(e);
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No se pudo enviar el correo de recuperación.'),
+        ),
+      );
+    }
   }
 
   void _onSocial(String provider) {
@@ -183,6 +250,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                   () => _obscurePassword = !_obscurePassword,
                                 ),
                                 onSubmit: _onSubmit,
+                                onForgotPassword: _onForgotPassword,
                                 onSoon: _soon,
                               ),
                             ),
@@ -242,6 +310,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                         _obscurePassword = !_obscurePassword,
                                   ),
                                   onSubmit: _onSubmit,
+                                  onForgotPassword: _onForgotPassword,
                                   onSoon: _soon,
                                 ),
                               ),
@@ -275,6 +344,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       () => _obscurePassword = !_obscurePassword,
                     ),
                     onSubmit: _onSubmit,
+                    onForgotPassword: _onForgotPassword,
                     onSoon: _soon,
                   ),
                 ),
@@ -393,6 +463,7 @@ class _LoginForm extends StatelessWidget {
     required this.submitting,
     required this.onToggleObscure,
     required this.onSubmit,
+    required this.onForgotPassword,
     required this.onSoon,
   });
 
@@ -406,6 +477,7 @@ class _LoginForm extends StatelessWidget {
   final bool submitting;
   final VoidCallback onToggleObscure;
   final VoidCallback onSubmit;
+  final VoidCallback onForgotPassword;
   final void Function(String) onSoon;
 
   bool get _isSplit =>
@@ -564,7 +636,7 @@ class _LoginForm extends StatelessWidget {
                 child: Align(
                   alignment: Alignment.centerRight,
                   child: TextButton(
-                    onPressed: () => onSoon('Recuperar contraseña'),
+                    onPressed: onForgotPassword,
                     style: TextButton.styleFrom(
                       foregroundColor: colors.accentLink,
                       padding: EdgeInsets.zero,
@@ -635,7 +707,7 @@ class _LoginForm extends StatelessWidget {
           Align(
             alignment: Alignment.centerRight,
             child: TextButton(
-              onPressed: () => onSoon('Recuperar contraseña'),
+              onPressed: onForgotPassword,
               style: TextButton.styleFrom(
                 foregroundColor: colors.accentLink,
                 padding: EdgeInsets.zero,

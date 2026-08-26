@@ -53,7 +53,7 @@
 | CI workflows en repo | Listo (secrets GHA pendientes de verificar) |
 | Flutter: tema, splash, **login UI** responsive | Listo (auth real pendiente; Apple solo iOS/macOS) |
 | Flutter: **home shell mock** (móvil / tablet / desktop · light+dark) | Listo (datos mock) |
-| `supabase_flutter` bootstrap tipado | Auth real + go_router |
+| `supabase_flutter` + Auth email/password | go_router + OAuth Google/Apple |
 | Features de negocio reales (noticias API, visitas, …) | Pendiente (Fase 4; UI mock noticias en home) |
 
 Ver [roadmap.md](roadmap.md).

@@ -148,7 +148,7 @@ RLS: [`database/rls-policies.md`](database/rls-policies.md). Resumen: [`security
 
 [`flutter-structure.md`](flutter-structure.md) — features con data/domain/presentation.
 
-**Estado app (2026-08-25):** bootstrap + **`supabase_flutter`** (`ComunexaSupabase`) + tema + splash + login UI + home shell mock. Auth sigue stub (bypass); sin `go_router` ni home por rol real. Detalle en el roadmap Fase 2.
+**Estado app (2026-08-25):** bootstrap + **`supabase_flutter`** + Auth email/password (`AuthRepository` / SessionNotifier) + tema + splash + login + home shell mock. OAuth Google/Apple y `go_router` pendientes. Detalle en el roadmap Fase 2.
 
 ## 10. Entornos y CI
 

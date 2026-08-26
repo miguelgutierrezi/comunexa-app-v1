@@ -21,7 +21,7 @@ Estado al **2026-08-25**.
 - [ ] Cutover datos legacy (`tenants`/`buildings` → org/property) + reescribir RLS de dominio
 - [ ] Separar uso de `property_manager` vs `property_staff` en app; `platform_superadmin` vía flag
 - [ ] Proyecto + `db push`
-- [ ] Auth + Storage buckets
+- [ ] Auth OAuth Google/Apple + Storage buckets
 - [ ] Branding jerárquico: organización + propiedad, fallback y permisos de Storage
 - [ ] Pipeline de media: PNG/JPEG/WebP, validación, re-encode, metadatos y variantes; sin SVG de usuario
 - [ ] Modelo SQL de `billing_accounts` + suscripción/entitlements; pagador organización o propiedad, activación manual
@@ -31,21 +31,21 @@ Estado al **2026-08-25**.
 
 ## Fase 2 — App core
 
-- [x] UI Login responsive (móvil / tablet / desktop, light+dark) — **solo presentación**
-- [x] Splash → Login (Navigator; sin sesión real) — móvil · tablet port `#118:117`/`#118:128` · tablet land `#118:95`/`#118:106` · desktop `#118:73`/`#118:84`
-- [x] Bypass login → Home + demos de alertas (`demo:invalid|empty|locked|offline`)
+- [x] UI Login responsive (móvil / tablet / desktop, light+dark)
+- [x] Splash → Login (Navigator) — móvil · tablet port `#118:117`/`#118:128` · tablet land `#118:95`/`#118:106` · desktop `#118:73`/`#118:84`
+- [x] Auth email/password real (Supabase Auth) + restore sesión + signOut + reset password; demos Figma `demo:invalid|empty|locked|offline`
 - [x] Smoke tests widget del login (breakpoints + demos OAuth coming soon)
-- [x] Botón Apple Sign-In solo en iOS/macOS (Google en todas)
+- [x] Botón Apple Sign-In solo en iOS/macOS (Google en todas; OAuth cableado pendiente)
 - [x] Home shell mock:
   - móvil: header + bottom nav + feed Noticias
   - tablet portrait (≥700, portrait): feed + eventos horizontales light/dark (`#74:5` / `#74:117`)
   - tablet landscape (≥900, landscape): dashboard compacto light/dark (`#35:487` / `#35:606`)
   - desktop (≥1280): dashboard sidebar light/dark (`#35:233` / `#35:353`)
 - [x] Smoke tests home (móvil / tablet portrait / tablet landscape / desktop · light+dark)
-- [x] SessionProvider stub con persistencia local (`shared_preferences`): correo, contexto activo y último usado
+- [x] SessionProvider con Auth + persistencia local de contexto (`shared_preferences`)
 - [x] Añadir noticia todos breakpoints light+dark (móvil / tablet port `#116:5`/`#116:92` / tablet land / desktop) + FAB/CTA
-- [x] `supabase_flutter` bootstrap tipado (`ComunexaSupabase`; sin Auth UI aún)
-- [ ] go_router + Auth real Supabase (email/OAuth) + repositorios
+- [x] `supabase_flutter` bootstrap tipado (`ComunexaSupabase`)
+- [ ] go_router + OAuth Google/Apple + repositorios de dominio
 - [ ] Onboarding híbrido: aceptar invitación o solicitar ingreso a propiedad
 - [x] Selector de contexto multirrol mobile light/dark (`#99:5` / `#99:67`)
 - [x] Selector de contexto tablet portrait light/dark (`#100:475` / `#100:547`)

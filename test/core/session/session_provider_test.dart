@@ -2,11 +2,15 @@ import 'package:comunexa/core/config/env.dart';
 import 'package:comunexa/core/session/session_provider.dart';
 import 'package:comunexa/core/session/session_state.dart';
 import 'package:comunexa/core/session/session_storage.dart';
+import 'package:comunexa/features/auth/data/auth_repository_provider.dart';
+import 'package:comunexa/features/auth/data/fake_auth_repository.dart';
+import 'package:comunexa/features/auth/domain/auth_user.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   late InMemorySessionStorage storage;
+  late FakeAuthRepository auth;
 
   setUpAll(() async {
     await Env.load();
@@ -14,23 +18,27 @@ void main() {
 
   setUp(() {
     storage = InMemorySessionStorage();
+    auth = FakeAuthRepository();
   });
 
   ProviderContainer createContainer() {
     return ProviderContainer(
       overrides: [
         sessionStorageProvider.overrideWithValue(storage),
+        authRepositoryProvider.overrideWithValue(auth),
       ],
     );
   }
 
-  test('signIn con un contexto persiste sesión activa', () async {
+  test('signInWithPassword con un contexto persiste sesión activa', () async {
     final container = createContainer();
     addTearDown(container.dispose);
 
-    final destination = await container
-        .read(sessionProvider.notifier)
-        .signIn('demo:single@test.com');
+    final destination =
+        await container.read(sessionProvider.notifier).signInWithPassword(
+              email: 'demo:single@test.com',
+              password: 'password123',
+            );
 
     expect(destination, PostLoginDestination.home);
     final session = container.read(sessionProvider).value!;
@@ -41,13 +49,15 @@ void main() {
     expect(snapshot?.activeContextId, 'ctx-torres-resident');
   });
 
-  test('signIn multirrol deja sesión pendiente sin contexto activo', () async {
+  test('signInWithPassword multirrol deja sesión pendiente', () async {
     final container = createContainer();
     addTearDown(container.dispose);
 
-    final destination = await container
-        .read(sessionProvider.notifier)
-        .signIn('demo:multi@test.com');
+    final destination =
+        await container.read(sessionProvider.notifier).signInWithPassword(
+              email: 'demo:multi@test.com',
+              password: 'password123',
+            );
 
     expect(destination, PostLoginDestination.contextSelect);
     final session = container.read(sessionProvider).value!;
@@ -64,9 +74,10 @@ void main() {
     final container = createContainer();
     addTearDown(container.dispose);
 
-    await container
-        .read(sessionProvider.notifier)
-        .signIn('demo:multi@test.com');
+    await container.read(sessionProvider.notifier).signInWithPassword(
+          email: 'demo:multi@test.com',
+          password: 'password123',
+        );
     await container
         .read(sessionProvider.notifier)
         .selectContext('ctx-atalia-admin');
@@ -89,6 +100,13 @@ void main() {
         lastUsedContextId: 'ctx-serena-reception',
       ),
     );
+    auth.seedSession(
+      const AuthUser(
+        id: 'test-multi',
+        email: 'demo:multi@test.com',
+        displayName: 'Carlos Méndez',
+      ),
+    );
 
     final container = createContainer();
     addTearDown(container.dispose);
@@ -107,6 +125,13 @@ void main() {
         lastUsedContextId: 'ctx-omega-cowner',
       ),
     );
+    auth.seedSession(
+      const AuthUser(
+        id: 'test-multi',
+        email: 'demo:multi@test.com',
+        displayName: 'Carlos Méndez',
+      ),
+    );
 
     final container = createContainer();
     addTearDown(container.dispose);
@@ -119,16 +144,27 @@ void main() {
     );
   });
 
-  test('signOut limpia almacenamiento', () async {
+  test('signOut limpia almacenamiento y Auth', () async {
+    final container = createContainer();
+    addTearDown(container.dispose);
+
+    await container.read(sessionProvider.notifier).signInWithPassword(
+          email: 'demo:single@test.com',
+          password: 'password123',
+        );
+    await container.read(sessionProvider.notifier).signOut();
+
+    expect(container.read(sessionProvider).value, SessionState.empty);
+    expect(await storage.read(), isNull);
+    expect(auth.currentUser, isNull);
+  });
+
+  test('sendPasswordResetEmail delega al repositorio', () async {
     final container = createContainer();
     addTearDown(container.dispose);
 
     await container
         .read(sessionProvider.notifier)
-        .signIn('demo:single@test.com');
-    await container.read(sessionProvider.notifier).signOut();
-
-    expect(container.read(sessionProvider).value, SessionState.empty);
-    expect(await storage.read(), isNull);
+        .sendPasswordResetEmail('user@test.com');
   });
 }

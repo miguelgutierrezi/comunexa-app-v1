@@ -64,10 +64,10 @@ $$;
 create or replace function tests.authenticate_as(p_user_id uuid)
 returns void
 language plpgsql
-security definer
 set search_path = public
 as $$
 begin
+  -- INVOKER: SET ROLE no está permitido en SECURITY DEFINER (PG).
   perform set_config('request.jwt.claim.sub', p_user_id::text, true);
   perform set_config('request.jwt.claim.role', 'authenticated', true);
   perform set_config(
@@ -85,14 +85,14 @@ $$;
 create or replace function tests.clear_authentication()
 returns void
 language plpgsql
-security definer
 set search_path = public
 as $$
 begin
+  -- INVOKER: vuelve al rol de sesión (postgres en CI) para bypass RLS.
   perform set_config('request.jwt.claim.sub', '', true);
   perform set_config('request.jwt.claim.role', '', true);
   perform set_config('request.jwt.claims', '', true);
-  execute 'set local role postgres';
+  execute 'reset role';
 end;
 $$;
 

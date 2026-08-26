@@ -226,7 +226,8 @@ void main() {
     final register = tester.widget<Text>(find.text('Regístrate'));
     expect(register.style?.color, AppTheme.accentTeal);
   });
-  testWidgets('login bypass entra al home aunque campos vacíos', (tester) async {
+  testWidgets('login campos vacíos muestra banner de campos obligatorios',
+      (tester) async {
     tester.view.physicalSize = const Size(390, 844);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
@@ -243,12 +244,59 @@ void main() {
     await tester.ensureVisible(find.text('Iniciar Sesión'));
     await tester.tap(find.text('Iniciar Sesión'));
     await tester.pump();
-    await tester.pump(const Duration(milliseconds: 500));
+
+    expect(
+      find.textContaining('completa todos los campos obligatorios'),
+      findsOneWidget,
+    );
+    expect(find.text('Este campo es obligatorio.'), findsNWidgets(2));
+    expect(find.textContaining('NOVEDADES DE LA COMUNIDAD'), findsNothing);
+  });
+
+  testWidgets('login email/password entra al home', (tester) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+
+    await tester.pumpWidget(
+      TestProviderScope(
+        child: MaterialApp(
+          theme: AppTheme.light(),
+          home: const LoginScreen(showAppleSignIn: true),
+        ),
+      ),
+    );
+
+    await tester.enterText(find.byType(TextField).at(0), 'demo:single@test.com');
+    await tester.enterText(find.byType(TextField).at(1), 'password123');
+    await tester.ensureVisible(find.text('Iniciar Sesión'));
+    await tester.tap(find.text('Iniciar Sesión'));
+    await tester.pump();
     await tester.pumpAndSettle();
 
     expect(find.textContaining('NOVEDADES DE LA COMUNIDAD'), findsOneWidget);
     expect(find.text('Mantenimiento del ascensor'), findsOneWidget);
     expect(find.text('Noticias'), findsOneWidget);
+  });
+
+  testWidgets('olvidé contraseña muestra confirmación genérica', (tester) async {
+    await tester.pumpWidget(
+      TestProviderScope(
+        child: MaterialApp(
+          theme: AppTheme.light(),
+          home: const LoginScreen(showAppleSignIn: true),
+        ),
+      ),
+    );
+
+    await tester.enterText(find.byType(TextField).first, 'user@test.com');
+    await tester.tap(find.text('¿Olvidaste tu contraseña?'));
+    await tester.pumpAndSettle();
+
+    expect(
+      find.textContaining('Si el correo existe, recibirás un enlace'),
+      findsOneWidget,
+    );
   });
   testWidgets('login demo:invalid muestra banner de credenciales', (tester) async {
     await tester.pumpWidget(

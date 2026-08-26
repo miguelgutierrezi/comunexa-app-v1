@@ -37,5 +37,5 @@ Obligatorio al cerrar cambios de código — ver [`../../AGENTS.md`](../../AGENT
 - Implementar Wompi/PayU / completar `payment-webhook` sin pedirlo.
 - Hosting en Vercel (decisión: Firebase Hosting).
 - Disparar builds iOS en cada commit (solo tags `v*`).
-- Tratar el login UI / bypass / home mock actuales como Auth completa (siguen siendo stub).
+- Tratar el home mock / contextos mock como cutover SQL completo (Auth email/password ya está; membresías reales pendientes).
 - Cerrar una tarea de código sin quality gate ni docs/agentes al día.

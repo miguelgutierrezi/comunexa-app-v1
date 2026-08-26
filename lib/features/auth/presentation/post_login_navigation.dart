@@ -31,9 +31,12 @@ Future<void> navigateAfterLogin(
   BuildContext context,
   WidgetRef ref, {
   required String email,
+  required String password,
 }) async {
-  final destination =
-      await ref.read(sessionProvider.notifier).signIn(email);
+  final destination = await ref.read(sessionProvider.notifier).signInWithPassword(
+        email: email,
+        password: password,
+      );
   if (!context.mounted) return;
 
   final Widget screen = switch (destination) {
