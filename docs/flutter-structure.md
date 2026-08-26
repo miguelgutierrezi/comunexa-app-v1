@@ -81,7 +81,7 @@ lib/
 │   ├── errors/app_exception.dart
 │   ├── session/
 │   │   ├── session_state.dart
-│   │   ├── session_storage.dart      # SharedPreferences + in-memory (tests)
+│   │   ├── session_storage.dart      # Solo lastContextId (SharedPreferences)
 │   │   └── session_provider.dart     # signIn · selectContext · signOut · restore
 │   ├── supabase/
 │   │   ├── comunexa_supabase.dart    # init tipado (anon + RLS)

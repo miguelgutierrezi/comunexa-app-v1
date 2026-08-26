@@ -4,14 +4,12 @@ import 'package:comunexa/core/session/session_storage.dart';
 import 'package:comunexa/core/theme/app_theme.dart';
 import 'package:comunexa/features/auth/data/auth_repository_provider.dart';
 import 'package:comunexa/features/auth/data/fake_auth_repository.dart';
-import 'package:comunexa/features/auth/domain/auth_user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Scope de tests: sesión en memoria + [FakeAuthRepository].
 ///
-/// Si [storage] ya tiene un [SessionSnapshot], se siembra Auth para que
-/// `sessionProvider` restaure el mismo usuario (sin eso el restore limpia).
+/// La autoridad de identidad es [auth]; [storage] solo guarda lastContextId.
 class TestProviderScope extends StatelessWidget {
   const TestProviderScope({
     super.key,
@@ -36,7 +34,6 @@ class TestProviderScope extends StatelessWidget {
   Widget build(BuildContext context) {
     final sessionStorage = storage ?? InMemorySessionStorage();
     final authRepo = auth ?? FakeAuthRepository();
-    _seedAuthFromStorage(sessionStorage, authRepo);
 
     return ProviderScope(
       overrides: [
@@ -75,20 +72,6 @@ class TestRouterApp extends ConsumerWidget {
       routerConfig: ref.watch(routerProvider),
     );
   }
-}
-
-void _seedAuthFromStorage(SessionStorage storage, FakeAuthRepository auth) {
-  if (storage is! InMemorySessionStorage) return;
-  final snapshot = storage.current;
-  if (snapshot == null) return;
-  if (auth.currentUser != null) return;
-  auth.seedSession(
-    AuthUser(
-      id: 'test-${snapshot.email.hashCode}',
-      email: snapshot.email,
-      displayName: snapshot.displayName,
-    ),
-  );
 }
 
 Future<void> initTestEnv() async {

@@ -17,14 +17,7 @@ void main() {
 
   testWidgets('sesión activa: splash → /home', (tester) async {
     final storage = InMemorySessionStorage();
-    await storage.write(
-      const SessionSnapshot(
-        email: 'demo:single@test.com',
-        displayName: 'Carlos Méndez',
-        activeContextId: 'ctx-torres-resident',
-        lastUsedContextId: 'ctx-torres-resident',
-      ),
-    );
+    await storage.writeLastContextId('ctx-torres-resident');
     final auth = FakeAuthRepository(
       seed: const AuthUser(
         id: 'u1',
@@ -46,15 +39,8 @@ void main() {
     expect(find.byType(LoginScreen), findsNothing);
   });
 
-  testWidgets('multirrol sin contexto: splash → /select-context', (tester) async {
-    final storage = InMemorySessionStorage();
-    await storage.write(
-      const SessionSnapshot(
-        email: 'demo:multi@test.com',
-        displayName: 'Carlos Méndez',
-        lastUsedContextId: 'ctx-torres-resident',
-      ),
-    );
+  testWidgets('multirrol sin lastContextId: splash → /select-context',
+      (tester) async {
     final auth = FakeAuthRepository(
       seed: const AuthUser(
         id: 'u2',
@@ -65,7 +51,6 @@ void main() {
 
     await tester.pumpWidget(
       TestProviderScope(
-        storage: storage,
         auth: auth,
         child: const TestRouterApp(),
       ),
@@ -78,18 +63,19 @@ void main() {
 
   testWidgets('/news/new con sesión abre añadir noticia', (tester) async {
     final storage = InMemorySessionStorage();
-    await storage.write(
-      const SessionSnapshot(
+    await storage.writeLastContextId('ctx-torres-resident');
+    final auth = FakeAuthRepository(
+      seed: const AuthUser(
+        id: 'u1',
         email: 'demo:single@test.com',
         displayName: 'Carlos Méndez',
-        activeContextId: 'ctx-torres-resident',
-        lastUsedContextId: 'ctx-torres-resident',
       ),
     );
 
     await tester.pumpWidget(
       TestProviderScope(
         storage: storage,
+        auth: auth,
         initialLocation: AppRoutes.newsNew,
         child: const TestRouterApp(),
       ),

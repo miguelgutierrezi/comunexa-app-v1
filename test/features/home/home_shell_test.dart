@@ -2,9 +2,25 @@ import '../../helpers/test_provider_scope.dart';
 import 'package:comunexa/core/config/env.dart';
 import 'package:comunexa/core/session/session_storage.dart';
 import 'package:comunexa/core/theme/app_theme.dart';
+import 'package:comunexa/features/auth/data/fake_auth_repository.dart';
+import 'package:comunexa/features/auth/domain/auth_user.dart';
 import 'package:comunexa/features/home/presentation/home_shell_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+FakeAuthRepository _multiAuth() => FakeAuthRepository(
+      seed: const AuthUser(
+        id: 'u-multi',
+        email: 'demo:multi@test.com',
+        displayName: 'Carlos Méndez',
+      ),
+    );
+
+Future<InMemorySessionStorage> _storageWithContext(String contextId) async {
+  final storage = InMemorySessionStorage();
+  await storage.writeLastContextId(contextId);
+  return storage;
+}
 
 void main() {
   setUpAll(() async {
@@ -38,19 +54,12 @@ void main() {
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
 
-    final storage = InMemorySessionStorage();
-    await storage.write(
-      const SessionSnapshot(
-        email: 'demo:multi@test.com',
-        displayName: 'Carlos Méndez',
-        activeContextId: 'ctx-torres-resident',
-        lastUsedContextId: 'ctx-torres-resident',
-      ),
-    );
+    final storage = await _storageWithContext('ctx-torres-resident');
 
     await tester.pumpWidget(
       TestProviderScope(
         storage: storage,
+        auth: _multiAuth(),
         child: MaterialApp(
           theme: AppTheme.light(),
           home: const HomeShellScreen(),
@@ -102,19 +111,12 @@ void main() {
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
 
-    final storage = InMemorySessionStorage();
-    await storage.write(
-      const SessionSnapshot(
-        email: 'demo:multi@test.com',
-        displayName: 'Carlos Méndez',
-        activeContextId: 'ctx-torres-resident',
-        lastUsedContextId: 'ctx-torres-resident',
-      ),
-    );
+    final storage = await _storageWithContext('ctx-torres-resident');
 
     await tester.pumpWidget(
       TestProviderScope(
         storage: storage,
+        auth: _multiAuth(),
         child: MaterialApp(
           theme: AppTheme.light(),
           home: const HomeShellScreen(),
@@ -221,19 +223,12 @@ void main() {
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
 
-    final storage = InMemorySessionStorage();
-    await storage.write(
-      const SessionSnapshot(
-        email: 'demo:multi@test.com',
-        displayName: 'Carlos Méndez',
-        activeContextId: 'ctx-torres-resident',
-        lastUsedContextId: 'ctx-torres-resident',
-      ),
-    );
+    final storage = await _storageWithContext('ctx-torres-resident');
 
     await tester.pumpWidget(
       TestProviderScope(
         storage: storage,
+        auth: _multiAuth(),
         child: MaterialApp(
           theme: AppTheme.light(),
           home: const HomeShellScreen(),
@@ -326,19 +321,12 @@ void main() {
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
 
-    final storage = InMemorySessionStorage();
-    await storage.write(
-      const SessionSnapshot(
-        email: 'demo:multi@test.com',
-        displayName: 'Carlos Méndez',
-        activeContextId: 'ctx-torres-resident',
-        lastUsedContextId: 'ctx-torres-resident',
-      ),
-    );
+    final storage = await _storageWithContext('ctx-torres-resident');
 
     await tester.pumpWidget(
       TestProviderScope(
         storage: storage,
+        auth: _multiAuth(),
         child: MaterialApp(
           theme: AppTheme.light(),
           home: const HomeShellScreen(),

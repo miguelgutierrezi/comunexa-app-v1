@@ -30,7 +30,7 @@ void main() {
     );
   }
 
-  test('signInWithPassword con un contexto persiste sesión activa', () async {
+  test('signInWithPassword con un contexto persiste solo contextId', () async {
     final container = createContainer();
     addTearDown(container.dispose);
 
@@ -44,12 +44,10 @@ void main() {
     final session = container.read(sessionProvider).value!;
     expect(session.email, 'demo:single@test.com');
     expect(session.activeContext?.propertyName, 'Torres del Parque');
-
-    final snapshot = await storage.read();
-    expect(snapshot?.activeContextId, 'ctx-torres-resident');
+    expect(await storage.readLastContextId(), 'ctx-torres-resident');
   });
 
-  test('signInWithPassword multirrol deja sesión pendiente', () async {
+  test('signInWithPassword multirrol sin preferencia pide selector', () async {
     final container = createContainer();
     addTearDown(container.dispose);
 
@@ -63,14 +61,11 @@ void main() {
     final session = container.read(sessionProvider).value!;
     expect(session.needsContextSelection, isTrue);
     expect(session.activeContext, isNull);
-
-    final snapshot = await storage.read();
-    expect(snapshot?.email, 'demo:multi@test.com');
-    expect(snapshot?.activeContextId, isNull);
-    expect(snapshot?.lastUsedContextId, 'ctx-torres-resident');
+    // No se escribe contextId hasta que el usuario elige.
+    expect(await storage.readLastContextId(), isNull);
   });
 
-  test('selectContext persiste propiedad activa y último uso', () async {
+  test('selectContext persiste únicamente el contextId', () async {
     final container = createContainer();
     addTearDown(container.dispose);
 
@@ -85,21 +80,11 @@ void main() {
     final session = container.read(sessionProvider).value!;
     expect(session.activeContext?.propertyName, 'Conjunto Residencial Atalia');
     expect(session.lastUsedContextId, 'ctx-atalia-admin');
-
-    final snapshot = await storage.read();
-    expect(snapshot?.activeContextId, 'ctx-atalia-admin');
-    expect(snapshot?.lastUsedContextId, 'ctx-atalia-admin');
+    expect(await storage.readLastContextId(), 'ctx-atalia-admin');
   });
 
-  test('restore tras reinicio mantiene sesión activa', () async {
-    await storage.write(
-      const SessionSnapshot(
-        email: 'demo:multi@test.com',
-        displayName: 'Carlos Méndez',
-        activeContextId: 'ctx-serena-reception',
-        lastUsedContextId: 'ctx-serena-reception',
-      ),
-    );
+  test('restore con lastContextId válido entra con contexto activo', () async {
+    await storage.writeLastContextId('ctx-serena-reception');
     auth.seedSession(
       const AuthUser(
         id: 'test-multi',
@@ -117,14 +102,7 @@ void main() {
     expect(session.needsContextSelection, isFalse);
   });
 
-  test('restore multirrol sin activo pide selector', () async {
-    await storage.write(
-      const SessionSnapshot(
-        email: 'demo:multi@test.com',
-        displayName: 'Carlos Méndez',
-        lastUsedContextId: 'ctx-omega-cowner',
-      ),
-    );
+  test('restore multirrol sin lastContextId pide selector', () async {
     auth.seedSession(
       const AuthUser(
         id: 'test-multi',
@@ -140,11 +118,11 @@ void main() {
     expect(session.needsContextSelection, isTrue);
     expect(
       session.availableContexts.firstWhere((c) => c.isLastUsed).id,
-      'ctx-omega-cowner',
+      'ctx-torres-resident',
     );
   });
 
-  test('signOut limpia almacenamiento y Auth', () async {
+  test('signOut limpia Auth pero no usa storage como autoridad', () async {
     final container = createContainer();
     addTearDown(container.dispose);
 
@@ -152,11 +130,14 @@ void main() {
           email: 'demo:single@test.com',
           password: 'password123',
         );
+    expect(await storage.readLastContextId(), 'ctx-torres-resident');
+
     await container.read(sessionProvider.notifier).signOut();
 
     expect(container.read(sessionProvider).value, SessionState.empty);
-    expect(await storage.read(), isNull);
     expect(auth.currentUser, isNull);
+    // Hint UX puede permanecer; la sesión en memoria queda vacía.
+    expect(await storage.readLastContextId(), 'ctx-torres-resident');
   });
 
   test('sendPasswordResetEmail delega al repositorio', () async {

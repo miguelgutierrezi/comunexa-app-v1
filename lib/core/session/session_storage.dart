@@ -3,41 +3,13 @@ import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// Datos serializables de sesión en disco.
-class SessionSnapshot {
-  const SessionSnapshot({
-    required this.email,
-    required this.displayName,
-    this.activeContextId,
-    this.lastUsedContextId,
-  });
-
-  final String email;
-  final String displayName;
-  final String? activeContextId;
-  final String? lastUsedContextId;
-
-  Map<String, dynamic> toJson() => {
-        'email': email,
-        'displayName': displayName,
-        if (activeContextId != null) 'activeContextId': activeContextId,
-        if (lastUsedContextId != null) 'lastUsedContextId': lastUsedContextId,
-      };
-
-  factory SessionSnapshot.fromJson(Map<String, dynamic> json) {
-    return SessionSnapshot(
-      email: json['email'] as String,
-      displayName: json['displayName'] as String,
-      activeContextId: json['activeContextId'] as String?,
-      lastUsedContextId: json['lastUsedContextId'] as String?,
-    );
-  }
-}
-
+/// Preferencia local: solo el último contextId elegido.
+///
+/// **No** es autoridad de sesión: correo, rol y membresías vienen de Auth + backend.
 abstract class SessionStorage {
-  Future<SessionSnapshot?> read();
+  Future<String?> readLastContextId();
 
-  Future<void> write(SessionSnapshot snapshot);
+  Future<void> writeLastContextId(String contextId);
 
   Future<void> clear();
 }
@@ -45,56 +17,80 @@ abstract class SessionStorage {
 class SharedPreferencesSessionStorage implements SessionStorage {
   SharedPreferencesSessionStorage(this._prefs);
 
-  static const _key = 'comunexa.session.v1';
+  /// Clave nueva (solo id). La v1 con email/displayName se migra y elimina.
+  static const _key = 'comunexa.last_context_id.v1';
+  static const _legacyKey = 'comunexa.session.v1';
 
   final SharedPreferences _prefs;
 
   static Future<SharedPreferencesSessionStorage> create() async {
     final prefs = await SharedPreferences.getInstance();
-    return SharedPreferencesSessionStorage(prefs);
+    final storage = SharedPreferencesSessionStorage(prefs);
+    await storage._migrateLegacyIfNeeded();
+    return storage;
   }
 
-  @override
-  Future<SessionSnapshot?> read() async {
-    final raw = _prefs.getString(_key);
-    if (raw == null || raw.isEmpty) return null;
-    try {
-      final map = jsonDecode(raw) as Map<String, dynamic>;
-      return SessionSnapshot.fromJson(map);
-    } catch (_) {
-      await clear();
-      return null;
+  Future<void> _migrateLegacyIfNeeded() async {
+    final legacy = _prefs.getString(_legacyKey);
+    if (legacy == null || legacy.isEmpty) return;
+
+    if (!_prefs.containsKey(_key)) {
+      try {
+        final map = jsonDecode(legacy) as Map<String, dynamic>;
+        final preferred = (map['activeContextId'] as String?) ??
+            (map['lastUsedContextId'] as String?);
+        if (preferred != null && preferred.trim().isNotEmpty) {
+          await _prefs.setString(_key, preferred.trim());
+        }
+      } catch (_) {
+        // Ignorar JSON legacy inválido.
+      }
     }
+    await _prefs.remove(_legacyKey);
   }
 
   @override
-  Future<void> write(SessionSnapshot snapshot) async {
-    await _prefs.setString(_key, jsonEncode(snapshot.toJson()));
+  Future<String?> readLastContextId() async {
+    final value = _prefs.getString(_key);
+    if (value == null || value.isEmpty) return null;
+    return value;
+  }
+
+  @override
+  Future<void> writeLastContextId(String contextId) async {
+    final trimmed = contextId.trim();
+    if (trimmed.isEmpty) {
+      await clear();
+      return;
+    }
+    await _prefs.setString(_key, trimmed);
   }
 
   @override
   Future<void> clear() async {
     await _prefs.remove(_key);
+    await _prefs.remove(_legacyKey);
   }
 }
 
 /// Almacenamiento en memoria para tests.
 class InMemorySessionStorage implements SessionStorage {
-  SessionSnapshot? _snapshot;
+  String? _lastContextId;
 
-  SessionSnapshot? get current => _snapshot;
+  String? get current => _lastContextId;
 
   @override
   Future<void> clear() async {
-    _snapshot = null;
+    _lastContextId = null;
   }
 
   @override
-  Future<SessionSnapshot?> read() async => _snapshot;
+  Future<String?> readLastContextId() async => _lastContextId;
 
   @override
-  Future<void> write(SessionSnapshot snapshot) async {
-    _snapshot = snapshot;
+  Future<void> writeLastContextId(String contextId) async {
+    final trimmed = contextId.trim();
+    _lastContextId = trimmed.isEmpty ? null : trimmed;
   }
 }
 

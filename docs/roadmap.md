@@ -42,7 +42,7 @@ Estado al **2026-08-25**.
   - tablet landscape (≥900, landscape): dashboard compacto light/dark (`#35:487` / `#35:606`)
   - desktop (≥1280): dashboard sidebar light/dark (`#35:233` / `#35:353`)
 - [x] Smoke tests home (móvil / tablet portrait / tablet landscape / desktop · light+dark)
-- [x] SessionProvider con Auth + persistencia local de contexto (`shared_preferences`)
+- [x] SessionProvider con Auth; SharedPreferences solo `lastContextId` (sin email/rol/sesión)
 - [x] Añadir noticia todos breakpoints light+dark (móvil / tablet port `#116:5`/`#116:92` / tablet land / desktop) + FAB/CTA
 - [x] `supabase_flutter` bootstrap tipado (`ComunexaSupabase`)
 - [x] go_router: `/login` · `/select-context` · `/home` · `/news/new` + redirects por sesión/contexto

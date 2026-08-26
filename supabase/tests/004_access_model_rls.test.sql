@@ -96,6 +96,13 @@ begin
 end;
 $$;
 
+-- Tras SET LOCAL ROLE authenticated hay que poder invocar helpers de tests.
+grant usage on schema tests to postgres, anon, authenticated, service_role;
+grant execute on all functions in schema tests to postgres, anon, authenticated, service_role;
+grant execute on function tests.create_user(uuid, text) to postgres, anon, authenticated, service_role;
+grant execute on function tests.authenticate_as(uuid) to postgres, anon, authenticated, service_role;
+grant execute on function tests.clear_authentication() to postgres, anon, authenticated, service_role;
+
 -- ---------------------------------------------------------------------------
 -- Fixtures (como postgres; bypass RLS)
 -- ---------------------------------------------------------------------------

@@ -17,7 +17,8 @@ class SessionNotifier extends AsyncNotifier<SessionState> {
   Future<SessionState> _restore() async {
     final authUser = await _auth.restoreSession();
     if (authUser == null) {
-      await _storage.clear();
+      // Sin Auth no hay sesión; se conserva lastContextId solo como hint UX
+      // (se valida contra membresías del próximo login).
       return SessionState.empty;
     }
     return _sessionFromAuthUser(authUser);
@@ -50,13 +51,13 @@ class SessionNotifier extends AsyncNotifier<SessionState> {
       availableContexts:
           applyLastUsedHighlight(current.availableContexts, contextId),
     );
-    await _persist(next);
+    await _storage.writeLastContextId(contextId);
     state = AsyncData(next);
   }
 
   Future<void> signOut() async {
     await _auth.signOut();
-    await _storage.clear();
+    // No borrar lastContextId: no lleva PII; se revalida en el próximo login.
     state = const AsyncData(SessionState.empty);
   }
 
@@ -69,57 +70,44 @@ class SessionNotifier extends AsyncNotifier<SessionState> {
     final displayName =
         authUser.displayName ?? mockUserDisplayNameForEmail(email);
     final contexts = mockUserContextsForEmail(email);
-    final snapshot = await _storage.read();
-
-    final lastUsedId = snapshot?.email == email
-        ? (snapshot?.lastUsedContextId ??
-            snapshot?.activeContextId ??
-            _defaultLastUsedId(contexts))
-        : _defaultLastUsedId(contexts);
+    final storedId = await _storage.readLastContextId();
+    final preferred =
+        storedId == null ? null : _findContext(contexts, storedId);
 
     if (contexts.isEmpty) {
-      await _storage.clear();
       return SessionState.empty;
     }
 
     if (contexts.length == 1) {
       final active = contexts.first;
-      final next = SessionState(
+      await _storage.writeLastContextId(active.id);
+      return SessionState(
         email: email,
         displayName: displayName,
         availableContexts: applyLastUsedHighlight(contexts, active.id),
         activeContext: active,
         lastUsedContextId: active.id,
       );
-      await _persist(next);
-      return next;
     }
 
-    UserAccessContext? active;
-    if (snapshot?.email == email && snapshot?.activeContextId != null) {
-      active = _findContext(contexts, snapshot!.activeContextId!);
-    }
-
-    if (active != null) {
-      final next = SessionState(
+    // Multirrol: si el último contextId sigue siendo membresía válida → home.
+    if (preferred != null) {
+      return SessionState(
         email: email,
         displayName: displayName,
-        availableContexts: applyLastUsedHighlight(contexts, lastUsedId),
-        activeContext: active,
-        lastUsedContextId: lastUsedId,
+        availableContexts: applyLastUsedHighlight(contexts, preferred.id),
+        activeContext: preferred,
+        lastUsedContextId: preferred.id,
       );
-      await _persist(next);
-      return next;
     }
 
-    final pending = SessionState(
+    final highlightId = _defaultLastUsedId(contexts);
+    return SessionState(
       email: email,
       displayName: displayName,
-      availableContexts: applyLastUsedHighlight(contexts, lastUsedId),
-      lastUsedContextId: lastUsedId,
+      availableContexts: applyLastUsedHighlight(contexts, highlightId),
+      lastUsedContextId: highlightId,
     );
-    await _persist(pending, persistActive: false);
-    return pending;
   }
 
   PostLoginDestination _destinationFor(SessionState session) {
@@ -128,25 +116,6 @@ class SessionNotifier extends AsyncNotifier<SessionState> {
     }
     if (session.hasActiveContext) return PostLoginDestination.home;
     return PostLoginDestination.home;
-  }
-
-  Future<void> _persist(
-    SessionState session, {
-    bool persistActive = true,
-  }) async {
-    final email = session.email;
-    final displayName = session.displayName;
-    if (email == null || displayName == null) return;
-
-    await _storage.write(
-      SessionSnapshot(
-        email: email,
-        displayName: displayName,
-        activeContextId:
-            persistActive ? session.activeContext?.id : null,
-        lastUsedContextId: session.lastUsedContextId,
-      ),
-    );
   }
 
   UserAccessContext? _findContext(
