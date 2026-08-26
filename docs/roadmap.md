@@ -17,6 +17,7 @@ Estado al **2026-08-25**.
 ## Fase 1 — Supabase dev
 
 - [x] Migrar modelo de acceso mínimo (003): organizations / properties / memberships / occupancies / permisos+presets
+- [x] RLS + tests pgTAP acceso objetivo (aislamiento org, manager asignado, residente, multirrol, sin membresías)
 - [ ] Cutover datos legacy (`tenants`/`buildings` → org/property) + reescribir RLS de dominio
 - [ ] Separar uso de `property_manager` vs `property_staff` en app; `platform_superadmin` vía flag
 - [ ] Proyecto + `db push`
@@ -26,7 +27,7 @@ Estado al **2026-08-25**.
 - [ ] Modelo SQL de `billing_accounts` + suscripción/entitlements; pagador organización o propiedad, activación manual
 - [ ] Invitaciones privadas + código público + solicitudes aprobables + auditoría
 - [ ] Seed Diaz PH
-- [ ] Tests RLS
+- [ ] Tests RLS de dominio (news/visits/…) + cutover
 
 ## Fase 2 — App core
 

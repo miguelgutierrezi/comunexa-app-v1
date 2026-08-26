@@ -18,7 +18,7 @@
 
 ## RLS
 
-Fuente: [`supabase/migrations/002_rls_policies.sql`](../supabase/migrations/002_rls_policies.sql).  
+Fuente: [`supabase/migrations/002_rls_policies.sql`](../supabase/migrations/002_rls_policies.sql) (legacy) · [`003_access_model.sql`](../supabase/migrations/003_access_model.sql) (org/property). Tests: `supabase test db`.  
 Tests cross-tenant obligatorios. No desactivar RLS en prod.
 
 ## Auth / Storage

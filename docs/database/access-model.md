@@ -1,7 +1,9 @@
 # Modelo de acceso objetivo — Comunexa
 
 Fuente canónica: [`../../supabase/migrations/003_access_model.sql`](../../supabase/migrations/003_access_model.sql).  
-Smoke: [`../../supabase/tests/003_access_model_smoke.sql`](../../supabase/tests/003_access_model_smoke.sql).
+Grants: [`../../supabase/migrations/004_access_model_grants.sql`](../../supabase/migrations/004_access_model_grants.sql).  
+Tests RLS (pgTAP): [`../../supabase/tests/004_access_model_rls.test.sql`](../../supabase/tests/004_access_model_rls.test.sql) — `supabase test db`.  
+Smoke schema: [`../../supabase/scripts/003_access_model_smoke.sql`](../../supabase/scripts/003_access_model_smoke.sql).
 
 ## Estado
 
@@ -50,3 +52,13 @@ No hace cutover de datos ni elimina tablas legacy. Eso es una migración posteri
 2. Reescribir policies de tablas de negocio (news, visits, …) con helpers de propiedad.
 3. Seed Diaz PH sobre el modelo nuevo.
 4. Invitaciones / join codes / membership_requests (migración aparte).
+
+## Tests RLS (004)
+
+Cubiertos en pgTAP (`supabase test db` / workflow `rls.yml`):
+
+1. Aislamiento entre organizaciones.
+2. Manager solo en propiedades asignadas.
+3. Residente sin acceso administrativo.
+4. Usuario multirrol con permisos distintos por propiedad.
+5. Autenticado sin membresías (sin filas de org/property; catálogo de permisos legible).

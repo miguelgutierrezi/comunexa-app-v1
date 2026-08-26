@@ -34,6 +34,16 @@ supabase link --project-ref <PROJECT_REF>
 supabase db push
 ```
 
+### Tests RLS locales (Docker requerido)
+
+```bash
+supabase start
+supabase test db   # pgTAP en supabase/tests/*.test.sql
+supabase stop
+```
+
+Detalle: [`database/access-model.md`](database/access-model.md) · workflow [`.github/workflows/rls.yml`](../.github/workflows/rls.yml).
+
 ## 3. Variables Flutter
 
 ```bash

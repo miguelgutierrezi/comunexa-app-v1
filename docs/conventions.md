@@ -75,7 +75,7 @@ Ramas:
 
 - Unit tests para repositorios y lógica domain.
 - Widget smoke tests para pantallas críticas (login, home) en `test/features/<feature>/`.
-- Tests de RLS en CI (script o Supabase local).
+- Tests de RLS en CI (`rls.yml` + `supabase test db`). Smoke schema en `supabase/scripts/`.
 - **Mandatorio:** lo nuevo en una tarea lleva tests en el mismo cambio.
 
 ## Quality gate local (mandatorio)

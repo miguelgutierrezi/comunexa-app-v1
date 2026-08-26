@@ -10,7 +10,7 @@ alwaysApply: true
 - **No** Firestore / Firebase Auth. No copiar código de `administradores-diaz-ph-v2`.
 - Pagos in-app **pausados** (stub `payment-webhook`). No completar pasarela sin pedirlo.
 - Leer `AGENTS.md` y `docs/technical-brief.md` antes de cambios estructurales.
-- Estado actual: [`docs/roadmap.md`](docs/roadmap.md) — splash todos breakpoints L+D + login UI + **home shell mock** (móvil / tablet / desktop · light+dark); Auth real / go_router pendientes. Bypass ≠ sesión real.
+- Estado actual: [`docs/roadmap.md`](docs/roadmap.md) — splash/login/home UI + migración acceso 003 + tests RLS; Auth real / go_router / cutover pendientes. Bypass ≠ sesión real.
 - Antes de Auth: migración **003** (membresías org/property) hecha; falta cutover legacy + policies de dominio. Roles: `platform_superadmin`, `organization_admin`, `property_manager`, `property_staff`, `member`. Hoteles = extensibilidad futura, no MVP.
 - Branding: resolver propiedad → organización → Comunexa; `co_branded` por defecto. `white_label` sin Comunexa es enterprise futuro, no MVP.
 - Suscripción B2B: paga organización o propiedad; puede cubrir varias propiedades; usuario final no paga acceso. Activación manual en piloto. Multirrol selecciona contexto solo si hay varios; plataforma es contexto separado/auditado. Ver `docs/subscriptions-and-onboarding.md`.

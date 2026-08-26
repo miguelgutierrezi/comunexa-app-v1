@@ -23,7 +23,7 @@ Instrucciones al trabajar en **Comunexa** (`comunexa-app-v1`).
 
 | Hecho | Pendiente inmediato |
 |---|---|
-| Schema + RLS 001/002 + **modelo acceso 003** (org/property/memberships) | Cutover legacy → org/property; `db push` + seed Diaz PH; tests RLS |
+| Schema + RLS 001/002 + **modelo acceso 003** + **tests RLS pgTAP** | Cutover legacy → org/property; `db push` + seed Diaz PH |
 | Bootstrap, `Env`, tema light/dark, brand assets | `supabase_flutter` + client tipado |
 | Splash → Login UI responsive (stub auth; Apple solo iOS/macOS) · SessionProvider persistido | go_router + Auth real Supabase |
 | Bypass login → **Home shell mock** (móvil / tablet / desktop · light+dark) | Home por rol + Auth real |

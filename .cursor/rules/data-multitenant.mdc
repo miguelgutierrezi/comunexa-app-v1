@@ -18,3 +18,4 @@ alwaysApply: false
 - `security_guard` es preset de permisos `property_staff` (seed en 003); visitantes, vehículos, autorizaciones y eventos siempre llevan contexto de propiedad. Eventos de acceso no se borran operativamente; correcciones auditadas.
 - Tablas `invoices`/`payments` existen; cobro in-app **no** — no “activar” webhook de pagos sin pedirlo.
 - Al modelar features nuevas: preferir `organization_id` / `property_id` del modelo 003. No mezclar con `tenant_id`/`building_id` en tablas nuevas salvo puente explícito (`units.property_id`).
+- Cambios de RLS del modelo de acceso → actualizar `supabase/tests/004_access_model_rls.test.sql` y pasar `supabase test db`.

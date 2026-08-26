@@ -6,7 +6,7 @@
 |---|---|---|---|
 | [`web.yml`](../.github/workflows/web.yml) | Push a `main` | Firebase Hosting (**automático**) | Secrets Firebase |
 | [`android.yml`](../.github/workflows/android.yml) | Tag `v*` | Play internal | `ENABLE_ANDROID_CI=true` |
-| [`ios.yml`](../.github/workflows/ios.yml) | Tag `v*` | TestFlight | `ENABLE_IOS_CI=true` |
+| [`rls.yml`](../.github/workflows/rls.yml) | PR/push que tocan `supabase/` | Local Supabase + `supabase test db` | Docker en runner |
 
 ## Activar deploy automático web
 

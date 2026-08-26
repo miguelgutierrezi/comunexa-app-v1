@@ -24,7 +24,7 @@
 | Documento | Contenido |
 |---|---|
 | [database/er-diagram.md](database/er-diagram.md) | ER |
-| [database/access-model.md](database/access-model.md) | Modelo acceso 003 (org/property/memberships) |
+| [database/access-model.md](database/access-model.md) | Modelo acceso 003 + tests RLS |
 | [database/schema.sql](database/schema.sql) | SQL legacy 001 (referencia) |
 | [database/rls-policies.md](database/rls-policies.md) | RLS |
 | [../supabase/migrations/](../supabase/migrations/) | Fuente canónica |

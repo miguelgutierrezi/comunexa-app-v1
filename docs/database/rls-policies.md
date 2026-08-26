@@ -1,6 +1,12 @@
 # Políticas RLS — Comunexa
 
-Row Level Security en Postgres (Supabase). Fuente canónica: [`../../supabase/migrations/002_rls_policies.sql`](../../supabase/migrations/002_rls_policies.sql).
+Row Level Security en Postgres (Supabase).
+
+| Capa | Fuente |
+|---|---|
+| Legacy (tenants/buildings) | [`../../supabase/migrations/002_rls_policies.sql`](../../supabase/migrations/002_rls_policies.sql) |
+| Acceso objetivo (org/property) | [`../../supabase/migrations/003_access_model.sql`](../../supabase/migrations/003_access_model.sql) + grants [`004`](../../supabase/migrations/004_access_model_grants.sql) |
+| Tests | [`../../supabase/tests/004_access_model_rls.test.sql`](../../supabase/tests/004_access_model_rls.test.sql) · CI [`.github/workflows/rls.yml`](../../.github/workflows/rls.yml) |
 
 ## Principio
 
@@ -34,13 +40,25 @@ El aislamiento multi-tenant **no depende del cliente Flutter**. Cada query pasa 
 
 ## Casos de prueba obligatorios
 
-Antes de producción, validar con tests (p. ej. `supabase test` o script con usuarios de prueba):
+### Modelo objetivo (003) — automatizados
+
+```bash
+supabase start && supabase test db
+```
+
+1. Aislamiento entre organizaciones.
+2. Manager solo en propiedades asignadas.
+3. Residente sin crear/actualizar propiedades ni asignar managers.
+4. Multirrol: administra solo donde es `property_manager`.
+5. Autenticado sin membresías: 0 orgs/properties; catálogo de permisos sí.
+
+### Legacy / producción (manual o ampliar suite)
 
 1. Usuario tenant A **no** lee filas con `tenant_id` de tenant B.
 2. Residente **no** inserta noticia en edificio ajeno.
-3. Building admin **no** accede edificio no asignado en `building_admins`.
-4. Residente **no** vota dos veces en la misma encuesta (constraint + policy).
-5. Usuario anónimo **no** lee ninguna tabla de negocio.
+3. Building admin **no** accede edificio no asignado.
+4. Residente **no** vota dos veces (constraint + policy).
+5. Usuario anónimo **no** lee tablas de negocio.
 
 ## Storage (complemento)
 
@@ -69,6 +87,6 @@ La matriz superior refleja policies **002** (legacy). Falta:
 
 1. migrar datos tenants/buildings → organizations/properties;
 2. reescribir policies de tablas de negocio con helpers de propiedad;
-3. tests: usuario con roles distintos en dos propiedades; código público no lee datos; `security_guard` no borra historial.
+3. ampliar tests a news/visits y `security_guard` (no borrar historial).
 
 Definir Storage buckets (`property-assets`) en migración dedicada cuando se creen.
