@@ -30,7 +30,7 @@ Estado al **2026-08-25**.
 ## Fase 2 — App core
 
 - [x] UI Login responsive (móvil / tablet / desktop, light+dark) — **solo presentación**
-- [x] Splash → Login (Navigator; sin sesión real)
+- [x] Splash → Login (Navigator; sin sesión real) — móvil · tablet port `#118:117`/`#118:128` · tablet land `#118:95`/`#118:106` · desktop `#118:73`/`#118:84`
 - [x] Bypass login → Home + demos de alertas (`demo:invalid|empty|locked|offline`)
 - [x] Smoke tests widget del login (breakpoints + demos OAuth coming soon)
 - [x] Botón Apple Sign-In solo en iOS/macOS (Google en todas)

@@ -37,6 +37,14 @@ Ramas:
 - Archivos: `snake_case.dart`; clases: `PascalCase`.
 - Widgets: sufijo `Screen` para pantallas, `Widget` para componentes reutilizables.
 
+### Assets de marca e iconografía
+
+- **Reutilizar siempre** antes de exportar de Figma: revisar `assets/branding/` y constantes en [`BrandAssets`](../lib/core/theme/brand_assets.dart).
+- Logos / símbolo Comunexa: preferir `symbolGradientLight` / `symbolGradientDark`, `symbolLarge`, `markColor`, `logoHorizontal`, etc. No duplicar SVG del mismo mark.
+- Iconos UI: usar las rutas ya listadas en `BrandAssets` (`icon-*`). Solo descargar de Figma si no existe equivalente.
+- Nuevos assets → añadir constante en `BrandAssets` en el mismo cambio; no hardcodear paths sueltos en widgets.
+- Branding de producto (`BrandAssets`) ≠ branding de tenant (futuro).
+
 ## Riverpod
 
 - Providers en `*_provider.dart` junto a la feature.

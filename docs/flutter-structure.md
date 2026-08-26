@@ -84,9 +84,9 @@ lib/
 │   │   └── session_provider.dart     # signIn · selectContext · signOut · restore
 │   └── theme/
 │       ├── app_theme.dart    # light/dark + tipografía
-│       └── brand_assets.dart
+│       └── brand_assets.dart # reutilizar siempre; no duplicar logos/SVG
 ├── features/
-│   ├── splash/presentation/splash_screen.dart
+│   ├── splash/presentation/splash_screen.dart  # móvil · tablet port/land · desktop (L+D)
 │   ├── auth/
 │   │   ├── data/mock_user_contexts.dart
 │   │   ├── domain/user_access_context.dart

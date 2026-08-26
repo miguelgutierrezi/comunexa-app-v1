@@ -10,6 +10,10 @@ abstract final class BrandAssets {
       '$_base/comunexa-3A2-logo-horizontal-color.svg';
   static const String favicon = '$_base/comunexa-3A2-favicon.svg';
   static const String symbolLarge = '$_figma/comunexa-symbol-large.svg';
+  /// Símbolo con gradiente de marca (login / splash light).
+  static const String symbolGradientLight = '$_figma/login-symbol-light.svg';
+  /// Símbolo blanco para fondos oscuros (login / splash dark).
+  static const String symbolGradientDark = '$_figma/login-symbol-dark.svg';
 
   static const String iconMail = '$_figma/icon-mail.svg';
   static const String iconLock = '$_figma/icon-lock.svg';

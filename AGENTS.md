@@ -46,7 +46,7 @@ Detalle: [`docs/roadmap.md`](docs/roadmap.md) · mapa `lib/`: [`docs/flutter-str
 | `main.dart` / `app.dart` | Entry + `MaterialApp` (sin go_router todavía) |
 | `core/config/env.dart` | `.env` / dart-define |
 | `core/theme/` | `AppTheme` + `BrandAssets` (marca producto) |
-| `features/splash/` | Splash breve |
+| `features/splash/` | Splash todos breakpoints light+dark |
 | `features/auth/` | Login + selector contexto mock (`demo:multi`) + post-login stub |
 | `features/home/` | Shell + feed + añadir noticia (móvil/tablet/desktop) + dashboards |
 | `services/` | Vacío; FCM etc. llegan después |
@@ -67,6 +67,7 @@ Detalle: [`docs/roadmap.md`](docs/roadmap.md) · mapa `lib/`: [`docs/flutter-str
 - No añadir roles operativos a `profiles.role`: usar membresías de organización/propiedad. Roles objetivo: `platform_superadmin`, `organization_admin`, `property_manager`, `property_staff`, `member`.
 - Hoteles son extensibilidad futura, no alcance funcional del MVP PH.
 - Branding de producto (`BrandAssets`) ≠ branding de tenant (futuro desde `tenants`).
+- **Assets:** reutilizar logos/símbolo/iconos de `BrandAssets` / `assets/branding/` antes de exportar de Figma; no duplicar el mismo mark.
 - Branding efectivo: propiedad → organización → Comunexa. `co_branded` es el modo MVP recomendado; `white_label` sin firma Comunexa es enterprise futuro.
 - Solo `organization_admin` y `property_manager` modifican branding de propiedad; validar contraste y assets. No permitir que la personalización reemplace estructura, componentes o accesibilidad.
 - Imágenes de usuario MVP: PNG/JPEG/WebP validados y re-encodeados en backend; quitar metadatos. No aceptar SVG de usuario ni publicar cargas sin procesar.
