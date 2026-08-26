@@ -1,8 +1,13 @@
+import 'dart:async';
+
 import 'package:comunexa/core/session/session_state.dart';
 import 'package:comunexa/core/session/session_storage.dart';
+import 'package:comunexa/features/auth/data/access_context_repository_provider.dart';
 import 'package:comunexa/features/auth/data/auth_repository_provider.dart';
-import 'package:comunexa/features/auth/data/mock_user_contexts.dart';
+import 'package:comunexa/features/auth/data/access_context_mapper.dart';
+import 'package:comunexa/features/auth/domain/access_context_repository.dart';
 import 'package:comunexa/features/auth/domain/auth_repository.dart';
+import 'package:comunexa/features/auth/domain/auth_state_change.dart';
 import 'package:comunexa/features/auth/domain/auth_user.dart';
 import 'package:comunexa/features/auth/domain/user_access_context.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,21 +15,60 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class SessionNotifier extends AsyncNotifier<SessionState> {
   SessionStorage get _storage => ref.read(sessionStorageProvider);
   AuthRepository get _auth => ref.read(authRepositoryProvider);
+  AccessContextRepository get _access =>
+      ref.read(accessContextRepositoryProvider);
+
+  StreamSubscription<AuthStateChange>? _authSubscription;
 
   @override
-  Future<SessionState> build() => _restore();
+  Future<SessionState> build() async {
+    _authSubscription ??= _auth.authStateChanges.listen(_onAuthStateChange);
+    ref.onDispose(() => _authSubscription?.cancel());
+
+    return _restore();
+  }
 
   Future<SessionState> _restore() async {
     final authUser = await _auth.restoreSession();
     if (authUser == null) {
-      // Sin Auth no hay sesión; se conserva lastContextId solo como hint UX
-      // (se valida contra membresías del próximo login).
       return SessionState.empty;
+    }
+    if (_auth.pendingPasswordRecovery) {
+      return _recoverySessionFromAuthUser(authUser);
     }
     return _sessionFromAuthUser(authUser);
   }
 
-  /// Login email/password vía Auth; contextos de membresía siguen mock hasta cutover.
+  void _onAuthStateChange(AuthStateChange change) {
+    unawaited(_handleAuthStateChange(change));
+  }
+
+  Future<void> _handleAuthStateChange(AuthStateChange change) async {
+    switch (change.event) {
+      case AuthSessionEvent.initialSession:
+        return;
+      case AuthSessionEvent.signedOut:
+        state = const AsyncData(SessionState.empty);
+      case AuthSessionEvent.passwordRecovery:
+        final user = change.user ?? _auth.currentUser;
+        if (user == null) return;
+        state = AsyncData(_recoverySessionFromAuthUser(user));
+      case AuthSessionEvent.signedIn:
+      case AuthSessionEvent.tokenRefreshed:
+      case AuthSessionEvent.userUpdated:
+        if (_auth.pendingPasswordRecovery ||
+            state.valueOrNull?.pendingPasswordRecovery == true) {
+          return;
+        }
+        final user = change.user ?? _auth.currentUser;
+        if (user == null) {
+          state = const AsyncData(SessionState.empty);
+          return;
+        }
+        state = AsyncData(await _sessionFromAuthUser(user));
+    }
+  }
+
   Future<PostLoginDestination> signInWithPassword({
     required String email,
     required String password,
@@ -33,6 +77,23 @@ class SessionNotifier extends AsyncNotifier<SessionState> {
       email: email,
       password: password,
     );
+    if (_auth.pendingPasswordRecovery) {
+      final session = _recoverySessionFromAuthUser(authUser);
+      state = AsyncData(session);
+      return PostLoginDestination.resetPassword;
+    }
+    final session = await _sessionFromAuthUser(authUser);
+    state = AsyncData(session);
+    return _destinationFor(session);
+  }
+
+  Future<PostLoginDestination> updatePassword(String password) async {
+    await _auth.updatePassword(password);
+    final authUser = _auth.currentUser;
+    if (authUser == null) {
+      state = const AsyncData(SessionState.empty);
+      return PostLoginDestination.noAccess;
+    }
     final session = await _sessionFromAuthUser(authUser);
     state = AsyncData(session);
     return _destinationFor(session);
@@ -41,15 +102,22 @@ class SessionNotifier extends AsyncNotifier<SessionState> {
   Future<void> selectContext(String contextId) async {
     final current = state.valueOrNull;
     if (current == null || !current.isAuthenticated) return;
+    if (current.pendingPasswordRecovery) return;
 
-    final active = _findContext(current.availableContexts, contextId);
-    if (active == null) return;
+    final profileId = _auth.currentUser?.id;
+    if (profileId == null) return;
 
+    final validated = await _access.validateContext(profileId, contextId);
+    if (validated == null) return;
+
+    final active = AccessContextMapper.toUserAccessContext(validated);
     final next = current.copyWith(
       activeContext: active,
       lastUsedContextId: contextId,
-      availableContexts:
-          applyLastUsedHighlight(current.availableContexts, contextId),
+      availableContexts: AccessContextMapper.applyLastUsedHighlight(
+        current.availableContexts,
+        contextId,
+      ),
     );
     await _storage.writeLastContextId(contextId);
     state = AsyncData(next);
@@ -57,7 +125,6 @@ class SessionNotifier extends AsyncNotifier<SessionState> {
 
   Future<void> signOut() async {
     await _auth.signOut();
-    // No borrar lastContextId: no lleva PII; se revalida en el próximo login.
     state = const AsyncData(SessionState.empty);
   }
 
@@ -65,17 +132,32 @@ class SessionNotifier extends AsyncNotifier<SessionState> {
     return _auth.sendPasswordResetEmail(email);
   }
 
+  SessionState _recoverySessionFromAuthUser(AuthUser authUser) {
+    final email = authUser.email;
+    return SessionState(
+      email: email,
+      displayName: authUser.displayName,
+      pendingPasswordRecovery: true,
+    );
+  }
+
   Future<SessionState> _sessionFromAuthUser(AuthUser authUser) async {
     final email = authUser.email;
-    final displayName =
-        authUser.displayName ?? mockUserDisplayNameForEmail(email);
-    final contexts = mockUserContextsForEmail(email);
+    final displayName = authUser.displayName;
+    final accessContexts =
+        await _access.getAvailableContexts(authUser.id);
+    final contexts = accessContexts
+        .map(AccessContextMapper.toUserAccessContext)
+        .toList();
     final storedId = await _storage.readLastContextId();
     final preferred =
         storedId == null ? null : _findContext(contexts, storedId);
 
     if (contexts.isEmpty) {
-      return SessionState.empty;
+      return SessionState(
+        email: email,
+        displayName: displayName,
+      );
     }
 
     if (contexts.length == 1) {
@@ -84,18 +166,23 @@ class SessionNotifier extends AsyncNotifier<SessionState> {
       return SessionState(
         email: email,
         displayName: displayName,
-        availableContexts: applyLastUsedHighlight(contexts, active.id),
+        availableContexts: AccessContextMapper.applyLastUsedHighlight(
+          contexts,
+          active.id,
+        ),
         activeContext: active,
         lastUsedContextId: active.id,
       );
     }
 
-    // Multirrol: si el último contextId sigue siendo membresía válida → home.
     if (preferred != null) {
       return SessionState(
         email: email,
         displayName: displayName,
-        availableContexts: applyLastUsedHighlight(contexts, preferred.id),
+        availableContexts: AccessContextMapper.applyLastUsedHighlight(
+          contexts,
+          preferred.id,
+        ),
         activeContext: preferred,
         lastUsedContextId: preferred.id,
       );
@@ -105,12 +192,21 @@ class SessionNotifier extends AsyncNotifier<SessionState> {
     return SessionState(
       email: email,
       displayName: displayName,
-      availableContexts: applyLastUsedHighlight(contexts, highlightId),
+      availableContexts: AccessContextMapper.applyLastUsedHighlight(
+        contexts,
+        highlightId,
+      ),
       lastUsedContextId: highlightId,
     );
   }
 
   PostLoginDestination _destinationFor(SessionState session) {
+    if (session.needsPasswordRecovery) {
+      return PostLoginDestination.resetPassword;
+    }
+    if (session.authenticatedWithoutAccess) {
+      return PostLoginDestination.noAccess;
+    }
     if (session.needsContextSelection) {
       return PostLoginDestination.contextSelect;
     }
@@ -139,7 +235,6 @@ class SessionNotifier extends AsyncNotifier<SessionState> {
 final sessionProvider =
     AsyncNotifierProvider<SessionNotifier, SessionState>(SessionNotifier.new);
 
-/// Contexto activo expuesto para widgets del shell.
 final activeContextProvider = Provider<UserAccessContext?>((ref) {
   return ref.watch(sessionProvider).valueOrNull?.activeContext;
 });

@@ -75,53 +75,62 @@ Actualizado **2026-08-25**.
 lib/
 ├── main.dart                 # bootstrap → ProviderScope
 ├── bootstrap.dart            # Env + session storage + Supabase
-├── app.dart                  # MaterialApp (aún sin go_router)
+├── app.dart                  # MaterialApp.router + routerProvider
 ├── core/
-│   ├── config/env.dart
-│   ├── errors/app_exception.dart
+│   ├── config/
+│   │   ├── env.dart
+│   │   └── auth_redirect.dart        # AUTH_REDIRECT_URL recovery
+│   ├── router/
+│   │   ├── app_router.dart           # go_router + redirects
+│   │   └── app_routes.dart
 │   ├── session/
 │   │   ├── session_state.dart
 │   │   ├── session_storage.dart      # Solo lastContextId (SharedPreferences)
-│   │   └── session_provider.dart     # signIn · selectContext · signOut · restore
+│   │   └── session_provider.dart     # Auth stream · selectContext · recovery
 │   ├── supabase/
-│   │   ├── comunexa_supabase.dart    # init tipado (anon + RLS)
-│   │   └── supabase_providers.dart   # supabaseClientProvider
+│   │   ├── comunexa_supabase.dart
+│   │   └── supabase_providers.dart
 │   └── theme/
-│       ├── app_theme.dart    # light/dark + tipografía
-│       └── brand_assets.dart # reutilizar siempre; no duplicar logos/SVG
+│       ├── app_theme.dart
+│       └── brand_assets.dart
 ├── features/
-│   ├── splash/presentation/splash_screen.dart  # móvil · tablet port/land · desktop (L+D)
+│   ├── splash/presentation/splash_screen.dart
 │   ├── auth/
-│   │   ├── data/mock_user_contexts.dart
-│   │   ├── domain/user_access_context.dart
+│   │   ├── data/
+│   │   │   ├── supabase_auth_repository.dart
+│   │   │   ├── fake_auth_repository.dart
+│   │   │   ├── supabase_access_context_repository.dart
+│   │   │   ├── fake_access_context_repository.dart
+│   │   │   ├── access_context_mapper.dart
+│   │   │   └── mock_user_contexts.dart   # solo tests/Figma
+│   │   ├── domain/
+│   │   │   ├── auth_repository.dart
+│   │   │   ├── access_context_repository.dart
+│   │   │   └── access_context.dart
 │   │   └── presentation/
 │   │       ├── login_screen.dart
-│   │       ├── context_select_screen.dart   # `#99:5`/`#99:67` mobile · `#100:475`/`#100:547` tablet port · `#100:331`/`#100:402` tablet land · `#99:185`/`#99:256` desktop
+│   │       ├── context_select_screen.dart
+│   │       ├── no_access_screen.dart
+│   │       ├── reset_password_screen.dart
 │   │       └── post_login_navigation.dart
 │   └── home/
-│       ├── data/mock_noticias.dart           # feed + eventos mock
-│       └── presentation/
-│           ├── home_shell_screen.dart        # breakpoints → mobile / tablet port / land / desktop
-│           ├── home_bottom_nav.dart
-│           ├── add_news_screen.dart          # móvil · tablet port `#116:5`/`#116:92` · tablet land · desktop
-│           ├── tablet_portrait_home.dart     # `#74:5` / `#74:117` feed + eventos horizontales
-│           ├── noticias_feed.dart
-│           └── desktop_dashboard.dart        # sidebar + grid + eventos
+│       ├── data/mock_noticias.dart           # feed mock
+│       └── presentation/ …                   # shell + add_news + dashboards
 └── services/                 # vacío (.gitkeep)
 ```
 
 | Hoy | Objetivo |
 |---|---|
 | Splash → Login → Home vía `go_router` | Deep links PQR/facturas |
-| Login UI + Auth email/password + tests | OAuth Google/Apple |
-| Home shell mock (móvil / tablet portrait / tablet landscape / desktop · light+dark) | Datos reales + home por rol |
+| Auth email/password + recovery + `onAuthStateChange` + tests (96) | OAuth Google/Apple |
+| `AccessContextRepository` + sesión/contexto (Supabase/Fake) | Cutover legacy SQL |
+| Home shell (breakpoints · L+D); feed **mock** | Datos reales + home por rol |
 | Añadir noticia todos breakpoints light+dark | Persistencia API |
 | Tablet landscape light+dark (`#35:487` / `#35:606`) | — |
 | Tablet portrait light+dark (`#74:5` / `#74:117`) | — |
 | Apple Sign-In solo iOS/macOS (override en tests) | Cablear OAuth real por plataforma |
-| `ProviderScope` + SessionProvider (Auth + contexto) | Membresías reales post-cutover |
-| `supabase_flutter` + Auth email/password + go_router | OAuth + repositorios |
-| `go_router` (`/login` · `/select-context` · `/home` · `/news/new`) | Rutas de dominio (`/news/:id`, …) |
+| `ProviderScope` + SessionProvider (Auth + contexto + recovery) | Branding efectivo desde org/property |
+| `go_router` (`/login` · `/reset-password` · `/select-context` · `/no-access` · `/home` · `/news/new`) | Rutas de dominio (`/news/:id`, …) |
 | Sin freezed | Generar modelos al conectar BD |
 | Tema fijo Comunexa | `tenant_theme` desde org/property |
 
@@ -155,16 +164,17 @@ features/<name>/
 
 Rutas declarativas con deep links para push:
 
-| Ruta | Pantalla | Deep link ejemplo |
+| Ruta | Pantalla | Notas |
 |---|---|---|
 | `/login` | Login | — |
-| `/select-context` | Selector multirrol (mobile · `#100:475` tablet port · tablet land · desktop; ver Figma IDs en código) | — |
-| `/home` | Shell principal | — |
-| `/news/:id` | Detalle noticia | `comunexa://news/{id}` |
-| `/pqr/:id` | Detalle PQR | `comunexa://pqr/{id}` |
-| `/invoices/:id` | Factura | `comunexa://invoices/{id}` |
+| `/reset-password` | Nueva contraseña (recovery) | Deep link Supabase Auth |
+| `/select-context` | Selector multirrol | Mobile · tablet · desktop |
+| `/no-access` | Sin membresías activas | Cerrar sesión |
+| `/home` | Shell principal | Property switcher en desktop |
+| `/news/new` | Añadir noticia (UI mock) | Requiere contexto activo |
+| `/news/:id` | Detalle noticia | *pendiente* |
 
-Redirect guard: si no hay sesión → `/login`; si hay sesión → cargar organización, propiedad activa, membresías y tenant theme. La UI deriva permisos del rol contextual de la propiedad, no de un rol global en el perfil.
+Redirect guard: sin sesión → `/login`; recovery pendiente → `/reset-password`; autenticado sin membresías → `/no-access`; un contexto → `/home`; varios → `/select-context`.
 
 Tras resolver membresías: un contexto entra directo; varios navegan a `/select-context`. En desktop (`#35:233`), el sidebar incluye **property switcher** (pill + rol) con menú para cambiar contexto sin salir del home. El selector recuerda el último contexto autorizado y persiste vía `SessionProvider`.
 

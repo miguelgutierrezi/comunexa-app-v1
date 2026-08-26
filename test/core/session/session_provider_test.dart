@@ -2,7 +2,10 @@ import 'package:comunexa/core/config/env.dart';
 import 'package:comunexa/core/session/session_provider.dart';
 import 'package:comunexa/core/session/session_state.dart';
 import 'package:comunexa/core/session/session_storage.dart';
+import 'package:comunexa/features/auth/data/access_context_repository_provider.dart';
 import 'package:comunexa/features/auth/data/auth_repository_provider.dart';
+import 'package:comunexa/features/auth/data/fake_access_context_repository.dart';
+import 'package:comunexa/features/auth/data/fake_access_context_seed.dart';
 import 'package:comunexa/features/auth/data/fake_auth_repository.dart';
 import 'package:comunexa/features/auth/domain/auth_user.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -11,6 +14,7 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   late InMemorySessionStorage storage;
   late FakeAuthRepository auth;
+  late FakeAccessContextRepository access;
 
   setUpAll(() async {
     await Env.load();
@@ -19,6 +23,7 @@ void main() {
   setUp(() {
     storage = InMemorySessionStorage();
     auth = FakeAuthRepository();
+    access = FakeAccessContextRepository();
   });
 
   ProviderContainer createContainer() {
@@ -26,6 +31,7 @@ void main() {
       overrides: [
         sessionStorageProvider.overrideWithValue(storage),
         authRepositoryProvider.overrideWithValue(auth),
+        accessContextRepositoryProvider.overrideWithValue(access),
       ],
     );
   }
@@ -85,6 +91,7 @@ void main() {
 
   test('restore con lastContextId válido entra con contexto activo', () async {
     await storage.writeLastContextId('ctx-serena-reception');
+    access.seedProfile('test-multi', FakeAccessContextSeed.multiple);
     auth.seedSession(
       const AuthUser(
         id: 'test-multi',
@@ -103,6 +110,7 @@ void main() {
   });
 
   test('restore multirrol sin lastContextId pide selector', () async {
+    access.seedProfile('test-multi', FakeAccessContextSeed.multiple);
     auth.seedSession(
       const AuthUser(
         id: 'test-multi',
@@ -122,6 +130,40 @@ void main() {
     );
   });
 
+  test('signInWithPassword sin membresías devuelve noAccess', () async {
+    final container = createContainer();
+    addTearDown(container.dispose);
+
+    final destination =
+        await container.read(sessionProvider.notifier).signInWithPassword(
+              email: 'demo:noaccess@test.com',
+              password: 'password123',
+            );
+
+    expect(destination, PostLoginDestination.noAccess);
+    final session = container.read(sessionProvider).value!;
+    expect(session.authenticatedWithoutAccess, isTrue);
+    expect(session.activeContext, isNull);
+  });
+
+  test('authenticated sin membresías queda sin acceso', () async {
+    access.seedProfile('no-access', const []);
+    auth.seedSession(
+      const AuthUser(
+        id: 'no-access',
+        email: 'user@test.com',
+        displayName: 'Usuario',
+      ),
+    );
+
+    final container = createContainer();
+    addTearDown(container.dispose);
+
+    final session = await container.read(sessionProvider.future);
+    expect(session.authenticatedWithoutAccess, isTrue);
+    expect(session.hasActiveContext, isFalse);
+  });
+
   test('signOut limpia Auth pero no usa storage como autoridad', () async {
     final container = createContainer();
     addTearDown(container.dispose);
@@ -138,6 +180,23 @@ void main() {
     expect(auth.currentUser, isNull);
     // Hint UX puede permanecer; la sesión en memoria queda vacía.
     expect(await storage.readLastContextId(), 'ctx-torres-resident');
+  });
+
+  test('sin full_name no inventa nombre ficticio', () async {
+    access.seedProfile('no-name', [FakeAccessContextSeed.single]);
+    auth.seedSession(
+      const AuthUser(
+        id: 'no-name',
+        email: 'e2e-noname@comunexa.local',
+      ),
+    );
+
+    final container = createContainer();
+    addTearDown(container.dispose);
+
+    final session = await container.read(sessionProvider.future);
+    expect(session.displayName, isNull);
+    expect(session.hasActiveContext, isTrue);
   });
 
   test('sendPasswordResetEmail delega al repositorio', () async {

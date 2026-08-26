@@ -1,7 +1,6 @@
 import 'package:comunexa/core/session/session_provider.dart';
 import 'package:comunexa/core/theme/app_theme.dart';
 import 'package:comunexa/core/theme/brand_assets.dart';
-import 'package:comunexa/features/auth/data/mock_user_contexts.dart';
 import 'package:comunexa/features/home/data/mock_noticias.dart';
 import 'package:comunexa/features/home/presentation/home_bottom_nav.dart';
 import 'package:comunexa/features/home/presentation/noticias_feed.dart';
@@ -200,8 +199,9 @@ class _SidebarPropertySwitcher extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final active =
-        ref.watch(activeContextProvider) ?? mockSingleContext;
+    final active = ref.watch(activeContextProvider);
+    if (active == null) return const SizedBox.shrink();
+
     final contexts = ref.watch(availableContextsProvider);
     final canSwitch = contexts.length > 1;
 
@@ -428,9 +428,14 @@ class _SidebarUserCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final displayName =
-        ref.watch(sessionDisplayNameProvider) ?? 'Carlos Méndez';
-    final active = ref.watch(activeContextProvider) ?? mockSingleContext;
+    final sessionName = ref.watch(sessionDisplayNameProvider)?.trim();
+    final email = ref.watch(sessionProvider).valueOrNull?.email;
+    final displayName = (sessionName != null && sessionName.isNotEmpty)
+        ? sessionName
+        : (email ?? 'Usuario');
+    final active = ref.watch(activeContextProvider);
+    if (active == null) return const SizedBox.shrink();
+
     final roleLabel = active.sidebarRoleLabel;
     final initials = _initialsFor(displayName);
 

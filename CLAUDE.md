@@ -2,10 +2,10 @@
 
 **Leer primero:** [`AGENTS.md`](AGENTS.md) · [`docs/technical-brief.md`](docs/technical-brief.md)
 
-Stack: Flutter + **Supabase (RLS)** + **FCM** + **Firebase Hosting** + **GitHub Actions**.  
+Stack: Flutter + **Supabase (RLS)** + **FCM** + **Firebase Hosting** + **GitHub Actions**.
 Pagos in-app pausados (stub `payment-webhook`). No Firestore.
 
-**Estado (2026-08-25):** fundamentos + UI + migración acceso 003 + tests RLS + **`supabase_flutter` bootstrap**. Auth UI real / go_router / cutover pendientes. Ver [`docs/roadmap.md`](docs/roadmap.md).
+**Estado (2026-08-25):** **Cierre modelo de acceso (Fases A–E)** — SQL 003/005 + pgTAP, Auth + go_router + `AccessContextRepository`, `/no-access`, recovery, seed E2E. Home/feed aún mock. Post-E: cutover legacy, seed Diaz PH, OAuth. Ver [`docs/roadmap.md`](docs/roadmap.md) · E2E: [`docs/access-model-e2e-validation.md`](docs/access-model-e2e-validation.md).
 
 Modelo objetivo antes de Auth: organización → propiedad → unidad, con membresías contextuales (`organization_admin`, `property_manager`, `property_staff`, `member`) y `platform_superadmin` global. El SQL actual `profiles.role`/`buildings` es transitorio; hoteles son extensibilidad futura, no alcance MVP.
 
@@ -19,10 +19,12 @@ Vigilancia es preset `security_guard` de `property_staff`, con control de acceso
 
 ```bash
 flutter analyze && flutter test && flutter build web --release
+# Si tocaste SQL/RLS/acceso:
+supabase test db
 ```
 
-1. Añadir/actualizar **tests** para lo que se implementó.  
-2. Todo en verde.  
+1. Añadir/actualizar **tests** para lo que se implementó.
+2. Todo en verde.
 3. Si hay impacto de producto/arquitectura/estado → actualizar `docs/` **y** las 3 superficies de agentes:
    - `AGENTS.md` + este `CLAUDE.md`
    - `.cursor/rules/`

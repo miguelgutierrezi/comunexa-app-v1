@@ -1,7 +1,12 @@
 import 'package:comunexa/features/auth/domain/user_access_context.dart';
 
 /// Destino tras autenticación (email/password).
-enum PostLoginDestination { home, contextSelect }
+enum PostLoginDestination {
+  home,
+  contextSelect,
+  noAccess,
+  resetPassword,
+}
 
 /// Sesión de usuario: correo, contextos disponibles y propiedad/rol activo.
 class SessionState {
@@ -11,6 +16,7 @@ class SessionState {
     this.availableContexts = const [],
     this.activeContext,
     this.lastUsedContextId,
+    this.pendingPasswordRecovery = false,
   });
 
   final String? email;
@@ -18,6 +24,9 @@ class SessionState {
   final List<UserAccessContext> availableContexts;
   final UserAccessContext? activeContext;
   final String? lastUsedContextId;
+
+  /// Deep link recovery: JWT válido pero falta definir nueva contraseña.
+  final bool pendingPasswordRecovery;
 
   static const empty = SessionState();
 
@@ -28,12 +37,23 @@ class SessionState {
   bool get needsContextSelection =>
       isAuthenticated && !hasActiveContext && availableContexts.length > 1;
 
+  /// Autenticado en Auth pero sin membresías activas válidas.
+  bool get authenticatedWithoutAccess =>
+      isAuthenticated &&
+      !pendingPasswordRecovery &&
+      availableContexts.isEmpty;
+
+  /// Flujo recovery: autenticado temporalmente hasta [updatePassword].
+  bool get needsPasswordRecovery =>
+      isAuthenticated && pendingPasswordRecovery;
+
   SessionState copyWith({
     String? email,
     String? displayName,
     List<UserAccessContext>? availableContexts,
     UserAccessContext? activeContext,
     String? lastUsedContextId,
+    bool? pendingPasswordRecovery,
     bool clearActiveContext = false,
   }) {
     return SessionState(
@@ -43,6 +63,8 @@ class SessionState {
       activeContext:
           clearActiveContext ? null : (activeContext ?? this.activeContext),
       lastUsedContextId: lastUsedContextId ?? this.lastUsedContextId,
+      pendingPasswordRecovery:
+          pendingPasswordRecovery ?? this.pendingPasswordRecovery,
     );
   }
 }

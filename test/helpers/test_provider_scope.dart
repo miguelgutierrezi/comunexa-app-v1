@@ -2,7 +2,9 @@ import 'package:comunexa/core/config/env.dart';
 import 'package:comunexa/core/router/app_router.dart';
 import 'package:comunexa/core/session/session_storage.dart';
 import 'package:comunexa/core/theme/app_theme.dart';
+import 'package:comunexa/features/auth/data/access_context_repository_provider.dart';
 import 'package:comunexa/features/auth/data/auth_repository_provider.dart';
+import 'package:comunexa/features/auth/data/fake_access_context_repository.dart';
 import 'package:comunexa/features/auth/data/fake_auth_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -16,6 +18,7 @@ class TestProviderScope extends StatelessWidget {
     required this.child,
     this.storage,
     this.auth,
+    this.accessContexts,
     this.splashDelay = Duration.zero,
     this.initialLocation,
   });
@@ -23,6 +26,7 @@ class TestProviderScope extends StatelessWidget {
   final Widget child;
   final SessionStorage? storage;
   final FakeAuthRepository? auth;
+  final FakeAccessContextRepository? accessContexts;
 
   /// Delay del splash (cero en tests).
   final Duration splashDelay;
@@ -34,11 +38,13 @@ class TestProviderScope extends StatelessWidget {
   Widget build(BuildContext context) {
     final sessionStorage = storage ?? InMemorySessionStorage();
     final authRepo = auth ?? FakeAuthRepository();
+    final accessRepo = accessContexts ?? FakeAccessContextRepository();
 
     return ProviderScope(
       overrides: [
         sessionStorageProvider.overrideWithValue(sessionStorage),
         authRepositoryProvider.overrideWithValue(authRepo),
+        accessContextRepositoryProvider.overrideWithValue(accessRepo),
         splashMinDelayProvider.overrideWithValue(splashDelay),
         if (initialLocation != null)
           routerProvider.overrideWith(

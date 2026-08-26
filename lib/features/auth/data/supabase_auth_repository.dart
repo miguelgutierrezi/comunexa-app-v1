@@ -1,14 +1,47 @@
+import 'package:comunexa/core/config/auth_redirect.dart';
 import 'package:comunexa/features/auth/domain/auth_failure.dart';
 import 'package:comunexa/features/auth/domain/auth_repository.dart';
+import 'package:comunexa/features/auth/domain/auth_state_change.dart';
 import 'package:comunexa/features/auth/domain/auth_user.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' hide AuthUser;
 
 class SupabaseAuthRepository implements AuthRepository {
-  SupabaseAuthRepository(this._client);
+  SupabaseAuthRepository(this._client) {
+    _auth.onAuthStateChange.listen(_onSupabaseAuthStateChange);
+  }
 
   final SupabaseClient _client;
+  bool _pendingPasswordRecovery = false;
 
   GoTrueClient get _auth => _client.auth;
+
+  @override
+  bool get pendingPasswordRecovery => _pendingPasswordRecovery;
+
+  @override
+  Stream<AuthStateChange> get authStateChanges => _auth.onAuthStateChange.map(
+        (data) {
+          final event = _mapEvent(data.event);
+          if (event == AuthSessionEvent.passwordRecovery) {
+            _pendingPasswordRecovery = true;
+          } else if (event == AuthSessionEvent.signedOut) {
+            _pendingPasswordRecovery = false;
+          }
+          final user = data.session?.user;
+          return AuthStateChange(
+            event: event,
+            user: user == null ? null : _mapUser(user),
+          );
+        },
+      );
+
+  void _onSupabaseAuthStateChange(AuthState data) {
+    if (data.event == AuthChangeEvent.passwordRecovery) {
+      _pendingPasswordRecovery = true;
+    } else if (data.event == AuthChangeEvent.signedOut) {
+      _pendingPasswordRecovery = false;
+    }
+  }
 
   @override
   AuthUser? get currentUser {
@@ -38,6 +71,7 @@ class SupabaseAuthRepository implements AuthRepository {
       if (user == null) {
         throw AuthFailure.invalidCredentials();
       }
+      _pendingPasswordRecovery = false;
       return _mapUser(user);
     } on AuthFailure {
       rethrow;
@@ -54,6 +88,7 @@ class SupabaseAuthRepository implements AuthRepository {
   Future<void> signOut() async {
     try {
       await _auth.signOut();
+      _pendingPasswordRecovery = false;
     } on AuthRetryableFetchException catch (e) {
       throw AuthFailure.network(e);
     } catch (e) {
@@ -68,7 +103,10 @@ class SupabaseAuthRepository implements AuthRepository {
       throw AuthFailure.invalidCredentials();
     }
     try {
-      await _auth.resetPasswordForEmail(normalized);
+      await _auth.resetPasswordForEmail(
+        normalized,
+        redirectTo: authPasswordResetRedirectUrl(),
+      );
     } on AuthApiException catch (e) {
       throw _mapApiException(e);
     } on AuthRetryableFetchException catch (e) {
@@ -76,6 +114,36 @@ class SupabaseAuthRepository implements AuthRepository {
     } catch (e) {
       throw AuthFailure.unknown(e);
     }
+  }
+
+  @override
+  Future<void> updatePassword(String newPassword) async {
+    final password = newPassword.trim();
+    if (password.length < 8) {
+      throw AuthFailure.invalidCredentials();
+    }
+    try {
+      await _auth.updateUser(UserAttributes(password: password));
+      _pendingPasswordRecovery = false;
+    } on AuthApiException catch (e) {
+      throw _mapApiException(e);
+    } on AuthRetryableFetchException catch (e) {
+      throw AuthFailure.network(e);
+    } catch (e) {
+      throw AuthFailure.unknown(e);
+    }
+  }
+
+  AuthSessionEvent _mapEvent(AuthChangeEvent event) {
+    return switch (event) {
+      AuthChangeEvent.initialSession => AuthSessionEvent.initialSession,
+      AuthChangeEvent.signedIn => AuthSessionEvent.signedIn,
+      AuthChangeEvent.signedOut => AuthSessionEvent.signedOut,
+      AuthChangeEvent.tokenRefreshed => AuthSessionEvent.tokenRefreshed,
+      AuthChangeEvent.passwordRecovery => AuthSessionEvent.passwordRecovery,
+      AuthChangeEvent.userUpdated => AuthSessionEvent.userUpdated,
+      _ => AuthSessionEvent.userUpdated,
+    };
   }
 
   AuthUser _mapUser(User user) {

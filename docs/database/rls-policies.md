@@ -5,8 +5,8 @@ Row Level Security en Postgres (Supabase).
 | Capa | Fuente |
 |---|---|
 | Legacy (tenants/buildings) | [`../../supabase/migrations/002_rls_policies.sql`](../../supabase/migrations/002_rls_policies.sql) |
-| Acceso objetivo (org/property) | [`../../supabase/migrations/003_access_model.sql`](../../supabase/migrations/003_access_model.sql) + grants [`004`](../../supabase/migrations/004_access_model_grants.sql) |
-| Tests | [`../../supabase/tests/004_access_model_rls.test.sql`](../../supabase/tests/004_access_model_rls.test.sql) · CI [`.github/workflows/rls.yml`](../../.github/workflows/rls.yml) |
+| Acceso objetivo (org/property) | [`003`](../../supabase/migrations/003_access_model.sql) + grants [`004`](../../supabase/migrations/004_access_model_grants.sql) + integridad/SELECT [`005`](../../supabase/migrations/005_access_integrity_and_membership_rls.sql) |
+| Tests | [`004_access_model_rls.test.sql`](../../supabase/tests/004_access_model_rls.test.sql) · [`005_access_integrity_rls.test.sql`](../../supabase/tests/005_access_integrity_rls.test.sql) · CI [`.github/workflows/rls.yml`](../../.github/workflows/rls.yml) |
 
 ## Principio
 
@@ -40,10 +40,11 @@ El aislamiento multi-tenant **no depende del cliente Flutter**. Cada query pasa 
 
 ## Casos de prueba obligatorios
 
-### Modelo objetivo (003) — automatizados
+### Modelo objetivo (003–005) — automatizados
 
 ```bash
 supabase start && supabase test db
+# o, tras cambios de migración: supabase db reset && supabase test db
 ```
 
 1. Aislamiento entre organizaciones.
@@ -51,6 +52,8 @@ supabase start && supabase test db
 3. Residente sin crear/actualizar propiedades ni asignar managers.
 4. Multirrol: administra solo donde es `property_manager`.
 5. Autenticado sin membresías: 0 orgs/properties; catálogo de permisos sí.
+6. **(005)** Residente no enumera membresías/occupancies ajenas; manager sí lista las de su propiedad.
+7. **(005)** FK compuesta rechaza `organization_id` / `unit_id` inconsistentes con la propiedad.
 
 ### Legacy / producción (manual o ampliar suite)
 
@@ -81,7 +84,14 @@ Ver [`access-model.md`](access-model.md) y [`../../supabase/migrations/003_acces
 
 Helpers nuevas: `has_organization_access`, `has_property_access`, `has_property_permission`; `is_platform_superadmin()` también mira `profiles.is_platform_superadmin`.
 
-### Cutover pendiente antes de Auth real
+### Migración 005 (hecha) — integridad + SELECT de membresías
+
+- FKs compuestas `property_memberships` / `occupancies` → `properties (id, organization_id)`.
+- FK `occupancies (unit_id, property_id)` → `units (id, property_id)`.
+- Helper `can_manage_property_members(property_id)`.
+- SELECT de membresías/occupancies: propia fila o gestores; **no** `has_property_access`.
+
+### Cutover pendiente
 
 La matriz superior refleja policies **002** (legacy). Falta:
 

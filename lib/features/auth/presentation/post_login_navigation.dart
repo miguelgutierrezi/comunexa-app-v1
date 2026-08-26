@@ -1,6 +1,7 @@
 import 'package:comunexa/core/router/app_router.dart';
 import 'package:comunexa/core/router/app_routes.dart';
 import 'package:comunexa/core/session/session_provider.dart';
+import 'package:comunexa/core/session/session_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -38,4 +39,20 @@ Future<void> navigateAfterContextSelected(
   await ref.read(sessionProvider.notifier).selectContext(contextId);
   if (!context.mounted) return;
   context.go(AppRoutes.home);
+}
+
+Future<void> navigateAfterPasswordReset(
+  BuildContext context,
+  WidgetRef ref, {
+  required String password,
+}) async {
+  final destination =
+      await ref.read(sessionProvider.notifier).updatePassword(password);
+  if (!context.mounted) return;
+  final session = ref.read(sessionProvider).valueOrNull ?? SessionState.empty;
+  if (!session.isAuthenticated) {
+    context.go(AppRoutes.login);
+    return;
+  }
+  context.go(locationForPostLogin(destination));
 }

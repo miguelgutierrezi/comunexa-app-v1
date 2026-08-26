@@ -18,8 +18,10 @@ Use these notes as the default context for this repository.
 
 ## Current code status (2026-08-25)
 
-- Done: migrations + RLS 001–004, pgTAP RLS tests, **`supabase_flutter` bootstrap** (`ComunexaSupabase`), Flutter UI (splash/login/home/add-news), GHA workflows.
-- Next: Auth real + go_router + repositorios; cutover legacy → org/property; seed.
+- **Access model closure (Phases A–E):** migrations 001–005, pgTAP 26/26, Auth email/password + `onAuthStateChange`, go_router, `AccessContextRepository`, `/no-access`, `/reset-password`, E2E seed + validation guide.
+- Done: Flutter UI (splash/login/home/add-news), **`supabase_flutter` bootstrap**, SessionProvider with real auth/context (Fake when no `.env`).
+- Next: legacy cutover → org/property, seed Diaz PH, OAuth, domain repositories, real home data.
+- E2E local: `./scripts/e2e-local-setup.sh` · guide: `docs/access-model-e2e-validation.md`
 
 ## Core constraints
 
@@ -32,7 +34,7 @@ Use these notes as the default context for this repository.
 - B2B subscription may be paid by an organization or property and cover one or many properties; end users never pay for access. It is manually activated during the pilot and separate from paused resident payments. Onboarding uses private invitations or approval-required requests. Multi-role users select a context only when several exist; platform support context is separate and audited. See `docs/subscriptions-and-onboarding.md`.
 - Security guards are a least-privilege `property_staff` preset, not a global role; access events are append-only. User media MVP accepts server-validated/re-encoded PNG/JPEG/WebP, not SVG. Native client name/icon require an enterprise white-label build; the shared app remains Comunexa. See `docs/access-control-and-media.md`.
 - Do not implement Wompi/PayU or complete `payment-webhook` unless explicitly asked.
-- Keep changes minimal. Treat login bypass / mock home as **UI only**, not real session.
+- Keep changes minimal. Home **feed data** is still mock; auth/session/context are real (Supabase or Fake repos when `.env` is empty).
 - Reply to the user in **Spanish**. UI strings in Spanish; code identifiers in English.
 
 ## Quality gate (mandatory before finishing a code change)
@@ -65,6 +67,6 @@ The three agent surfaces must stay aligned. See `.cursor/rules/quality-gate.mdc`
 
 - Package imports: `package:comunexa/...`.
 - Target layout: `lib/features/<name>/{data,domain,presentation}/`.
-- Riverpod for state; go_router planned (not wired yet — do not invent a second navigation system without aligning `app.dart`).
+- Riverpod for state; **go_router** wired (`lib/core/router/app_router.dart`).
 - `presentation` must not call Supabase directly; use repositories in `data/`.
 - Conventional Commits.

@@ -2,6 +2,7 @@ import 'package:comunexa/core/supabase/comunexa_supabase.dart';
 import 'package:comunexa/features/auth/data/supabase_auth_repository.dart';
 import 'package:comunexa/features/auth/domain/auth_failure.dart';
 import 'package:comunexa/features/auth/domain/auth_repository.dart';
+import 'package:comunexa/features/auth/domain/auth_state_change.dart';
 import 'package:comunexa/features/auth/domain/auth_user.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -20,6 +21,12 @@ class UnconfiguredAuthRepository implements AuthRepository {
   AuthUser? get currentUser => null;
 
   @override
+  bool get pendingPasswordRecovery => false;
+
+  @override
+  Stream<AuthStateChange> get authStateChanges => const Stream.empty();
+
+  @override
   Future<AuthUser?> restoreSession() async => null;
 
   @override
@@ -35,6 +42,11 @@ class UnconfiguredAuthRepository implements AuthRepository {
 
   @override
   Future<void> sendPasswordResetEmail(String email) async {
+    throw AuthFailure.notConfigured();
+  }
+
+  @override
+  Future<void> updatePassword(String newPassword) async {
     throw AuthFailure.notConfigured();
   }
 }

@@ -10,6 +10,9 @@ abstract final class Env {
 
   static String get supabaseAnonKey => _read('SUPABASE_ANON_KEY');
 
+  /// Redirect del correo de recuperación (web: `/reset-password` si vacío).
+  static String get authRedirectUrl => _read('AUTH_REDIRECT_URL');
+
   static String get firebaseProjectId => _read('FIREBASE_PROJECT_ID');
 
   static bool get isConfigured =>

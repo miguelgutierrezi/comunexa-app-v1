@@ -1,7 +1,6 @@
 import 'package:comunexa/core/session/session_provider.dart';
 import 'package:comunexa/core/theme/app_theme.dart';
 import 'package:comunexa/core/theme/brand_assets.dart';
-import 'package:comunexa/features/auth/data/mock_user_contexts.dart';
 import 'package:comunexa/features/auth/domain/user_access_context.dart';
 import 'package:comunexa/features/home/data/mock_noticias.dart';
 import 'package:comunexa/features/home/presentation/desktop_dashboard.dart';
@@ -53,7 +52,7 @@ class _AddNewsScreenState extends ConsumerState<AddNewsScreen> {
     super.dispose();
   }
 
-  UserAccessContext get _activeContext {
+  UserAccessContext? get _activeContext {
     final active = ref.read(activeContextProvider);
     final contexts = ref.read(availableContextsProvider);
     if (_selectedContextId != null) {
@@ -61,7 +60,7 @@ class _AddNewsScreenState extends ConsumerState<AddNewsScreen> {
         if (ctx.id == _selectedContextId) return ctx;
       }
     }
-    return active ?? mockSingleContext;
+    return active;
   }
 
   Future<void> _pickDate() async {
@@ -116,6 +115,8 @@ class _AddNewsScreenState extends ConsumerState<AddNewsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(activeContextProvider);
+
     return LayoutBuilder(
       builder: (context, constraints) {
         final width = constraints.maxWidth;
@@ -137,6 +138,9 @@ class _AddNewsScreenState extends ConsumerState<AddNewsScreen> {
   }
 
   Widget _buildStacked(BuildContext context, _AddNewsDensity density) {
+    final active = _activeContext;
+    if (active == null) return const SizedBox.shrink();
+
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final scrollPad = density == _AddNewsDensity.tabletPortrait
         ? const EdgeInsets.fromLTRB(40, 32, 40, 32)
@@ -164,9 +168,9 @@ class _AddNewsScreenState extends ConsumerState<AddNewsScreen> {
                   category: _category,
                   publishDateLabel: _formatDate(_publishDate),
                   attachmentName: _attachmentName,
-                  propertyName: _activeContext.propertyName,
+                  propertyName: active.propertyName,
                   contexts: ref.watch(availableContextsProvider),
-                  selectedContextId: _activeContext.id,
+                  selectedContextId: active.id,
                   onCategoryChanged: (c) => setState(() => _category = c),
                   onPropertySelected: (id) =>
                       setState(() => _selectedContextId = id),
@@ -191,6 +195,9 @@ class _AddNewsScreenState extends ConsumerState<AddNewsScreen> {
   }
 
   Widget _buildSplit(BuildContext context, DashboardLayout layout) {
+    final active = _activeContext;
+    if (active == null) return const SizedBox.shrink();
+
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final pageBg = isDark ? AppTheme.ink : AppTheme.fieldLight;
     // Desktop dark `#112:317` / tablet dark: chrome `#111E2E`.
@@ -264,9 +271,9 @@ class _AddNewsScreenState extends ConsumerState<AddNewsScreen> {
                               category: _category,
                               publishDateLabel: _formatDate(_publishDate),
                               attachmentName: _attachmentName,
-                              propertyName: _activeContext.propertyName,
+                              propertyName: active.propertyName,
                               contexts: ref.watch(availableContextsProvider),
-                              selectedContextId: _activeContext.id,
+                              selectedContextId: active.id,
                               onCategoryChanged: (c) =>
                                   setState(() => _category = c),
                               onPropertySelected: (id) =>

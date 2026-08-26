@@ -2,6 +2,20 @@
 
 Estado al **2026-08-25**.
 
+## Cierre modelo de acceso (Fases A–E) — completado
+
+| Fase | Entregable | Estado |
+|------|------------|--------|
+| **A** | Migración 005: FKs compuestas + RLS SELECT estricto + pgTAP | [x] |
+| **B** | `AccessContextRepository` + `SessionNotifier` sin mocks productivos | [x] |
+| **C** | `authenticatedWithoutAccess` + `/no-access` | [x] |
+| **D** | `onAuthStateChange` + `/reset-password` + deep link recovery | [x] |
+| **E** | Seed E2E + script setup + guía validación + quality gate | [x] |
+
+Guía E2E: [`access-model-e2e-validation.md`](access-model-e2e-validation.md) · seed: [`../supabase/scripts/006_e2e_access_seed.sql`](../supabase/scripts/006_e2e_access_seed.sql)
+
+**Post-E (siguiente bloque):** cutover legacy, seed Diaz PH, OAuth, repositorios de dominio.
+
 ## Fase 0 — Fundamentos
 
 - [x] Docs + brief (incl. CI/CD GHA, Hosting, pagos pausados)
@@ -17,7 +31,11 @@ Estado al **2026-08-25**.
 ## Fase 1 — Supabase dev
 
 - [x] Migrar modelo de acceso mínimo (003): organizations / properties / memberships / occupancies / permisos+presets
-- [x] RLS + tests pgTAP acceso objetivo (aislamiento org, manager asignado, residente, multirrol, sin membresías)
+- [x] RLS + tests pgTAP acceso objetivo (aislamiento org, manager, residente, multirrol, huérfano)
+- [x] Integridad FK org/property/unit + SELECT estricto de membresías (005 + pgTAP)
+- [x] Flutter: `AccessContextRepository` + sesión/contexto sin mocks productivos (cierre A–E)
+- [x] Flutter: `/no-access` + recovery password + `onAuthStateChange` (cierre A–E)
+- [x] Seed E2E local + guía validación manual
 - [ ] Cutover datos legacy (`tenants`/`buildings` → org/property) + reescribir RLS de dominio
 - [ ] Separar uso de `property_manager` vs `property_staff` en app; `platform_superadmin` vía flag
 - [ ] Proyecto + `db push`
@@ -45,7 +63,7 @@ Estado al **2026-08-25**.
 - [x] SessionProvider con Auth; SharedPreferences solo `lastContextId` (sin email/rol/sesión)
 - [x] Añadir noticia todos breakpoints light+dark (móvil / tablet port `#116:5`/`#116:92` / tablet land / desktop) + FAB/CTA
 - [x] `supabase_flutter` bootstrap tipado (`ComunexaSupabase`)
-- [x] go_router: `/login` · `/select-context` · `/home` · `/news/new` + redirects por sesión/contexto
+- [x] go_router: `/login` · `/reset-password` · `/select-context` · `/no-access` · `/home` · `/news/new` + redirects por sesión/contexto/recovery
 - [ ] OAuth Google/Apple + repositorios de dominio
 - [ ] Onboarding híbrido: aceptar invitación o solicitar ingreso a propiedad
 - [x] Selector de contexto multirrol mobile light/dark (`#99:5` / `#99:67`)

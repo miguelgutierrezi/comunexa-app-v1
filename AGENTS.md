@@ -23,14 +23,18 @@ Instrucciones al trabajar en **Comunexa** (`comunexa-app-v1`).
 
 | Hecho | Pendiente inmediato |
 |---|---|
-| Schema + RLS 001/002 + **modelo acceso 003** + **tests RLS pgTAP** | Cutover legacy → org/property; `db push` + seed Diaz PH |
-| Bootstrap, `Env`, tema, Auth email/password, **go_router** | OAuth + repositorios; cutover membresías |
-| Splash → Login UI responsive (stub auth; Apple solo iOS/macOS) · SessionProvider persistido | Cablear Auth Supabase al login |
-| Bypass login → **Home shell mock** (móvil / tablet / desktop · light+dark) | Home por rol + Auth real |
+| Schema + RLS 001/002 + **modelo acceso 003/005** + **pgTAP 26/26** | Cutover legacy → org/property; `db push` + seed Diaz PH |
+| Bootstrap, `Env`, tema, **Auth email/password** + **`onAuthStateChange`** + recovery | OAuth Google/Apple |
+| **go_router** (`/login` · `/reset-password` · `/select-context` · `/no-access` · `/home` · `/news/new`) | Repositorios de dominio (noticias, visitas, …) |
+| **`AccessContextRepository`** (Supabase/Fake) + **`SessionNotifier`** sin mocks productivos | RLS en tablas de negocio |
+| Home shell (móvil / tablet / desktop · light+dark); feed/add-news **UI mock** | Home por rol + APIs reales |
+| **Seed E2E** (`006_e2e_access_seed.sql`) + [`docs/access-model-e2e-validation.md`](docs/access-model-e2e-validation.md) | Matriz manual §4 (validación humana) |
 | Workflows GHA + remote GitHub | Secrets/variables GHA + CI verde |
 | Stub `payment-webhook` | Features de negocio reales (Fase 4) |
 
-Detalle: [`docs/roadmap.md`](docs/roadmap.md) · mapa `lib/`: [`docs/flutter-structure.md`](docs/flutter-structure.md).
+**Cierre modelo de acceso (Fases A–E):** SQL + pgTAP + Flutter auth/contexto/router + seed E2E + guía. Post-E: cutover legacy, seed Diaz PH, OAuth.
+
+Detalle: [`docs/roadmap.md`](docs/roadmap.md) · mapa `lib/`: [`docs/flutter-structure.md`](docs/flutter-structure.md) · E2E: [`docs/access-model-e2e-validation.md`](docs/access-model-e2e-validation.md).
 
 ## Orden de lectura
 
@@ -48,8 +52,10 @@ Detalle: [`docs/roadmap.md`](docs/roadmap.md) · mapa `lib/`: [`docs/flutter-str
 | `core/theme/` | `AppTheme` + `BrandAssets` (marca producto) |
 | `core/supabase/` | `ComunexaSupabase` + `supabaseClientProvider` |
 | `features/splash/` | Splash todos breakpoints light+dark |
-| `features/auth/` | Login + selector contexto mock (`demo:multi`) + post-login stub |
-| `features/home/` | Shell + feed + añadir noticia (móvil/tablet/desktop) + dashboards |
+| `core/router/` | `app_router.dart` + `app_routes.dart` (redirects sesión/contexto/recovery) |
+| `core/config/auth_redirect.dart` | URL redirect recovery (`AUTH_REDIRECT_URL`) |
+| `features/auth/` | Login · selector · `/no-access` · `/reset-password` · repos Auth + AccessContext |
+| `features/home/` | Shell + feed + añadir noticia (móvil/tablet/desktop) + dashboards (**datos mock**) |
 | `services/` | Vacío; FCM etc. llegan después |
 
 ## Restricciones
@@ -93,7 +99,8 @@ Detalle: [`docs/roadmap.md`](docs/roadmap.md) · mapa `lib/`: [`docs/flutter-str
 
 - UI en español; código en inglés; **responder al usuario en español**.
 - Cambios mínimos alineados a la tarea; no saltar a Fase 4 sin pedirlo.
-- Home/login son **UI mock** hasta Auth real: no tratar bypass como sesión.
+- **Demos sin Supabase** (`.env` vacío): `demo:single|multi|noaccess|recovery@test.com`. **E2E local:** seed `006` + usuarios `e2e-*@comunexa.local` — ver guía E2E.
+- Home/feed siguen con **datos mock**; sesión y contexto son reales vía Supabase o Fake repos.
 
 ## Quality gate (mandatorio)
 
@@ -103,11 +110,11 @@ Ningún cambio de código se cierra sin esto. Detalle también en [`.cursor/rule
 
 ```bash
 flutter analyze
-flutter test
+flutter test                    # 97 tests (Fake repos; sin Supabase)
 flutter build web --release
 ```
 
-Los tres deben pasar (mismo criterio que `web.yml`). Solo-docs: no exige build.
+Cambios en SQL/RLS/acceso: además `supabase test db` (26/26 pgTAP). Validación manual E2E: [`docs/access-model-e2e-validation.md`](docs/access-model-e2e-validation.md).
 
 ### 2. Tests para lo nuevo
 

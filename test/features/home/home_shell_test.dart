@@ -2,19 +2,31 @@ import '../../helpers/test_provider_scope.dart';
 import 'package:comunexa/core/config/env.dart';
 import 'package:comunexa/core/session/session_storage.dart';
 import 'package:comunexa/core/theme/app_theme.dart';
+import 'package:comunexa/features/auth/data/fake_access_context_seed.dart';
 import 'package:comunexa/features/auth/data/fake_auth_repository.dart';
 import 'package:comunexa/features/auth/domain/auth_user.dart';
 import 'package:comunexa/features/home/presentation/home_shell_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+FakeAuthRepository _singleAuth() => FakeAuthRepository(
+      seed: AuthUser(
+        id: FakeAccessContextSeed.profileIdForEmail('demo:single@test.com'),
+        email: 'demo:single@test.com',
+        displayName: 'Carlos Méndez',
+      ),
+    );
+
 FakeAuthRepository _multiAuth() => FakeAuthRepository(
-      seed: const AuthUser(
-        id: 'u-multi',
+      seed: AuthUser(
+        id: FakeAccessContextSeed.profileIdForEmail('demo:multi@test.com'),
         email: 'demo:multi@test.com',
         displayName: 'Carlos Méndez',
       ),
     );
+
+Future<InMemorySessionStorage> _singleSessionStorage() =>
+    _storageWithContext('ctx-torres-resident');
 
 Future<InMemorySessionStorage> _storageWithContext(String contextId) async {
   final storage = InMemorySessionStorage();
@@ -31,14 +43,19 @@ void main() {
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
 
+    final storage = await _singleSessionStorage();
+
     await tester.pumpWidget(
       TestProviderScope(
+        storage: storage,
+        auth: _singleAuth(),
         child: MaterialApp(
           theme: AppTheme.light(),
           home: const HomeShellScreen(),
         ),
       ),
     );
+    await tester.pumpAndSettle();
 
     expect(find.text('Torres del Parque'), findsOneWidget);
     expect(find.text('Mantenimiento del ascensor'), findsOneWidget);
@@ -84,14 +101,19 @@ void main() {
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
 
+    final storage = await _singleSessionStorage();
+
     await tester.pumpWidget(
       TestProviderScope(
+        storage: storage,
+        auth: _singleAuth(),
         child: MaterialApp(
           theme: AppTheme.light(),
           home: const HomeShellScreen(),
         ),
       ),
     );
+    await tester.pumpAndSettle();
 
     expect(find.text('Novedades de la Comunidad'), findsOneWidget);
     expect(find.text('Próximos Eventos'), findsOneWidget);
@@ -101,8 +123,8 @@ void main() {
     expect(find.text('Buscar novedades...'), findsOneWidget);
     expect(find.text('Normativa'), findsOneWidget);
     expect(find.text('Torres del Parque'), findsOneWidget);
-    expect(find.text('Residente - T. A'), findsOneWidget);
-    expect(find.text('Residente · Torre A, Apto 502'), findsOneWidget);
+    expect(find.text('Residente'), findsOneWidget);
+    expect(find.text('Residente · Torres del Parque'), findsOneWidget);
   });
 
   testWidgets('desktop multirrol permite cambiar propiedad desde sidebar',
@@ -143,14 +165,19 @@ void main() {
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
 
+    final storage = await _singleSessionStorage();
+
     await tester.pumpWidget(
       TestProviderScope(
+        storage: storage,
+        auth: _singleAuth(),
         child: MaterialApp(
           theme: AppTheme.light(),
           home: const HomeShellScreen(),
         ),
       ),
     );
+    await tester.pumpAndSettle();
 
     expect(find.text('Novedades de la Comunidad'), findsOneWidget);
     expect(find.text('Próximos Eventos'), findsOneWidget);
@@ -183,8 +210,12 @@ void main() {
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
 
+    final storage = await _singleSessionStorage();
+
     await tester.pumpWidget(
       TestProviderScope(
+        storage: storage,
+        auth: _singleAuth(),
         child: MaterialApp(
           theme: AppTheme.light(),
           darkTheme: AppTheme.dark(),
@@ -193,6 +224,7 @@ void main() {
         ),
       ),
     );
+    await tester.pumpAndSettle();
 
     expect(find.text('Novedades de la Comunidad'), findsOneWidget);
     expect(find.text('Próximos Eventos'), findsOneWidget);
@@ -253,14 +285,19 @@ void main() {
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
 
+    final storage = await _singleSessionStorage();
+
     await tester.pumpWidget(
       TestProviderScope(
+        storage: storage,
+        auth: _singleAuth(),
         child: MaterialApp(
           theme: AppTheme.light(),
           home: const HomeShellScreen(),
         ),
       ),
     );
+    await tester.pumpAndSettle();
 
     expect(find.text('Novedades de la Comunidad'), findsOneWidget);
     expect(find.text('Próximos Eventos'), findsOneWidget);
@@ -268,7 +305,7 @@ void main() {
     expect(find.text('Configuración'), findsOneWidget);
     expect(find.text('Noticias'), findsWidgets);
     expect(find.text('Torres del Parque'), findsOneWidget);
-    expect(find.text('Residente - T. A'), findsOneWidget);
+    expect(find.text('Residente'), findsOneWidget);
 
     // Densidad tablet: título de top bar a 20 (desktop usa 22).
     final title = tester.widget<Text>(find.text('Novedades de la Comunidad'));
@@ -280,8 +317,12 @@ void main() {
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
 
+    final storage = await _singleSessionStorage();
+
     await tester.pumpWidget(
       TestProviderScope(
+        storage: storage,
+        auth: _singleAuth(),
         child: MaterialApp(
           theme: AppTheme.light(),
           darkTheme: AppTheme.dark(),
@@ -290,6 +331,7 @@ void main() {
         ),
       ),
     );
+    await tester.pumpAndSettle();
 
     expect(find.text('Novedades de la Comunidad'), findsOneWidget);
     expect(find.text('Próximos Eventos'), findsOneWidget);
@@ -352,8 +394,12 @@ void main() {
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
 
+    final storage = await _singleSessionStorage();
+
     await tester.pumpWidget(
       TestProviderScope(
+        storage: storage,
+        auth: _singleAuth(),
         child: MaterialApp(
           theme: AppTheme.light(),
           darkTheme: AppTheme.dark(),
@@ -362,6 +408,7 @@ void main() {
         ),
       ),
     );
+    await tester.pumpAndSettle();
 
     expect(find.text('Novedades de la Comunidad'), findsOneWidget);
     expect(find.text('Próximos Eventos'), findsOneWidget);

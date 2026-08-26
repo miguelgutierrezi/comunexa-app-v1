@@ -1,7 +1,6 @@
 import 'package:comunexa/core/session/session_provider.dart';
 import 'package:comunexa/core/theme/app_theme.dart';
 import 'package:comunexa/core/theme/brand_assets.dart';
-import 'package:comunexa/features/auth/data/mock_user_contexts.dart';
 import 'package:comunexa/features/home/presentation/widgets/property_context_menu_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -29,7 +28,9 @@ class HeaderPropertySwitcher extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final active = ref.watch(activeContextProvider) ?? mockSingleContext;
+    final active = ref.watch(activeContextProvider);
+    if (active == null) return const SizedBox.shrink();
+
     final contexts = ref.watch(availableContextsProvider);
     final canSwitch = contexts.length > 1;
     final titleColor = isDark ? Colors.white : AppTheme.ink;

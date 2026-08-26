@@ -1,6 +1,10 @@
 import '../../helpers/test_provider_scope.dart';
 import 'package:comunexa/core/config/env.dart';
+import 'package:comunexa/core/session/session_storage.dart';
 import 'package:comunexa/core/theme/app_theme.dart';
+import 'package:comunexa/features/auth/data/fake_access_context_seed.dart';
+import 'package:comunexa/features/auth/data/fake_auth_repository.dart';
+import 'package:comunexa/features/auth/domain/auth_user.dart';
 import 'package:comunexa/features/home/presentation/add_news_screen.dart';
 import 'package:comunexa/features/home/presentation/home_shell_screen.dart';
 import 'package:flutter/material.dart';
@@ -20,14 +24,26 @@ void main() {
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
 
+    final storage = InMemorySessionStorage();
+    await storage.writeLastContextId('ctx-torres-resident');
+
     await tester.pumpWidget(
       TestProviderScope(
+        storage: storage,
+        auth: FakeAuthRepository(
+          seed: AuthUser(
+            id: FakeAccessContextSeed.profileIdForEmail('demo:single@test.com'),
+            email: 'demo:single@test.com',
+            displayName: 'Carlos Méndez',
+          ),
+        ),
         child: MaterialApp(
           theme: theme ?? AppTheme.light(),
           home: const AddNewsScreen(),
         ),
       ),
     );
+    await tester.pumpAndSettle();
   }
 
   Future<void> revealPublishButton(WidgetTester tester) async {
@@ -202,14 +218,26 @@ void main() {
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
 
+    final storage = InMemorySessionStorage();
+    await storage.writeLastContextId('ctx-torres-resident');
+
     await tester.pumpWidget(
       TestProviderScope(
+        storage: storage,
+        auth: FakeAuthRepository(
+          seed: AuthUser(
+            id: FakeAccessContextSeed.profileIdForEmail('demo:single@test.com'),
+            email: 'demo:single@test.com',
+            displayName: 'Carlos Méndez',
+          ),
+        ),
         child: MaterialApp(
           theme: AppTheme.light(),
           home: const HomeShellScreen(),
         ),
       ),
     );
+    await tester.pumpAndSettle();
 
     expect(find.byType(FloatingActionButton), findsOneWidget);
     await tester.tap(find.byType(FloatingActionButton));
@@ -224,14 +252,26 @@ void main() {
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
 
+    final storage = InMemorySessionStorage();
+    await storage.writeLastContextId('ctx-torres-resident');
+
     await tester.pumpWidget(
       TestProviderScope(
+        storage: storage,
+        auth: FakeAuthRepository(
+          seed: AuthUser(
+            id: FakeAccessContextSeed.profileIdForEmail('demo:single@test.com'),
+            email: 'demo:single@test.com',
+            displayName: 'Carlos Méndez',
+          ),
+        ),
         child: MaterialApp(
           theme: AppTheme.light(),
           home: const HomeShellScreen(),
         ),
       ),
     );
+    await tester.pumpAndSettle();
 
     expect(find.text('Añadir noticia'), findsOneWidget);
     await tester.tap(find.text('Añadir noticia'));

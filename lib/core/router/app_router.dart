@@ -3,6 +3,8 @@ import 'package:comunexa/core/session/session_provider.dart';
 import 'package:comunexa/core/session/session_state.dart';
 import 'package:comunexa/features/auth/presentation/context_select_screen.dart';
 import 'package:comunexa/features/auth/presentation/login_screen.dart';
+import 'package:comunexa/features/auth/presentation/no_access_screen.dart';
+import 'package:comunexa/features/auth/presentation/reset_password_screen.dart';
 import 'package:comunexa/features/home/presentation/add_news_screen.dart';
 import 'package:comunexa/features/home/presentation/home_shell_screen.dart';
 import 'package:comunexa/features/splash/presentation/splash_screen.dart';
@@ -58,8 +60,16 @@ GoRouter createAppRouter(
         builder: (context, state) => const LoginScreen(),
       ),
       GoRoute(
+        path: AppRoutes.resetPassword,
+        builder: (context, state) => const ResetPasswordScreen(),
+      ),
+      GoRoute(
         path: AppRoutes.selectContext,
         builder: (context, state) => const ContextSelectScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.noAccess,
+        builder: (context, state) => const NoAccessScreen(),
       ),
       GoRoute(
         path: AppRoutes.home,
@@ -95,16 +105,33 @@ String? _redirect(Ref ref, GoRouterState state) {
     return AppRoutes.login;
   }
 
+  if (session.needsPasswordRecovery) {
+    if (loc == AppRoutes.resetPassword) return null;
+    return AppRoutes.resetPassword;
+  }
+
+  if (session.authenticatedWithoutAccess) {
+    if (loc == AppRoutes.noAccess) return null;
+    return AppRoutes.noAccess;
+  }
+
   if (session.needsContextSelection) {
     if (loc == AppRoutes.selectContext) return null;
     return AppRoutes.selectContext;
   }
 
   if (session.hasActiveContext) {
-    if (loc == AppRoutes.login || loc == AppRoutes.selectContext) {
+    if (loc == AppRoutes.login ||
+        loc == AppRoutes.resetPassword ||
+        loc == AppRoutes.selectContext ||
+        loc == AppRoutes.noAccess) {
       return AppRoutes.home;
     }
     return null;
+  }
+
+  if (session.isAuthenticated) {
+    return AppRoutes.noAccess;
   }
 
   return AppRoutes.login;
@@ -115,11 +142,15 @@ String locationForPostLogin(PostLoginDestination destination) {
   return switch (destination) {
     PostLoginDestination.home => AppRoutes.home,
     PostLoginDestination.contextSelect => AppRoutes.selectContext,
+    PostLoginDestination.noAccess => AppRoutes.noAccess,
+    PostLoginDestination.resetPassword => AppRoutes.resetPassword,
   };
 }
 
 String locationForAppStart(SessionState session) {
   if (!session.isAuthenticated) return AppRoutes.login;
+  if (session.needsPasswordRecovery) return AppRoutes.resetPassword;
+  if (session.authenticatedWithoutAccess) return AppRoutes.noAccess;
   if (session.needsContextSelection) return AppRoutes.selectContext;
   if (session.hasActiveContext) return AppRoutes.home;
   return AppRoutes.login;

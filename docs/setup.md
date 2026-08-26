@@ -76,10 +76,10 @@ Cliente: `supabaseClientProvider` / `ComunexaSupabase.client` solo desde capas `
 
 Dashboard → Authentication:
 1. Habilitar **Email** (password).
-2. Redirect URL = dominio Hosting (y deep links móviles cuando existan).
+2. Redirect URL = dominio Hosting + `/reset-password` (y deep links móviles cuando existan). Opcional: `AUTH_REDIRECT_URL` en `.env`.
 3. Opcional después: Google / Apple vía OAuth (mismos providers en Dashboard; UI ya muestra botones como “próximamente”).
 
-`handle_new_user` crea `profiles`. La app usa `AuthRepository` → `signInWithPassword` / `signOut` / `sendPasswordResetEmail` / restore de sesión JWT.
+`handle_new_user` crea `profiles`. La app usa `AuthRepository` → `signInWithPassword` / `signOut` / `sendPasswordResetEmail` / `updatePassword` / `onAuthStateChange` (sync sesión) / restore de sesión JWT.
 
 ## 5. Storage
 

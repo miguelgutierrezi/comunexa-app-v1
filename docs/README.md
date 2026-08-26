@@ -18,13 +18,14 @@
 | [roadmap.md](roadmap.md) | Fases |
 | [subscriptions-and-onboarding.md](subscriptions-and-onboarding.md) | Planes, suscripción B2B, invitaciones y solicitudes de acceso |
 | [access-control-and-media.md](access-control-and-media.md) | Vigilancia, visitas, vehículos y validación de imágenes |
+| [access-model-e2e-validation.md](access-model-e2e-validation.md) | Validación manual E2E — cierre Fases A–E |
 
 ## Base de datos
 
 | Documento | Contenido |
 |---|---|
 | [database/er-diagram.md](database/er-diagram.md) | ER |
-| [database/access-model.md](database/access-model.md) | Modelo acceso 003 + tests RLS |
+| [database/access-model.md](database/access-model.md) | Modelo acceso 003/005 + tests RLS + cierre Flutter A–E |
 | [database/schema.sql](database/schema.sql) | SQL legacy 001 (referencia) |
 | [database/rls-policies.md](database/rls-policies.md) | RLS |
 | [../supabase/migrations/](../supabase/migrations/) | Fuente canónica |
@@ -51,9 +52,10 @@
 |---|---|
 | Docs + migraciones SQL/RLS + stub pagos | Listo |
 | CI workflows en repo | Listo (secrets GHA pendientes de verificar) |
-| Flutter: tema, splash, **login UI** responsive | Listo (auth real pendiente; Apple solo iOS/macOS) |
-| Flutter: **home shell mock** (móvil / tablet / desktop · light+dark) | Listo (datos mock) |
-| `supabase_flutter` + Auth + go_router | OAuth Google/Apple + repositorios |
+| Flutter: tema, splash, login, selector, `/no-access`, recovery | Listo (Auth + contexto reales; Apple solo iOS/macOS) |
+| Flutter: **home shell** (móvil / tablet / desktop · light+dark) | Listo (**feed mock**; sesión/contexto reales) |
+| **Cierre acceso A–E** (repos, router, seed E2E, pgTAP 26) | Listo — validación manual §4 pendiente humana |
+| OAuth Google/Apple + repositorios dominio | Pendiente |
 | Features de negocio reales (noticias API, visitas, …) | Pendiente (Fase 4; UI mock noticias en home) |
 
 Ver [roadmap.md](roadmap.md).

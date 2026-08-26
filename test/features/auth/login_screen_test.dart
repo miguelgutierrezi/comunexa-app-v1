@@ -3,6 +3,8 @@ import 'package:comunexa/core/config/env.dart';
 import 'package:comunexa/core/router/app_routes.dart';
 import 'package:comunexa/core/theme/app_theme.dart';
 import 'package:comunexa/features/auth/presentation/login_screen.dart';
+import 'package:comunexa/features/auth/presentation/no_access_screen.dart';
+import 'package:comunexa/features/auth/presentation/reset_password_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -276,6 +278,55 @@ void main() {
     expect(find.textContaining('NOVEDADES DE LA COMUNIDAD'), findsOneWidget);
     expect(find.text('Mantenimiento del ascensor'), findsOneWidget);
     expect(find.text('Noticias'), findsOneWidget);
+  });
+
+  testWidgets('login demo:noaccess muestra pantalla sin acceso', (tester) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+
+    await tester.pumpWidget(
+      const TestProviderScope(
+        initialLocation: AppRoutes.login,
+        child: TestRouterApp(),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.enterText(find.byType(TextField).at(0), 'demo:noaccess@test.com');
+    await tester.enterText(find.byType(TextField).at(1), 'password123');
+    await tester.ensureVisible(find.text('Iniciar Sesión'));
+    await tester.tap(find.text('Iniciar Sesión'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(NoAccessScreen), findsOneWidget);
+    expect(find.text('Aún no tienes acceso'), findsOneWidget);
+    expect(find.textContaining('NOVEDADES DE LA COMUNIDAD'), findsNothing);
+  });
+
+  testWidgets('login demo:recovery muestra pantalla nueva contraseña',
+      (tester) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+
+    await tester.pumpWidget(
+      const TestProviderScope(
+        initialLocation: AppRoutes.login,
+        child: TestRouterApp(),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.enterText(find.byType(TextField).at(0), 'demo:recovery@test.com');
+    await tester.enterText(find.byType(TextField).at(1), 'password123');
+    await tester.ensureVisible(find.text('Iniciar Sesión'));
+    await tester.tap(find.text('Iniciar Sesión'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(ResetPasswordScreen), findsOneWidget);
+    expect(find.text('Nueva contraseña'), findsOneWidget);
+    expect(find.textContaining('NOVEDADES DE LA COMUNIDAD'), findsNothing);
   });
 
   testWidgets('olvidé contraseña muestra confirmación genérica', (tester) async {
