@@ -1,6 +1,6 @@
 import 'package:comunexa/features/auth/domain/user_access_context.dart';
 
-/// Destino tras autenticación (stub hasta go_router).
+/// Destino tras autenticación (email/password).
 enum PostLoginDestination { home, contextSelect }
 
 /// Sesión de usuario: correo, contextos disponibles y propiedad/rol activo.

@@ -1,48 +1,20 @@
 import 'dart:ui';
 
-import 'package:comunexa/core/session/session_provider.dart';
-import 'package:comunexa/core/session/session_state.dart';
 import 'package:comunexa/core/theme/app_theme.dart';
 import 'package:comunexa/core/theme/brand_assets.dart';
-import 'package:comunexa/features/auth/presentation/post_login_navigation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-/// Splash breve → restaura sesión persistida o login.
+/// Splash breve; la navegación la decide [go_router] (redirect).
 /// Móvil `#118:5`/`#118:27` · tablet port `#118:117`/`#118:128` · tablet land `#118:95`/`#118:106` ·
 /// desktop `#118:73`/`#118:84`.
-class SplashScreen extends ConsumerStatefulWidget {
+class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
 
   static const double tabletPortraitBreakpoint = 700;
   static const double tabletLandscapeBreakpoint = 900;
   static const double desktopBreakpoint = 1280;
-
-  @override
-  ConsumerState<SplashScreen> createState() => _SplashScreenState();
-}
-
-class _SplashScreenState extends ConsumerState<SplashScreen> {
-  @override
-  void initState() {
-    super.initState();
-    _bootstrap();
-  }
-
-  Future<void> _bootstrap() async {
-    final minDelay = Future<void>.delayed(const Duration(milliseconds: 1200));
-    final sessionFuture = ref.read(sessionProvider.future);
-    await Future.wait([minDelay, sessionFuture]);
-
-    if (!mounted) return;
-    final session = ref.read(sessionProvider).valueOrNull ?? SessionState.empty;
-    navigateToAppStart(
-      context,
-      resolveAppStartDestination(session),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -69,7 +41,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
         glowSize: 540,
       );
     }
-    // Tablet land light `#118:95` · dark `#118:106`.
     if (isTabletLandscape) {
       return _WideSplash(
         isDark: isDark,
@@ -78,7 +49,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
         glowSize: 500,
       );
     }
-    // Tablet port light `#118:117` · dark `#118:128`.
     if (isTabletPortrait) {
       return _WideSplash(
         isDark: isDark,
@@ -95,7 +65,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   }
 }
 
-/// Wide: desktop · tablet land · tablet port `#118:117`/`#118:128`.
 class _WideSplash extends StatelessWidget {
   const _WideSplash({
     required this.isDark,
@@ -129,7 +98,6 @@ class _WideSplash extends StatelessWidget {
         children: [
           Center(
             child: Opacity(
-              // Light: 8%. Dark desktop `#118:84`: 15%.
               opacity: isDark ? 0.15 : 0.08,
               child: ImageFiltered(
                 imageFilter: ImageFilter.blur(sigmaX: 60, sigmaY: 60),
@@ -185,7 +153,6 @@ class _WideSplash extends StatelessWidget {
   }
 }
 
-/// Móvil light `#118:5` · dark `#118:27`.
 class _MobileSplash extends StatelessWidget {
   const _MobileSplash({
     required this.isDark,

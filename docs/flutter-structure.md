@@ -112,7 +112,7 @@ lib/
 
 | Hoy | Objetivo |
 |---|---|
-| Splash → Login → Home vía `Navigator` | `go_router` + redirect por sesión |
+| Splash → Login → Home vía `go_router` | Deep links PQR/facturas |
 | Login UI + Auth email/password + tests | OAuth Google/Apple |
 | Home shell mock (móvil / tablet portrait / tablet landscape / desktop · light+dark) | Datos reales + home por rol |
 | Añadir noticia todos breakpoints light+dark | Persistencia API |
@@ -120,8 +120,8 @@ lib/
 | Tablet portrait light+dark (`#74:5` / `#74:117`) | — |
 | Apple Sign-In solo iOS/macOS (override en tests) | Cablear OAuth real por plataforma |
 | `ProviderScope` + SessionProvider (Auth + contexto) | Membresías reales post-cutover |
-| `supabase_flutter` + Auth email/password | OAuth Google/Apple + repositorios |
-| Sin `go_router` | Añadir en Fase 2 |
+| `supabase_flutter` + Auth email/password + go_router | OAuth + repositorios |
+| `go_router` (`/login` · `/select-context` · `/home` · `/news/new`) | Rutas de dominio (`/news/:id`, …) |
 | Sin freezed | Generar modelos al conectar BD |
 | Tema fijo Comunexa | `tenant_theme` desde org/property |
 

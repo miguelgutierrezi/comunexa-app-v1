@@ -42,6 +42,13 @@ supabase test db   # pgTAP en supabase/tests/*.test.sql
 supabase stop
 ```
 
+Los `*.test.sql` se ejecutan en cada `test db` (no son migraciones).  
+Para **reaplicar migraciones** desde cero en local:
+
+```bash
+supabase db reset   # dropea la DB local, aplica 001…004 de nuevo y seed
+```
+
 Detalle: [`database/access-model.md`](database/access-model.md) · workflow [`.github/workflows/rls.yml`](../.github/workflows/rls.yml).
 
 ## 3. Variables Flutter

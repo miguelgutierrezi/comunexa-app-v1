@@ -1,5 +1,6 @@
 import '../../helpers/test_provider_scope.dart';
 import 'package:comunexa/core/config/env.dart';
+import 'package:comunexa/core/router/app_routes.dart';
 import 'package:comunexa/core/theme/app_theme.dart';
 import 'package:comunexa/features/auth/presentation/login_screen.dart';
 import 'package:flutter/material.dart';
@@ -259,19 +260,17 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
 
     await tester.pumpWidget(
-      TestProviderScope(
-        child: MaterialApp(
-          theme: AppTheme.light(),
-          home: const LoginScreen(showAppleSignIn: true),
-        ),
+      const TestProviderScope(
+        initialLocation: AppRoutes.login,
+        child: TestRouterApp(),
       ),
     );
+    await tester.pumpAndSettle();
 
     await tester.enterText(find.byType(TextField).at(0), 'demo:single@test.com');
     await tester.enterText(find.byType(TextField).at(1), 'password123');
     await tester.ensureVisible(find.text('Iniciar Sesión'));
     await tester.tap(find.text('Iniciar Sesión'));
-    await tester.pump();
     await tester.pumpAndSettle();
 
     expect(find.textContaining('NOVEDADES DE LA COMUNIDAD'), findsOneWidget);

@@ -1,3 +1,4 @@
+import 'package:comunexa/core/router/app_routes.dart';
 import 'package:comunexa/core/theme/app_theme.dart';
 import 'package:comunexa/core/theme/brand_assets.dart';
 import 'package:comunexa/features/home/presentation/add_news_screen.dart';
@@ -8,6 +9,7 @@ import 'package:comunexa/features/home/presentation/tablet_portrait_home.dart';
 import 'package:comunexa/features/home/presentation/widgets/header_property_switcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 
 /// Shell post-login:
 /// - mobile: header + bottom nav (showcase `#35:5`) + FAB añadir noticia (`#112:5`)
@@ -28,14 +30,18 @@ class HomeShellScreen extends StatefulWidget {
 class _HomeShellScreenState extends State<HomeShellScreen> {
   HomeTab _tab = HomeTab.noticias;
 
-  void _openAddNews() {
-    Navigator.of(context).push<HomeTab>(
-      MaterialPageRoute(builder: (_) => const AddNewsScreen()),
-    ).then((tab) {
-      if (tab != null && mounted) {
-        setState(() => _tab = tab);
-      }
-    });
+  Future<void> _openAddNews() async {
+    final HomeTab? result;
+    if (GoRouter.maybeOf(context) != null) {
+      result = await context.push<HomeTab>(AppRoutes.newsNew);
+    } else {
+      result = await Navigator.of(context).push<HomeTab>(
+        MaterialPageRoute(builder: (_) => const AddNewsScreen()),
+      );
+    }
+    if (!mounted || result == null) return;
+    final selected = result;
+    setState(() => _tab = selected);
   }
 
   @override

@@ -1,3 +1,4 @@
+import 'package:comunexa/core/router/app_routes.dart';
 import 'package:comunexa/core/session/session_provider.dart';
 import 'package:comunexa/core/theme/app_theme.dart';
 import 'package:comunexa/core/theme/brand_assets.dart';
@@ -9,6 +10,7 @@ import 'package:comunexa/features/home/presentation/home_shell_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 
 /// Selector multirrol:
 /// - mobile: Figma `#99:5` light / `#99:67` dark
@@ -98,9 +100,14 @@ class _ContextSelectScreenState extends ConsumerState<ContextSelectScreen> {
   void _onSelect(UserAccessContext ctx) {
     setState(() => _highlightedId = ctx.id);
     if (widget.contexts != null) {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute<void>(builder: (_) => const HomeShellScreen()),
-      );
+      // Override de tests sin sesión: Navigator o go_router.
+      if (GoRouter.maybeOf(context) != null) {
+        context.go(AppRoutes.home);
+      } else {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute<void>(builder: (_) => const HomeShellScreen()),
+        );
+      }
       return;
     }
     navigateAfterContextSelected(context, ref, contextId: ctx.id);
@@ -108,12 +115,16 @@ class _ContextSelectScreenState extends ConsumerState<ContextSelectScreen> {
 
   void _onLogout() {
     if (widget.contexts != null) {
-      Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute<void>(
-          builder: (_) => const LoginScreen(),
-        ),
-        (_) => false,
-      );
+      if (GoRouter.maybeOf(context) != null) {
+        context.go(AppRoutes.login);
+      } else {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute<void>(
+            builder: (_) => const LoginScreen(),
+          ),
+          (_) => false,
+        );
+      }
       return;
     }
     navigateAfterLogout(context, ref);

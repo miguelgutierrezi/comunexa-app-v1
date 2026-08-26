@@ -6,7 +6,7 @@ Instrucciones al trabajar en **Comunexa** (`comunexa-app-v1`).
 
 | Capa | Tecnología |
 |---|---|
-| Cliente | Flutter + Riverpod + go_router (router aún por añadir) |
+| Cliente | Flutter + Riverpod + go_router |
 | Backend | **Supabase** (Postgres, Auth, Storage, Edge Functions) |
 | Aislamiento | **RLS** |
 | Push | **FCM** |
@@ -24,7 +24,7 @@ Instrucciones al trabajar en **Comunexa** (`comunexa-app-v1`).
 | Hecho | Pendiente inmediato |
 |---|---|
 | Schema + RLS 001/002 + **modelo acceso 003** + **tests RLS pgTAP** | Cutover legacy → org/property; `db push` + seed Diaz PH |
-| Bootstrap, `Env`, tema light/dark, brand assets, **`supabase_flutter`** | Auth real + repositorios; go_router |
+| Bootstrap, `Env`, tema, Auth email/password, **go_router** | OAuth + repositorios; cutover membresías |
 | Splash → Login UI responsive (stub auth; Apple solo iOS/macOS) · SessionProvider persistido | Cablear Auth Supabase al login |
 | Bypass login → **Home shell mock** (móvil / tablet / desktop · light+dark) | Home por rol + Auth real |
 | Workflows GHA + remote GitHub | Secrets/variables GHA + CI verde |
@@ -43,7 +43,7 @@ Detalle: [`docs/roadmap.md`](docs/roadmap.md) · mapa `lib/`: [`docs/flutter-str
 
 | Path | Qué es |
 |---|---|
-| `main.dart` / `app.dart` | Entry + `MaterialApp` (sin go_router todavía) |
+| `main.dart` / `app.dart` | Entry + `MaterialApp.router` (`routerProvider`) |
 | `core/config/env.dart` | `.env` / dart-define |
 | `core/theme/` | `AppTheme` + `BrandAssets` (marca producto) |
 | `core/supabase/` | `ComunexaSupabase` + `supabaseClientProvider` |

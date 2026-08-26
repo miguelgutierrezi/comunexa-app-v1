@@ -1,23 +1,22 @@
+import 'package:comunexa/core/router/app_router.dart';
 import 'package:comunexa/core/theme/app_theme.dart';
-import 'package:comunexa/features/auth/presentation/login_screen.dart';
-import 'package:comunexa/features/splash/presentation/splash_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ComunexaApp extends StatelessWidget {
+class ComunexaApp extends ConsumerWidget {
   const ComunexaApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
+  Widget build(BuildContext context, WidgetRef ref) {
+    final router = ref.watch(routerProvider);
+
+    return MaterialApp.router(
       title: 'Comunexa',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light(),
       darkTheme: AppTheme.dark(),
       themeMode: ThemeMode.system,
-      home: const SplashScreen(),
-      routes: {
-        '/login': (_) => const LoginScreen(),
-      },
+      routerConfig: router,
     );
   }
 }

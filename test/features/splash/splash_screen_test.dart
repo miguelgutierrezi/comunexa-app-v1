@@ -1,5 +1,6 @@
 import '../../helpers/test_provider_scope.dart';
 import 'package:comunexa/core/config/env.dart';
+import 'package:comunexa/core/router/app_routes.dart';
 import 'package:comunexa/core/theme/app_theme.dart';
 import 'package:comunexa/core/theme/brand_assets.dart';
 import 'package:comunexa/features/auth/presentation/login_screen.dart';
@@ -42,11 +43,6 @@ void main() {
 
     final scaffold = tester.widget<Scaffold>(find.byType(Scaffold).first);
     expect(scaffold.backgroundColor, AppTheme.bgLight);
-
-    // Avanza el delay mínimo + sesión vacía → login.
-    await tester.pump(const Duration(milliseconds: 1300));
-    await tester.pumpAndSettle();
-    expect(find.byType(LoginScreen), findsOneWidget);
   });
 
   testWidgets('splash dark móvil usa ink y símbolo Figma #118:27',
@@ -78,10 +74,6 @@ void main() {
 
     final scaffold = tester.widget<Scaffold>(find.byType(Scaffold).first);
     expect(scaffold.backgroundColor, AppTheme.ink);
-
-    await tester.pump(const Duration(milliseconds: 1300));
-    await tester.pumpAndSettle();
-    expect(find.byType(LoginScreen), findsOneWidget);
   });
 
   testWidgets('splash desktop light muestra marca Figma #118:73',
@@ -118,10 +110,6 @@ void main() {
 
     final scaffold = tester.widget<Scaffold>(find.byType(Scaffold).first);
     expect(scaffold.backgroundColor, Colors.white);
-
-    await tester.pump(const Duration(milliseconds: 1300));
-    await tester.pumpAndSettle();
-    expect(find.byType(LoginScreen), findsOneWidget);
   });
 
   testWidgets('splash desktop dark usa ink Figma #118:84', (tester) async {
@@ -153,10 +141,6 @@ void main() {
 
     final scaffold = tester.widget<Scaffold>(find.byType(Scaffold).first);
     expect(scaffold.backgroundColor, AppTheme.ink);
-
-    await tester.pump(const Duration(milliseconds: 1300));
-    await tester.pumpAndSettle();
-    expect(find.byType(LoginScreen), findsOneWidget);
   });
 
   testWidgets('splash tablet landscape light Figma #118:95', (tester) async {
@@ -188,10 +172,6 @@ void main() {
 
     final scaffold = tester.widget<Scaffold>(find.byType(Scaffold).first);
     expect(scaffold.backgroundColor, Colors.white);
-
-    await tester.pump(const Duration(milliseconds: 1300));
-    await tester.pumpAndSettle();
-    expect(find.byType(LoginScreen), findsOneWidget);
   });
 
   testWidgets('splash tablet landscape dark Figma #118:106', (tester) async {
@@ -223,10 +203,6 @@ void main() {
 
     final scaffold = tester.widget<Scaffold>(find.byType(Scaffold).first);
     expect(scaffold.backgroundColor, AppTheme.ink);
-
-    await tester.pump(const Duration(milliseconds: 1300));
-    await tester.pumpAndSettle();
-    expect(find.byType(LoginScreen), findsOneWidget);
   });
 
   testWidgets('splash tablet portrait light Figma #118:117', (tester) async {
@@ -258,10 +234,6 @@ void main() {
 
     final scaffold = tester.widget<Scaffold>(find.byType(Scaffold).first);
     expect(scaffold.backgroundColor, Colors.white);
-
-    await tester.pump(const Duration(milliseconds: 1300));
-    await tester.pumpAndSettle();
-    expect(find.byType(LoginScreen), findsOneWidget);
   });
 
   testWidgets('splash tablet portrait dark Figma #118:128', (tester) async {
@@ -293,9 +265,33 @@ void main() {
 
     final scaffold = tester.widget<Scaffold>(find.byType(Scaffold).first);
     expect(scaffold.backgroundColor, AppTheme.ink);
+  });
 
-    await tester.pump(const Duration(milliseconds: 1300));
+  testWidgets('router: splash sin sesión redirige a /login', (tester) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+
+    await tester.pumpWidget(
+      const TestProviderScope(
+        child: TestRouterApp(),
+      ),
+    );
     await tester.pumpAndSettle();
+
+    expect(find.byType(LoginScreen), findsOneWidget);
+    expect(find.text('Bienvenido'), findsOneWidget);
+  });
+
+  testWidgets('router: /home sin sesión redirige a /login', (tester) async {
+    await tester.pumpWidget(
+      const TestProviderScope(
+        initialLocation: AppRoutes.home,
+        child: TestRouterApp(),
+      ),
+    );
+    await tester.pumpAndSettle();
+
     expect(find.byType(LoginScreen), findsOneWidget);
   });
 }

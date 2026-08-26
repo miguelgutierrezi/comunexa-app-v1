@@ -24,7 +24,7 @@ create or replace function tests.create_user(p_id uuid, p_email text)
 returns void
 language plpgsql
 security definer
-set search_path = public, auth
+set search_path = public, auth, extensions
 as $$
 begin
   insert into auth.users (

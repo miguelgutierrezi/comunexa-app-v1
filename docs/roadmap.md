@@ -45,7 +45,8 @@ Estado al **2026-08-25**.
 - [x] SessionProvider con Auth + persistencia local de contexto (`shared_preferences`)
 - [x] Añadir noticia todos breakpoints light+dark (móvil / tablet port `#116:5`/`#116:92` / tablet land / desktop) + FAB/CTA
 - [x] `supabase_flutter` bootstrap tipado (`ComunexaSupabase`)
-- [ ] go_router + OAuth Google/Apple + repositorios de dominio
+- [x] go_router: `/login` · `/select-context` · `/home` · `/news/new` + redirects por sesión/contexto
+- [ ] OAuth Google/Apple + repositorios de dominio
 - [ ] Onboarding híbrido: aceptar invitación o solicitar ingreso a propiedad
 - [x] Selector de contexto multirrol mobile light/dark (`#99:5` / `#99:67`)
 - [x] Selector de contexto tablet portrait light/dark (`#100:475` / `#100:547`)
