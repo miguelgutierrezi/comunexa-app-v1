@@ -11,7 +11,7 @@ alwaysApply: true
 - Pagos in-app **pausados** (stub `payment-webhook`). No completar pasarela sin pedirlo.
 - Leer `AGENTS.md` y `docs/technical-brief.md` antes de cambios estructurales.
 - Estado actual: [`docs/roadmap.md`](docs/roadmap.md) — splash todos breakpoints L+D + login UI + **home shell mock** (móvil / tablet / desktop · light+dark); Auth real / go_router pendientes. Bypass ≠ sesión real.
-- Antes de Auth: migrar el rol único transitorio a membresías por organización/propiedad. Roles objetivo: `platform_superadmin`, `organization_admin`, `property_manager`, `property_staff`, `member`. Hoteles = extensibilidad futura, no MVP.
+- Antes de Auth: migración **003** (membresías org/property) hecha; falta cutover legacy + policies de dominio. Roles: `platform_superadmin`, `organization_admin`, `property_manager`, `property_staff`, `member`. Hoteles = extensibilidad futura, no MVP.
 - Branding: resolver propiedad → organización → Comunexa; `co_branded` por defecto. `white_label` sin Comunexa es enterprise futuro, no MVP.
 - Suscripción B2B: paga organización o propiedad; puede cubrir varias propiedades; usuario final no paga acceso. Activación manual en piloto. Multirrol selecciona contexto solo si hay varios; plataforma es contexto separado/auditado. Ver `docs/subscriptions-and-onboarding.md`.
 - Vigilancia = preset `security_guard` de `property_staff`; eventos de acceso auditables/append-only. Media de usuario PNG/JPEG/WebP procesada en backend, no SVG MVP. Nombre/icono nativos propios = build white-label enterprise; app compartida conserva Comunexa.

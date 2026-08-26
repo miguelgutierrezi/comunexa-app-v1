@@ -57,23 +57,18 @@ Definir en migración `003_storage_policies.sql` cuando se creen los buckets.
 
 ## Evolución
 
-### Migración de roles pendiente antes de Auth
+### Migración 003 (hecha) — modelo objetivo mínimo
 
-La matriz anterior refleja las policies 002 actuales. El objetivo aprobado reemplaza el rol único de `profiles` por membresías:
+Ver [`access-model.md`](access-model.md) y [`../../supabase/migrations/003_access_model.sql`](../../supabase/migrations/003_access_model.sql).
 
-- privilegio global: `platform_superadmin`;
-- organización: `organization_admin`;
-- propiedad: `property_manager`, `property_staff`, `member`.
+Helpers nuevas: `has_organization_access`, `has_property_access`, `has_property_permission`; `is_platform_superadmin()` también mira `profiles.is_platform_superadmin`.
 
-Las helpers futuras deben resolver acceso para una propiedad concreta y no inferir que un usuario tiene el mismo rol en toda la organización. Los tests deben incluir un usuario con roles distintos en dos propiedades y verificar que los permisos no se propaguen entre ellas.
+### Cutover pendiente antes de Auth real
 
-Las invitaciones y solicitudes requieren pruebas adicionales: un código público no permite leer datos privados; un miembro no se autoaprueba; un manager no aprueba fuera de sus propiedades; un token expirado/revocado no crea membresía; y la activación de plan no depende de valores enviados por Flutter.
+La matriz superior refleja policies **002** (legacy). Falta:
 
-Para control de acceso, `property_staff` requiere permisos explícitos del preset `security_guard`. Debe poder registrar entradas/salidas solo en propiedades asignadas, sin leer dominios ajenos ni borrar historial. Las correcciones son eventos auditables, no `DELETE` operativo.
+1. migrar datos tenants/buildings → organizations/properties;
+2. reescribir policies de tablas de negocio con helpers de propiedad;
+3. tests: usuario con roles distintos en dos propiedades; código público no lee datos; `security_guard` no borra historial.
 
-Al añadir tablas nuevas:
-
-1. Columna `tenant_id` (y FKs a building/unit según aplique).
-2. `enable row level security`.
-3. Policies usando helpers existentes.
-4. Test cross-tenant en CI.
+Definir Storage buckets (`property-assets`) en migración dedicada cuando se creen.

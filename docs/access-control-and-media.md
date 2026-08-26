@@ -1,6 +1,6 @@
 # Control de acceso y carga de imágenes — Comunexa
 
-Decisión de arquitectura objetivo. No está implementada en las migraciones actuales.
+Decisión de arquitectura objetivo. Schema mínimo en migración **003** ([`database/access-model.md`](database/access-model.md)); cutover y events de acceso pendientes.
 
 ## 1. Vigilancia como perfil de permisos
 

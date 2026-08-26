@@ -10,11 +10,11 @@ alwaysApply: false
 - Fuente canónica SQL: `supabase/migrations/`. Docs en `docs/database/` deben alinearse.
 - No editar migraciones ya aplicadas en un ambiente compartido: crear `00N_*.sql` nueva.
 - PKs UUID; FKs por id, no por nombre de edificio/tenant.
-- Dominio objetivo: organización → propiedad → unidad; los nombres SQL `tenant`/`building` son transitorios hasta una migración explícita.
-- Roles objetivo: `platform_superadmin` global; `organization_admin`; `property_manager`; `property_staff`; `member`. Los roles operativos viven en membresías contextuales, no como un único `profiles.role`.
-- Una identidad puede tener roles distintos por propiedad; RLS debe evaluarlos en ese contexto.
+- Dominio objetivo: organización → propiedad → unidad. Migración **003** (`organizations`/`properties`/memberships) en paralelo al legacy `tenant`/`building` hasta cutover. Ver [`docs/database/access-model.md`](docs/database/access-model.md).
+- Roles objetivo: `platform_superadmin` global (`profiles.is_platform_superadmin`); `organization_admin`; `property_manager`; `property_staff`; `member`. Los roles operativos viven en membresías contextuales, no como un único `profiles.role`.
+- Una identidad puede tener roles distintos por propiedad; RLS debe evaluarlos en ese contexto (`has_property_access` / `has_property_permission`).
 - Hoteles son extensibilidad futura (`property_type`, ocupaciones con vigencia), no alcance funcional del MVP PH.
 - `billing_accounts` puede representar pagador organización o propiedad; una suscripción puede cubrir varias propiedades y no reutiliza `invoices`/`payments` de residentes. Invitaciones/solicitudes solo crean membresía tras validación; código público nunca autoriza datos.
-- `security_guard` es preset de permisos `property_staff`; visitantes, vehículos, autorizaciones y eventos siempre llevan contexto de propiedad. Eventos de acceso no se borran operativamente; correcciones auditadas.
+- `security_guard` es preset de permisos `property_staff` (seed en 003); visitantes, vehículos, autorizaciones y eventos siempre llevan contexto de propiedad. Eventos de acceso no se borran operativamente; correcciones auditadas.
 - Tablas `invoices`/`payments` existen; cobro in-app **no** — no “activar” webhook de pagos sin pedirlo.
-- Al modelar features nuevas antes de la migración: respetar `tenant_id` + `building_id`; después, usar la FK de propiedad definida por la migración. No mezclar ambos modelos parcialmente.
+- Al modelar features nuevas: preferir `organization_id` / `property_id` del modelo 003. No mezclar con `tenant_id`/`building_id` en tablas nuevas salvo puente explícito (`units.property_id`).

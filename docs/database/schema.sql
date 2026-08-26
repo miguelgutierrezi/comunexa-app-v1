@@ -1,5 +1,6 @@
--- Comunexa — esquema inicial
--- Aplicar con: supabase db push (local) o supabase migration up
+-- Comunexa — esquema inicial (legacy 001)
+-- Aplicar con: supabase db push
+-- Modelo de acceso objetivo: ver migrations/003_access_model.sql y docs/database/access-model.md
 
 -- Extensiones
 create extension if not exists "pgcrypto";

@@ -108,12 +108,12 @@ El código público solo descubre la propiedad y abre una solicitud: **nunca con
 
 ## 6. Invitaciones, solicitudes y ocupaciones
 
-Entidades objetivo, a concretar en una migración nueva:
+Entidades objetivo, a concretar en migraciones nuevas (occupancies ya en **003**):
 
 - `property_join_codes`: código público rotatable para iniciar solicitudes.
 - `property_invitations`: token privado, destinatario opcional, propiedad/unidad, expiración, usos y estado.
 - `membership_requests`: solicitante, propiedad, unidad declarada, relación, evidencia opcional, estado y auditoría de revisión.
-- `occupancies`: vínculo aprobado entre perfil y unidad, tipo, vigencia y estado.
+- `occupancies` (**003**): vínculo aprobado entre perfil y unidad, tipo, vigencia y estado.
 
 Estados de solicitud:
 

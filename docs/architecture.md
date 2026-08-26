@@ -73,7 +73,7 @@ flowchart TB
 
 Los roles de organización y propiedad son **membresías contextuales**. No se modelan como un solo rol permanente en `profiles`: una persona puede administrar una propiedad, operar otra y ser miembro de una tercera.
 
-**Transición:** el SQL 001/002 aún usa `profiles.role`, `buildings`, `building_admins` y `resident_units`. La migración al modelo objetivo debe ocurrir antes de conectar Auth real, acompañada de nuevas policies y tests RLS.
+**Transición:** migración **003** añade organizations/properties/memberships/occupancies/permisos. El SQL 001/002 (`profiles.role`, `buildings`, `building_admins`, `resident_units`) sigue en paralelo hasta cutover + policies de dominio. Ver [`docs/database/access-model.md`](database/access-model.md).
 
 ## 4. Marca dinámica
 

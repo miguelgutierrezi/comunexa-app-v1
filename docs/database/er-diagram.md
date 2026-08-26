@@ -1,45 +1,47 @@
 # Diagrama entidad-relación — Comunexa
 
-Esquema Postgres en Supabase. Todas las tablas de negocio incluyen `tenant_id` para RLS.
+Esquema Postgres en Supabase.
 
-> **Estado:** el diagrama principal refleja las migraciones 001/002 actuales. Antes de Auth real se debe crear una migración nueva hacia el modelo objetivo de membresías descrito abajo; no se deben editar migraciones ya aplicadas.
+> **Estado:** migraciones **001/002** = dominio legacy (`tenants`/`buildings`). Migración **003** = modelo objetivo de identidad/acceso (`organizations`/`properties`/memberships). Detalle: [`access-model.md`](access-model.md). No editar migraciones ya aplicadas.
 
-## Modelo objetivo de identidad y acceso
+## Modelo objetivo de identidad y acceso (003)
 
 ```mermaid
 erDiagram
   organizations ||--o{ organization_memberships : tiene
   organizations ||--o{ properties : administra
   properties ||--o{ property_memberships : autoriza
-  properties ||--o{ units : contiene
+  properties ||--o{ occupancies : contextualiza
+  permission_presets ||--o{ permission_preset_permissions : agrupa
+  permissions ||--o{ permission_preset_permissions : incluye
+  permission_presets ||--o{ property_memberships : opcional
+  property_memberships ||--o{ property_membership_permissions : overrides
+  permissions ||--o{ property_membership_permissions : concede
   profiles ||--o{ organization_memberships : participa
   profiles ||--o{ property_memberships : participa
   profiles ||--o{ occupancies : ocupa
   units ||--o{ occupancies : recibe
+  properties ||--o{ units : puente_nullable
 ```
 
-- `profiles` no contiene un único rol operativo.
+- `profiles.is_platform_superadmin` es el privilegio global; `profiles.role` es legacy.
 - `organization_memberships.role`: `organization_admin` o `member`.
-- `property_memberships.role`: `property_manager`, `property_staff` o `member`; los permisos operativos se limitan por RLS.
-- `platform_superadmin` es un privilegio global separado.
-- `properties.property_type`: inicialmente `building` / `residential_complex`; `hotel` queda reservado para evolución futura.
-- `occupancies` generaliza la relación con una unidad mediante tipo y vigencia. En PH cubre propietario/arrendatario; en una extensión futura podría cubrir huéspedes.
+- `property_memberships.role`: `property_manager`, `property_staff` o `member`.
+- `property_staff` usa `permission_preset_id` (p. ej. `security_guard`) y/o overrides.
+- `properties.property_type`: `building` / `residential_complex`; `hotel` reservado.
+- `occupancies`: tipo + vigencia + estado; historial al cerrar.
 
-Los nombres físicos definitivos y la estrategia de migración se cerrarán en la siguiente migración. Hasta entonces, `tenants`, `buildings`, `building_admins` y `resident_units` siguen siendo la fuente SQL vigente.
+Legacy vigente en paralelo hasta cutover: `tenants`, `buildings`, `building_admins`, `resident_units`.
 
-El modelo objetivo también incorpora, sin reutilizar facturas de residentes:
+Pendiente de migraciones futuras (no en 003):
 
-- `billing_accounts`, suscripción + plan/entitlements y relación a una o varias propiedades; el pagador puede ser organización o propiedad;
-- `property_join_codes` para descubrir una propiedad sin conceder acceso;
-- `property_invitations` privadas y expirables;
-- `membership_requests` con revisión y auditoría;
-- `occupancies` como vínculo aprobado y temporal con una unidad.
-- `visitors`, `vehicles`, `visit_authorizations` y `access_events` append-only para control de acceso.
+- `billing_accounts` / suscripción;
+- `property_join_codes`, `property_invitations`, `membership_requests`;
+- `visitors`, `vehicles`, `visit_authorizations`, `access_events`.
 
-Detalle: [`../subscriptions-and-onboarding.md`](../subscriptions-and-onboarding.md).
-Control de acceso: [`../access-control-and-media.md`](../access-control-and-media.md).
+Detalle: [`../subscriptions-and-onboarding.md`](../subscriptions-and-onboarding.md) · [`../access-control-and-media.md`](../access-control-and-media.md) · [`access-model.md`](access-model.md).
 
-## Diagrama principal
+## Diagrama principal (legacy 001/002)
 
 ```mermaid
 erDiagram
@@ -134,9 +136,11 @@ erDiagram
 
 ## Archivos SQL
 
-- Esquema: [`../../supabase/migrations/001_initial_schema.sql`](../../supabase/migrations/001_initial_schema.sql)
-- RLS: [`../../supabase/migrations/002_rls_policies.sql`](../../supabase/migrations/002_rls_policies.sql)
-- Copia de referencia: [`schema.sql`](schema.sql)
+- Esquema legacy: [`../../supabase/migrations/001_initial_schema.sql`](../../supabase/migrations/001_initial_schema.sql)
+- RLS legacy: [`../../supabase/migrations/002_rls_policies.sql`](../../supabase/migrations/002_rls_policies.sql)
+- Acceso objetivo: [`../../supabase/migrations/003_access_model.sql`](../../supabase/migrations/003_access_model.sql)
+- Resumen acceso: [`access-model.md`](access-model.md)
+- Copia de referencia legacy: [`schema.sql`](schema.sql)
 
 ## Storage (Supabase, no ER)
 

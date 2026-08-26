@@ -76,7 +76,7 @@ Las imágenes configurables se validan y re-encodean en backend; la app solo con
 
 **Decisión objetivo:** `profiles` representa identidad y datos personales; el acceso vive en `organization_memberships` y `property_memberships`. Esto permite que una persona tenga roles distintos en propiedades diferentes. `platform_superadmin` permanece como privilegio global separado.
 
-**Estado SQL actual:** `profiles.tenant_id` + `profiles.role`, con `building_admins` y `resident_units`. Es suficiente para el prototipo PH, pero debe migrarse antes de Auth real. Hoteles son una extensión prevista, no alcance del MVP actual.
+**Estado SQL:** migración **003** crea el modelo objetivo mínimo (`organizations`, `properties`, memberships, `occupancies`, permisos/presets). Legacy 001/002 (`profiles.role`, `buildings`, …) sigue en paralelo hasta cutover. Ver [`database/access-model.md`](database/access-model.md). Hoteles son extensión prevista, no alcance del MVP actual.
 
 ## 5. Entidades principales
 
@@ -84,7 +84,7 @@ Detalle: [`database/schema.sql`](database/schema.sql), [`database/er-diagram.md`
 
 `tenants` · `buildings` · `units` · `profiles` · `building_admins` · `resident_units` · `invoices` · `payments` · `pqr` · `news` · `common_areas` · `reservations` · `visits` · `messages` · `polls` · `poll_options` · `votes` · `notifications_log`
 
-Entidades objetivo pendientes de migración: suscripciones/entitlements, invitaciones privadas, códigos públicos de propiedad, solicitudes de membresía, ocupaciones con vigencia, visitantes, vehículos, autorizaciones y eventos de acceso.
+Entidades objetivo pendientes tras 003: cutover legacy, suscripciones/entitlements, invitaciones privadas, códigos públicos, solicitudes de membresía, visitantes/vehículos/autorizaciones/eventos de acceso.
 
 ## 6. Integraciones externas
 

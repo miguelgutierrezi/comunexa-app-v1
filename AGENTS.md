@@ -23,10 +23,10 @@ Instrucciones al trabajar en **Comunexa** (`comunexa-app-v1`).
 
 | Hecho | Pendiente inmediato |
 |---|---|
-| Schema + RLS inicial en `supabase/migrations/` | Migrar membresías contextuales antes de Auth; luego `db push` + seed Diaz PH |
+| Schema + RLS 001/002 + **modelo acceso 003** (org/property/memberships) | Cutover legacy → org/property; `db push` + seed Diaz PH; tests RLS |
 | Bootstrap, `Env`, tema light/dark, brand assets | `supabase_flutter` + client tipado |
 | Splash → Login UI responsive (stub auth; Apple solo iOS/macOS) · SessionProvider persistido | go_router + Auth real Supabase |
-| Bypass login → **Home shell mock** (móvil / tablet / desktop · light+dark) | Selector tablet/desktop; home por rol + Auth real |
+| Bypass login → **Home shell mock** (móvil / tablet / desktop · light+dark) | Home por rol + Auth real |
 | Workflows GHA + remote GitHub | Secrets/variables GHA + CI verde |
 | Stub `payment-webhook` | Features de negocio reales (Fase 4) |
 
@@ -63,7 +63,7 @@ Detalle: [`docs/roadmap.md`](docs/roadmap.md) · mapa `lib/`: [`docs/flutter-str
 
 - No hardcodear marca Diaz PH.
 - `tenant_id` en entidades; UUIDs, no nombres como FK.
-- Dominio objetivo: organización → propiedad → unidad. `tenant`/`building` son nombres SQL actuales hasta migración explícita.
+- Dominio objetivo: organización → propiedad → unidad. Migración **003** crea `organizations`/`properties`/memberships; `tenant`/`building` siguen legacy hasta cutover. Ver [`docs/database/access-model.md`](docs/database/access-model.md).
 - No añadir roles operativos a `profiles.role`: usar membresías de organización/propiedad. Roles objetivo: `platform_superadmin`, `organization_admin`, `property_manager`, `property_staff`, `member`.
 - Hoteles son extensibilidad futura, no alcance funcional del MVP PH.
 - Branding de producto (`BrandAssets`) ≠ branding de tenant (futuro desde `tenants`).

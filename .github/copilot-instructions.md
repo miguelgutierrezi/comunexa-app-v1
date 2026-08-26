@@ -18,16 +18,15 @@ Use these notes as the default context for this repository.
 
 ## Current code status (2026-08-25)
 
-- Done: migrations + RLS, Flutter bootstrap, theme/branding, **splash todos breakpoints L+D**, **responsive login UI**, **home shell mock**, **añadir noticia** (móvil / tablet port+land / desktop · light+dark), GHA workflows, remote GitHub.
-- Next: Supabase project + `supabase_flutter` + go_router + real Auth (SessionProvider stub ya persistido).
-- Before Auth, migrate the transitional single `profiles.role` model to contextual organization/property memberships. Target roles: global `platform_superadmin`; `organization_admin`; `property_manager`; `property_staff`; `member`.
+- Done: migrations + RLS 001/002, **access model 003** (organizations/properties/memberships/occupancies/permissions), Flutter bootstrap, theme/branding, splash todos breakpoints L+D, responsive login UI, home shell mock, añadir noticia, GHA workflows, remote GitHub.
+- Next: cutover legacy → org/property, `db push` + seed, Supabase Auth + go_router.
 
 ## Core constraints
 
 - Do not commit secrets (`.env`, service role, keystores, `google-services.json`).
 - Do not disable RLS. Always design with `tenant_id`.
 - Do not hardcode Diaz PH branding; product brand ≠ tenant brand.
-- Target domain is organization → property → unit. Current SQL names `tenant`/`building` remain valid until an explicit migration; do not mix models partially. Hotels are future extensibility, not MVP scope.
+- Target domain is organization → property → unit. Migration **003** adds the access model; SQL names `tenant`/`building` remain until cutover — do not mix models partially. See `docs/database/access-model.md`. Hotels are future extensibility, not MVP scope.
 - Resolve branding as property → organization → Comunexa. MVP defaults to `co_branded`; removing Comunexa (`white_label`) is enterprise-only. Keep typography, components, layout, and accessibility product-controlled.
 - **Assets:** always reuse `BrandAssets` / `assets/branding/` (logos, symbol, icons) before exporting from Figma; do not duplicate the same mark.
 - B2B subscription may be paid by an organization or property and cover one or many properties; end users never pay for access. It is manually activated during the pilot and separate from paused resident payments. Onboarding uses private invitations or approval-required requests. Multi-role users select a context only when several exist; platform support context is separate and audited. See `docs/subscriptions-and-onboarding.md`.

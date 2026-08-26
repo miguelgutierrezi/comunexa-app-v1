@@ -16,8 +16,9 @@ Estado al **2026-08-25**.
 
 ## Fase 1 — Supabase dev
 
-- [ ] Migrar modelo de acceso antes de Auth: organizaciones/propiedades + membresías contextuales
-- [ ] Separar `property_manager` de `property_staff`; `platform_superadmin` global
+- [x] Migrar modelo de acceso mínimo (003): organizations / properties / memberships / occupancies / permisos+presets
+- [ ] Cutover datos legacy (`tenants`/`buildings` → org/property) + reescribir RLS de dominio
+- [ ] Separar uso de `property_manager` vs `property_staff` en app; `platform_superadmin` vía flag
 - [ ] Proyecto + `db push`
 - [ ] Auth + Storage buckets
 - [ ] Branding jerárquico: organización + propiedad, fallback y permisos de Storage
