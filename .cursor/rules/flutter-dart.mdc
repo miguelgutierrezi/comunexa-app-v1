@@ -11,7 +11,7 @@ alwaysApply: false
 - Estado: Riverpod (`ProviderScope` ya en `main`). Navegación objetivo: **go_router** (hoy `MaterialApp` + rutas / Navigator).
 - UI al usuario en **español**. Código en inglés.
 - `presentation` no debe llamar a Supabase directo; encapsular en repositorios `data/`.
-- Login actual (`features/auth/presentation/login_screen.dart`) es **UI + stub**; Apple Sign-In solo si plataforma es iOS/macOS (`showAppleSignIn` overrideable en tests). Al conectar Auth, añadir repository/provider sin reescribir el layout responsive salvo que se pida.
+- Login actual (`features/auth/presentation/login_screen.dart`) es **UI + stub**; Apple Sign-In solo si plataforma es iOS/macOS (`showAppleSignIn` overrideable en tests). Cliente: `ComunexaSupabase` / `supabaseClientProvider` — **no** usar `Supabase.instance` en `presentation`. Auth real vía repository pendiente.
 - Branding producto: `BrandAssets` / `AppTheme`. **Reutilizar siempre** assets existentes (`assets/branding/`, constantes en `BrandAssets`) antes de exportar de Figma; no duplicar logos/símbolo/iconos. Resolver identidad efectiva propiedad → organización → Comunexa; `co_branded` por defecto y `white_label` solo enterprise. No hardcodear Diaz PH ni permitir que colores configurables rompan contraste/accesibilidad.
 - App nativa compartida conserva nombre/icono Comunexa; branding dinámico vive dentro de la app. PWA dedicada puede usar manifest por cliente; nativo personalizado exige flavor/build enterprise.
 - UI solo previsualiza cargas; no trata un asset como publicado hasta que backend lo valide y procese.

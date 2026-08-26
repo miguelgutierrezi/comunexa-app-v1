@@ -18,8 +18,8 @@ Use these notes as the default context for this repository.
 
 ## Current code status (2026-08-25)
 
-- Done: migrations + RLS 001/002, **access model 003** + grants 004, **pgTAP RLS tests** (workflow `rls.yml`), Flutter UI (splash/login/home/add-news), GHA web workflows, remote GitHub.
-- Next: cutover legacy → org/property, `db push` + seed, Supabase Auth + go_router.
+- Done: migrations + RLS 001–004, pgTAP RLS tests, **`supabase_flutter` bootstrap** (`ComunexaSupabase`), Flutter UI (splash/login/home/add-news), GHA workflows.
+- Next: Auth real + go_router + repositorios; cutover legacy → org/property; seed.
 
 ## Core constraints
 

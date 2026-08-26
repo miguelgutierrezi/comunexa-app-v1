@@ -24,8 +24,8 @@ Instrucciones al trabajar en **Comunexa** (`comunexa-app-v1`).
 | Hecho | Pendiente inmediato |
 |---|---|
 | Schema + RLS 001/002 + **modelo acceso 003** + **tests RLS pgTAP** | Cutover legacy → org/property; `db push` + seed Diaz PH |
-| Bootstrap, `Env`, tema light/dark, brand assets | `supabase_flutter` + client tipado |
-| Splash → Login UI responsive (stub auth; Apple solo iOS/macOS) · SessionProvider persistido | go_router + Auth real Supabase |
+| Bootstrap, `Env`, tema light/dark, brand assets, **`supabase_flutter`** | Auth real + repositorios; go_router |
+| Splash → Login UI responsive (stub auth; Apple solo iOS/macOS) · SessionProvider persistido | Cablear Auth Supabase al login |
 | Bypass login → **Home shell mock** (móvil / tablet / desktop · light+dark) | Home por rol + Auth real |
 | Workflows GHA + remote GitHub | Secrets/variables GHA + CI verde |
 | Stub `payment-webhook` | Features de negocio reales (Fase 4) |
@@ -46,6 +46,7 @@ Detalle: [`docs/roadmap.md`](docs/roadmap.md) · mapa `lib/`: [`docs/flutter-str
 | `main.dart` / `app.dart` | Entry + `MaterialApp` (sin go_router todavía) |
 | `core/config/env.dart` | `.env` / dart-define |
 | `core/theme/` | `AppTheme` + `BrandAssets` (marca producto) |
+| `core/supabase/` | `ComunexaSupabase` + `supabaseClientProvider` |
 | `features/splash/` | Splash todos breakpoints light+dark |
 | `features/auth/` | Login + selector contexto mock (`demo:multi`) + post-login stub |
 | `features/home/` | Shell + feed + añadir noticia (móvil/tablet/desktop) + dashboards |

@@ -73,7 +73,8 @@ Actualizado **2026-08-25**.
 
 ```
 lib/
-├── main.dart                 # Env.load + ProviderScope
+├── main.dart                 # bootstrap → ProviderScope
+├── bootstrap.dart            # Env + session storage + Supabase
 ├── app.dart                  # MaterialApp (aún sin go_router)
 ├── core/
 │   ├── config/env.dart
@@ -82,6 +83,9 @@ lib/
 │   │   ├── session_state.dart
 │   │   ├── session_storage.dart      # SharedPreferences + in-memory (tests)
 │   │   └── session_provider.dart     # signIn · selectContext · signOut · restore
+│   ├── supabase/
+│   │   ├── comunexa_supabase.dart    # init tipado (anon + RLS)
+│   │   └── supabase_providers.dart   # supabaseClientProvider
 │   └── theme/
 │       ├── app_theme.dart    # light/dark + tipografía
 │       └── brand_assets.dart # reutilizar siempre; no duplicar logos/SVG
@@ -116,9 +120,10 @@ lib/
 | Tablet portrait light+dark (`#74:5` / `#74:117`) | — |
 | Apple Sign-In solo iOS/macOS (override en tests) | Cablear OAuth real por plataforma |
 | `ProviderScope` + SessionProvider (stub persistido) | auth_provider Supabase |
-| Sin `go_router` / `supabase_flutter` | Añadir en Fase 2 |
+| `supabase_flutter` init tipado (`ComunexaSupabase`) | Auth real + repositorios |
+| Sin `go_router` | Añadir en Fase 2 |
 | Sin freezed | Generar modelos al conectar BD |
-| Tema fijo Comunexa | `tenant_theme` desde `tenants` |
+| Tema fijo Comunexa | `tenant_theme` desde org/property |
 
 ### Breakpoints home (Figma)
 

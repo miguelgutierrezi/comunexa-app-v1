@@ -44,7 +44,8 @@ Estado al **2026-08-25**.
 - [x] Smoke tests home (móvil / tablet portrait / tablet landscape / desktop · light+dark)
 - [x] SessionProvider stub con persistencia local (`shared_preferences`): correo, contexto activo y último usado
 - [x] Añadir noticia todos breakpoints light+dark (móvil / tablet port `#116:5`/`#116:92` / tablet land / desktop) + FAB/CTA
-- [ ] `supabase_flutter` + go_router + Auth real
+- [x] `supabase_flutter` bootstrap tipado (`ComunexaSupabase`; sin Auth UI aún)
+- [ ] go_router + Auth real Supabase (email/OAuth) + repositorios
 - [ ] Onboarding híbrido: aceptar invitación o solicitar ingreso a propiedad
 - [x] Selector de contexto multirrol mobile light/dark (`#99:5` / `#99:67`)
 - [x] Selector de contexto tablet portrait light/dark (`#100:475` / `#100:547`)

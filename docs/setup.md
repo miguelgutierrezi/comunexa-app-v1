@@ -51,7 +51,7 @@ cp .env.example .env
 # editar .env con SUPABASE_URL, SUPABASE_ANON_KEY, etc.
 ```
 
-La app carga `.env` sola al arrancar (`flutter_dotenv` → `Env.load()` en `main.dart`).
+La app carga `.env` sola al arrancar (`bootstrap` → `Env.load()` + `ComunexaSupabase.initialize()`).
 
 ```bash
 flutter run -d chrome
@@ -60,7 +60,8 @@ flutter run -d chrome
 No hace falta `--dart-define-from-file` en local.  
 `.env` está en `.gitignore` y también declarado como asset en `pubspec.yaml`.
 
-Uso en código: `Env.supabaseUrl`, `Env.supabaseAnonKey`, `Env.isConfigured`.
+Uso en código: `Env.supabaseUrl`, `Env.supabaseAnonKey`, `Env.isConfigured`.  
+Cliente: `supabaseClientProvider` / `ComunexaSupabase.client` solo desde capas `data/` (no en `presentation`). Sin URL/key la UI mock sigue viva.
 
 ## 4. Auth
 

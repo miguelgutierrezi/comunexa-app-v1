@@ -148,7 +148,7 @@ RLS: [`database/rls-policies.md`](database/rls-policies.md). Resumen: [`security
 
 [`flutter-structure.md`](flutter-structure.md) — features con data/domain/presentation.
 
-**Estado app (2026-08-25):** bootstrap + tema + splash + **UI de login** (todos los breakpoints, light/dark) + **home shell mock** (móvil; tablet portrait ≥700; tablet landscape ≥900; desktop ≥1280). Auth sigue siendo stub con bypass a home; no hay `go_router`, client Supabase ni home por rol real. Detalle en el roadmap Fase 2.
+**Estado app (2026-08-25):** bootstrap + **`supabase_flutter`** (`ComunexaSupabase`) + tema + splash + login UI + home shell mock. Auth sigue stub (bypass); sin `go_router` ni home por rol real. Detalle en el roadmap Fase 2.
 
 ## 10. Entornos y CI
 
